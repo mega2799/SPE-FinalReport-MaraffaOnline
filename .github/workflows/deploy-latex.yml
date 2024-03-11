@@ -1,0 +1,61 @@
+name: Build and Deploy LaTeX Document
+
+permissions: write-all
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: danteev/texlive:latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Restore the TeX Live installation from cache
+      # - name: Restore TeX Live Cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       /usr/local/texlive
+      #     key: texlive-${{ runner.os }}-${{ hashFiles('**/*.tex') }}
+
+      - name: Build Latex PDF and HTML
+        run: |
+          mkdir ./public
+            pandoc -s --highlight-style kate --toc -c latex2html.css report/main.tex -o public/index.html
+          cp latex2html.css public
+          pdflatex report/main.tex
+          pdflatex report/main.tex
+
+      # Save the TeX Live installation to cache for future use
+      - name: Save TeX Live Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            /usr/local/texlive
+          key: texlive-${{ runner.os }}-${{ hashFiles('**/*.tex') }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PDF
+          path: main.pdf
+
+      - name: Publish PDF
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: Current
+          files: main.pdf
+
+      - name: Publish HTML to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
