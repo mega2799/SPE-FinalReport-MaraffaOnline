@@ -1,8 +1,30 @@
-% replace all text with your own text.
-% in this template few examples are mention
-\chapter{CI}
+\usepackage{verbatim}
+\chapter{Continuous Integration}
 \label{ch:ci} % Label for method chapter
 
+Abbiamo deciso di implementare ogni servizio in una repository diversa. La repository fornita è un contenitore di tutte le singole repository dei servizi.
+\section{CI}
+Per ogni repository è stata implementata una CI specifica. \\
+
+\textbf{UserManagementMaraffa e BusinessLogic:} Essendo le due repository estremamente simili e avendo entrambe un ambiente in node.js, è stato implementato un workflow pressochè analogo. Questo workflow reagisce all'evento push sul main branch, e pull request sui branch main e develop 
+e sono stati implementati 3 job: build, test e deploy.
+Dopo una checkout iniziale (fetch-depth è 0 in quanto il changelog necessita di tutta la history dei commit), viene creata una cache per permettere ai job di comunicare tra loro. Successivamente alla build il sistema viene testato (in entrambi i casi viene usata l'action di yarn) e infine viene effettuato il deploy del servizio containerizzato se l'evento è una pull request con la quale viene svolto il merge e quando l'action è closed (non sta progredendo e quindi l'esecuzione non è in corso). Nel deploy viene effettuato il chekout, si configura il nome del progetto, si configura la versione della build. Se il commit viene effettuato sul main si configura il nome del tag e la versione a "LATEST", nel caso non fosse nel main viene configurata la versione a "develop". Infine si effettua il login al Github container registry, la build e la push dell'immagine sul registro. L'immagine viene configurata in modo parametrico con delle variabili d'ambiente e il nome viene trasformato in minuscolo. 
+
+\textbf{MiddlewareMaraffa:} //TODO
+push su main, pull request su main e develop
+build e test se pullrequest.merge = true 
+
+Parte finale 
+\textbf{ChatServer:} Il servizio è sviluppato in un ambiente Java, pertanto dopo aver effettuato il checkout nel job build and test,  si effettua il set-up di Java (distribuzione: temurin, versione 20). Viene svolto il set-up di Gradle, in cui viene usata un'action per la build e creata una cache. Inoltre viene aggiunto un commento con un riassunto dei risultati dei job  alla pull request, il cui valore è impostato a "on-failure". Si noti che il suo valore di default è "never"; se fosse "always", si potrebbero verificare scenari indesiderati. Il riassunto dei risultati dei job risulta particolarmente utile: un utente che vuole esaminare la pull request riesce a comprendere lo stato dei job (se sono stati eseguiti correttamente oppure no) in modo leggibile e intuitivo. Successivamente si effettua il deploy del container di rabbitMQ se l'evento è una pull request oppure se è una push sul master o se la stringa con il riferimento a github contiene "tags/v". Infine se tutti il job da cui dipende (build-and-test) non è fallito e non è stato interrotto. Con l'istruzione run si verifica che non ci siano stati dei fallimenti nel job deploy and test.
+
+\textbf{FrontendMaraffa:} //TODO
+Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integrazione, il rilevamento precoce di bug e i problemi di compatibilità.
+
+
+
+
+
+\begin{comment}
 We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
 that a project report's structure could follow a particular paradigm. Hence, the organization of a report (effectively the Table of Content of a report) can vary depending on the type of project you are doing. Check which of the given examples suit your project. Alternatively, follow your supervisor's advice.
 
@@ -269,4 +291,4 @@ Write a summary of this chapter.
 ~\\[5em]
 \noindent
 {\huge\textbf{Note:}} In the case of \textbf{software engineering} project a Chapter ``\textbf{Testing and Validation}'' should precede the ``Results'' chapter. See Section~\ref{subsec:se_chpters} for report organization of such project. 
-
+\end{comment}
