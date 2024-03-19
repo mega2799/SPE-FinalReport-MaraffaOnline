@@ -120,8 +120,7 @@
     \begin{titlepage}      
         \begin{center}
             % \includegraphics[width=3cm]{figures/uorlogo.png}\\[0.5cm]
-            {\LARGE University of Reading\\[0.5cm]
-            Department of Computer Science}\\[2cm]
+            {\LARGE Software Process Engineering}\\[2cm]
 			%{\color{blue} \rule{\textwidth}{1pt}}
 			
 			% -------------------------------
@@ -132,7 +131,7 @@
                 %TODO: 1 TITLE of Your PROJECT 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 % chnage the following line                
-                Computer Science Undergraduate Report Template and Report Writing Guide
+                Maraffa Online
             
             }
             \linespread{1}~\\[2cm]
@@ -142,76 +141,21 @@
                 %TODO: 2 YOUR NAME
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%             
                 % chnage the following line
-                FirstName(s) LastName
+                Sofia Tosi, Matteo Santoro
                 % change end             
             }\\[1cm] 
             
 
-            {\large 
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %TODO: 3 YOUR NAME Supervisor's name(s)
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%             
-                % change the following line                
-                \emph{Supervisor:} Supervisor's Name}\\[1cm] % if applicable
             
     		% PLEASE DO NOT CHANGE THIS TEXT %
-            \large A report submitted in partial fulfilment of the requirements of\\the University of Reading for the degree of\\ Bachelor of Science in \textit{Computer Science}\\[0.3cm] 
+            %\large A report submitted in partial fulfilment of the requirements of\\the University of Reading for the degree of\\ Bachelor of Science in \textit{Computer Science}\\[0.3cm] 
             \vfill
             
             
             \today % Please update this date you can use \date{April 2020} for fixed date
         \end{center}
     \end{titlepage}
-    
-    
-    % -------------------------------------------------------------------
-    % Declaration
-    % -------------------------------------------------------------------
-    \newpage
-    \thispagestyle{empty}
-    \chapter*{\Large Declaration}
-    % PLEASE CHANGE THIS TEXT EXCEPT YOUR NAME%
-    % -------------------------------
-    %TODO: PLEASE ONLY UPDATE HERE -- PLEASE WRITE YOUR NAME %    
-    % ------------------------------- 
-    I,
-    %%%%%%%%%%%%%%%%%%%%%%%
-     Firstname(s) Lastname, % Mandatory part
-    %%%%%%%%%%%%%%%%%%%%%%%
-    of the Department of Computer Science, University of Reading, confirm that this is my own work and figures, tables, equations, code snippets, artworks, and illustrations in this report are original and have not been taken from any other person's work, except where the works of others have been explicitly acknowledged, quoted, and referenced. I understand that if failing to do so will be considered a case of plagiarism. Plagiarism is a form of academic misconduct and will be penalised accordingly. \\
-    
-    %% Please delete as appropriate. 
-    \noindent
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-    %TODO 1 Consent for example copy -  we will use 
-    I give consent to a copy of my report being shared with future students as an exemplar. \\
-    
-    \noindent
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-    %TODO 2 Consent to let the report to use use by library for public use
-    I give consent for my work to be made available more widely to members of UoR and public with interest in teaching, learning and research. 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ~\\[1cm]
-    \begin{flushright}
-	%------------------------------ 
-	% change the following line
-    %TODO: PLEASE UPDATE  Your Name  -------------------------------%
-	Firstname(s) Lastname % Please change it to your name
-    
-    \today
-    \end{flushright}
-
-     
-    % -------------------------------------------------------------------
-    % Abstract and Acknowledgement
-    % -------------------------------------------------------------------
-    
-    \input{report/chapters/abstract.tex}
-    % -------------------------------------------------------------------
-	% Acknowledgement
-	% -------------------------------------------------------------------
-   
-    \input{report/chapters/acknowledgments.tex}   
+       
     
     % -------------------------------------------------------------------
     % Contents, list of figures, list of tables
@@ -233,30 +177,10 @@
     % Lamport, L. (1986), LATEX: A Document Preparation System, Addison-Wesley.
     
     \input{report/chapters/introduction.tex}
-    \input{report/chapters/literature.tex}% https://guides.library.bloomu.edu/litreview
-    \input{report/chapters/methodology.tex}
-    \input{report/chapters/ci.tex}
-    \input{report/chapters/results.tex}
-    \input{report/chapters/discussion.tex}
+    \input{report/chapters/DDD.tex}% https://guides.library.bloomu.edu/litreview
+    \input{report/chapters/implementation.tex}
+    \input{report/chapters/DevOps.tex}
     \input{report/chapters/conclusions.tex}
-    \input{report/chapters/reflection.tex}
-    
 
-    
-    % -------------------------------------------------------------------
-    % Bibliography/References  -  Harvard Style was used in this report
-    % -------------------------------------------------------------------
-    \bibliographystyle{agsm} % Harvard Style 
-    
-    \bibliography{report/references}  %  Patashnik, O. (1988), BibTEXing. Documentation for general BibTEX users.
-    
-    % -------------------------------------------------------------------
-    % Appendices
-    % -------------------------------------------------------------------
-    
-    \begin{appendices}
-        \input{report/chapters/appendix_A.tex}
-        \input{report/chapters/appendix_B.tex}
-    \end{appendices}
     
 \end{document}
