@@ -45,8 +45,6 @@ id="toc-requisiti-e-casi-duso">Requisiti e casi d’uso</a>
 <ul>
 <li><a href="#requisiti" id="toc-requisiti">Requisiti</a></li>
 <li><a href="#scenario" id="toc-scenario">Scenario</a></li>
-<li><a href="#requirments" id="toc-requirments">Requirments</a></li>
-<li><a href="#casi-duso" id="toc-casi-duso">Casi d’uso</a></li>
 </ul></li>
 <li><a href="#riflessioni" id="toc-riflessioni">Riflessioni</a></li>
 </ul></li>
@@ -105,7 +103,7 @@ id="toc-containerization">Containerization</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-04-02</p>
+<p>2024-04-11</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -282,8 +280,10 @@ l’11 a 0 per la squadra avversaria</td>
 <h3 id="scenario">Scenario</h3>
 <p>Si riporta di seguito lo schema dei casi d’uso che modella
 l’interazione dell’utente con l’applicazione.</p>
-<h3 id="requirments">Requirments</h3>
-<h3 id="casi-duso">Casi d’uso</h3>
+<figure id="use_case">
+<img src="report/img/Casi_duso.png" />
+<figcaption>Schema dei casi d’uso</figcaption>
+</figure>
 <h2 id="riflessioni">Riflessioni</h2>
 <p>**Spiegare per quale motivo i pattern del DDD non sono stati
 applicati** (shared kernel, publish consumer, ...)</p>
@@ -310,6 +310,28 @@ chiamarla</h2>
 <p>**main, develop, feature branch...***</p>
 <h3 id="commit-verification">Commit verification</h3>
 <h3 id="conventional-commits">Conventional commits</h3>
+<p>In ogni repo è stato adottato un sistema standard per scrivere i
+commit: i conventional commit. In questo modo i commit risultano più
+chiari e facilmente leggibili. Riportiamo di seguito la nomenclatura
+usata:</p>
+<ul>
+<li><p><strong>fix:</strong> per i commit che risolvono un bug</p></li>
+<li><p><strong>feat:</strong> per i commit che aggiungono una nuova
+feature</p></li>
+<li><p><strong>refactor:</strong> per i commit che migliorano il codice
+senza aggiungere nuove funzionalità</p></li>
+<li><p><strong>docs:</strong> per i commit che riguardano la
+documentazione</p></li>
+<li><p><strong>style:</strong> per i commit che riguardano la
+formattazione del codice</p></li>
+<li><p><strong>test:</strong> per i commit che riguardano i
+test</p></li>
+<li><p><strong>ci:</strong> per i commit che riguardano la Continuous
+Integration</p></li>
+</ul>
+<p>Inoltre sono evidenziati i breaking changes per le modifiche non più
+compatibili con le versioni precedenti. La stessa nomenclatura viene
+utilizzata anche nel changelog.</p>
 <h2 id="build-automation">Build automation</h2>
 <h2 id="continuous-integration">Continuous Integration</h2>
 <p>Abbiamo deciso di implementare ogni servizio in una repository
