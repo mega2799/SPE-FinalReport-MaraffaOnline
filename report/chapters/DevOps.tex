@@ -2,6 +2,7 @@
 \chapter{DevOps}
 \label{ch:DevOps} % Label for method chapter
 \section{Semantic Versioning}
+
 **parla anche dei plugin**
 \section{Licensing e issue template}
 In ogni nostra repo è presente una licenza MIT. È stata scelta questa licenza perché è estremamente permissiva: 
@@ -16,6 +17,20 @@ Inoltre la licenza MIT è compatibile anche con altre licenze, anche con quelle 
 **main, develop, feature branch...***
 \subsection{Commit verification}
 \subsection{Conventional commits}
+In ogni repo è stato adottato un sistema standard per scrivere i commit:  i conventional commit. In questo modo i commit risultano più chiari e facilmente leggibili. 
+Riportiamo di seguito la nomenclatura usata:
+\begin{itemize}
+    \item \textbf{fix:} per i commit che risolvono un bug
+    \item \textbf{feat:} per i commit che aggiungono una nuova feature
+    \item \textbf{refactor:} per i commit che migliorano il codice senza aggiungere nuove funzionalità
+    \item \textbf{docs:} per i commit che riguardano la documentazione
+    \item \textbf{style:} per i commit che riguardano la formattazione del codice
+    \item \textbf{test:} per i commit che riguardano i test
+    \item \textbf{ci:} per i commit che riguardano la Continuous Integration
+\end{itemize}
+Inoltre sono evidenziati i breaking changes per le modifiche non più compatibili con le versioni precedenti.
+La stessa nomenclatura viene utilizzata anche nel changelog.
+
 \section{Build automation}
 \section{Continuous Integration}
 Abbiamo deciso di implementare ogni servizio in una repository diversa. La repository fornita è un contenitore di tutte le singole repository dei servizi.
