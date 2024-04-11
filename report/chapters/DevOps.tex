@@ -16,6 +16,19 @@ Inoltre la licenza MIT è compatibile anche con altre licenze, anche con quelle 
 \subsection{Git workflow}
 **main, develop, feature branch...***
 \subsection{Commit verification}
+È stato utilizzato il meccanismo di commit verification per assicurare:
+\begin{itemize}
+    \item \textbf{Integrità:} controllo sull'alterazione dei file presenti all'interno del commit.  Utilizzando una funzione hash, ci si assicura che non siano stati alterati in non modo autorizzato.
+    \item \textbf{Autenticità:} controllo sull'autore del commit. Utilizzando una firma digitale, ci si assicura che il commit sia stato effettuato dall'autore autorizzato.
+\end{itemize}
+I controlli vengono effettuati in seguito a un merge. \\
+Quando un commit è verificato viene prodotto un tag verde con la scritta "verified" e un tag rosso con la scritta "unverified" in caso contrario:
+\begin{figure}[h!]
+    \centering 
+    \includegraphics[scale=0.7]{report/img/verified_commit.png}
+    \caption{Verified commit}
+    \label{verified_commit}
+    \end{figure}
 \subsection{Conventional commits}
 In ogni repo è stato adottato un sistema standard per scrivere i commit:  i conventional commit. In questo modo i commit risultano più chiari e facilmente leggibili. 
 Riportiamo di seguito la nomenclatura usata:
