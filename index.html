@@ -309,6 +309,24 @@ chiamarla</h2>
 <h3 id="git-workflow">Git workflow</h3>
 <p>**main, develop, feature branch...***</p>
 <h3 id="commit-verification">Commit verification</h3>
+<p>È stato utilizzato il meccanismo di commit verification per
+assicurare:</p>
+<ul>
+<li><p><strong>Integrità:</strong> controllo sull’alterazione dei file
+presenti all’interno del commit. Utilizzando una funzione hash, ci si
+assicura che non siano stati alterati in non modo autorizzato.</p></li>
+<li><p><strong>Autenticità:</strong> controllo sull’autore del commit.
+Utilizzando una firma digitale, ci si assicura che il commit sia stato
+effettuato dall’autore autorizzato.</p></li>
+</ul>
+<p>I controlli vengono effettuati in seguito a un merge.<br />
+Quando un commit è verificato viene prodotto un tag verde con la scritta
+"verified" e un tag rosso con la scritta "unverified" in caso
+contrario:</p>
+<figure id="verified_commit">
+<img src="report/img/verified_commit.png" />
+<figcaption>Verified commit</figcaption>
+</figure>
 <h3 id="conventional-commits">Conventional commits</h3>
 <p>In ogni repo è stato adottato un sistema standard per scrivere i
 commit: i conventional commit. In questo modo i commit risultano più
