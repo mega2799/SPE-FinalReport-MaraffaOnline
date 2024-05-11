@@ -33,9 +33,9 @@ of Abbreviations</a></li>
 <li><a href="#ch:ddd" id="toc-ch:ddd">Domain Driven Design</a>
 <ul>
 <li><a
-href="#knowledge-session-for-the-exploration-of-the-problem-space"
-id="toc-knowledge-session-for-the-exploration-of-the-problem-space">Knowledge
-session for the exploration of the problem space</a></li>
+href="#knowledge-crunching-session-for-the-exploration-of-the-problem-space"
+id="toc-knowledge-crunching-session-for-the-exploration-of-the-problem-space">Knowledge
+crunching session for the exploration of the problem space</a></li>
 <li><a href="#ubiquitos-language" id="toc-ubiquitos-language">Ubiquitos
 Language</a></li>
 <li><a href="#bounded-context" id="toc-bounded-context">Bounded
@@ -58,8 +58,15 @@ id="toc-task.registry">TASK.REGISTRY?????</a></li>
 </ul></li>
 <li><a href="#ch:DevOps" id="toc-ch:DevOps">DevOps</a>
 <ul>
+<li><a href="#semantic-versioning-e-changelog-e-secrets"
+id="toc-semantic-versioning-e-changelog-e-secrets">Semantic Versioning e
+Changelog e secrets</a>
+<ul>
 <li><a href="#semantic-versioning" id="toc-semantic-versioning">Semantic
 Versioning</a></li>
+<li><a href="#changelog-e-secrets"
+id="toc-changelog-e-secrets">Changelog e secrets</a></li>
+</ul></li>
 <li><a href="#licensing-e-issue-template"
 id="toc-licensing-e-issue-template">Licensing e issue template</a></li>
 <li><a href="#git-section-non-so-come-chiamarla"
@@ -103,7 +110,7 @@ id="toc-containerization">Containerization</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-04-12</p>
+<p>2024-05-11</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -111,11 +118,25 @@ id="toc-containerization">Containerization</a></li>
 <p>School of Mathematical, Physical and Computational Sciences</p>
 </div>
 <h1 id="ch:into">Introduction</h1>
-<p>** replace with a description of introduction**</p>
+<p>MaraffaOnline è un’applicazione che permette alle persone di giocare
+al gioco di carte <a
+href="https://it.wikipedia.org/wiki/Marafone_Beccacino">Maraffa/Beccacino</a>.
+Il progetto consiste nell’eseguire una manutenzione evolutiva del gioco
+di carte reperibile su MaraffaOnline, attualmente sviluppato dalla
+prof.ssa Lumini. In particolare la nuova versione avrà un’architettura a
+microservizi e introdurrà anche nuove funzionalità come formazione
+personalizzata delle squadre, una nuova modalità di gioco (vittoria 11 a
+0 in caso di violazione delle regole da parte di una squadra),
+salvataggio delle statistiche delle partite e degli utenti, ...<br />
+Per lo sviluppo è stato seguito un approccio Domain Driven Design, per
+il quale si è approfondito il dominio del gioco.<br />
+È stata posta particolare attenzione alle tecniche di continuos
+integration, alle quali è stato dedicato uno dei capitoli di questo
+report.</p>
 <h1 id="ch:ddd">Domain Driven Design</h1>
 <h2
-id="knowledge-session-for-the-exploration-of-the-problem-space">Knowledge
-session for the exploration of the problem space</h2>
+id="knowledge-crunching-session-for-the-exploration-of-the-problem-space">Knowledge
+crunching session for the exploration of the problem space</h2>
 <h2 id="ubiquitos-language">Ubiquitos Language</h2>
 <div class="adjustbox">
 <p><span>max width=1.1,center</span></p>
@@ -333,8 +354,44 @@ applicati** (shared kernel, publish consumer, ...)</p>
 <h2 id="implementation">Implementation</h2>
 <h2 id="task.registry">TASK.REGISTRY?????</h2>
 <h1 id="ch:DevOps">DevOps</h1>
-<h2 id="semantic-versioning">Semantic Versioning</h2>
-<p>**parla anche dei plugin**</p>
+<h2 id="semantic-versioning-e-changelog-e-secrets">Semantic Versioning e
+Changelog e secrets</h2>
+<h3 id="semantic-versioning">Semantic Versioning</h3>
+<p>Per ogni release è stato adottato il semanting Versioning. È stato
+utilizzato il formato X.Y.Z, partendo da 1.0.0, ogni release incrementa
+il numero di versione in base a:</p>
+<ul>
+<li><p><strong>Major (X):</strong> per cambiamenti incompatibili con le
+versioni precedenti</p></li>
+<li><p><strong>Minor (Y):</strong> per aggiunta di nuove funzionalità
+compatibili con le versioni precedenti</p></li>
+<li><p><strong>Patch (Z):</strong> per correzione di bug compatibili con
+le versioni precedenti</p></li>
+</ul>
+<p>Per ogni release viene creato anche un tag con la corrispondente
+versione.</p>
+<h3 id="changelog-e-secrets">Changelog e secrets</h3>
+<p>Ogni volta che is effettua una push sul main, viene generato un
+changelog. Il changelog è un file che contiene tutte le modifiche
+effettuate. Nel changelog vengono riportati ogni commit che indicano le
+modifiche apportate, i contributori e il codice sorgente. Se presenti,
+vengono inoltre riportate le sezioni:</p>
+<ul>
+<li><p><strong>feat: Feature</strong> per le nuove funzionalità</p></li>
+<li><p><strong>fix: Bug Fixes</strong> per le correzioni di bug</p></li>
+<li><p><strong>docs: Documentation</strong> per le modifiche alla
+documentazione</p></li>
+<li><p><strong>refactor: Refactor</strong> per le modifiche al codice
+che non aggiungono nuove funzionalità</p></li>
+<li><p><strong>perf: Performance Improvements</strong> per le modifiche
+che migliorano le prestazioni</p></li>
+<li><p><strong>CI: Continuos Integration</strong> per le modifiche alla
+CI</p></li>
+</ul>
+<p>Il changelog viene autogenerato tramite l’action
+’BobAnkh/auto-generate-changelog@v1.2.5’. Inoltre per evitare un accesso
+non autorizzato a dati sensibili, come l’access token del changelog,
+sono stati inseriti in secrets, variabili d’ambiente di Github.</p>
 <h2 id="licensing-e-issue-template">Licensing e issue template</h2>
 <p>In ogni nostra repo è presente una licenza MIT. È stata scelta questa
 licenza perché è estremamente permissiva: il codice sorgente di Maraffa
@@ -454,6 +511,7 @@ altri apetti del build process**</p>
 grouping containers and defining dependencies**</p>
 <h1 id="ch:con">Conclusions and Future Work</h1>
 <h2 id="conclusions">Conclusions</h2>
+<p>**spiega che verrà messo online nel sitoweb **</p>
 <p>**Replace with a description of the conclusions**</p>
 <p>Typically a conclusions chapter first summarizes the investigated
 problem and its aims and objectives. It summaries the
