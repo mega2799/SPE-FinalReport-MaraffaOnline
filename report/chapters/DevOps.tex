@@ -1,9 +1,29 @@
 
 \chapter{DevOps}
 \label{ch:DevOps} % Label for method chapter
-\section{Semantic Versioning}
-
-**parla anche dei plugin**
+\section{Semantic Versioning e Changelog e secrets}
+\subsection{Semantic Versioning}
+Per ogni release è stato adottato il semanting Versioning. È stato utilizzato il formato X.Y.Z, partendo da 1.0.0, ogni release incrementa il numero di versione in base a:
+\begin{itemize}
+    \item \textbf{Major (X):} per cambiamenti incompatibili con le versioni precedenti
+    \item \textbf{Minor (Y):} per aggiunta di nuove funzionalità compatibili con le versioni precedenti
+    \item \textbf{Patch (Z):} per correzione di bug compatibili con le versioni precedenti
+\end{itemize}
+Per ogni release viene creato anche un tag con la corrispondente versione.
+\subsection{Changelog e secrets}
+Ogni volta che is effettua una push sul main, viene generato un changelog. Il changelog è un file che contiene tutte le modifiche effettuate.
+Nel changelog vengono riportati ogni commit che indicano le modifiche apportate, i contributori e il codice sorgente.
+Se presenti, vengono inoltre riportate le sezioni: 
+\begin{itemize}
+    \item \textbf{feat: Feature} per le nuove funzionalità
+    \item \textbf{fix: Bug Fixes} per le correzioni di bug
+    \item \textbf{docs: Documentation} per le modifiche alla documentazione
+    \item \textbf{refactor: Refactor} per le modifiche al codice che non aggiungono nuove funzionalità
+    \item \textbf{perf: Performance Improvements} per le modifiche che migliorano le prestazioni
+    \item \textbf{CI: Continuos Integration} per le modifiche alla CI
+\end{itemize}
+Il changelog viene autogenerato tramite l'action 'BobAnkh/auto-generate-changelog@v1.2.5'.
+Inoltre per evitare un accesso non autorizzato a dati sensibili, come l'access token del changelog, sono stati inseriti in secrets, variabili d'ambiente di Github. 
 \section{Licensing e issue template}
 In ogni nostra repo è presente una licenza MIT. È stata scelta questa licenza perché è estremamente permissiva: 
 il codice sorgente di Maraffa Online è open source e pertanto gli utenti possono utilizzarlo, modificarlo e distribuirlo.
