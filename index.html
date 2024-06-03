@@ -110,7 +110,7 @@ id="toc-containerization">Containerization</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-05-12</p>
+<p>2024-06-03</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -137,6 +137,24 @@ report.</p>
 <h2
 id="knowledge-crunching-session-for-the-exploration-of-the-problem-space">Knowledge
 crunching session for the exploration of the problem space</h2>
+<p>Per ottenere maggior chiarezza sul dominio è stato utilizzato il
+metodo Even Storming. La tecnica consiste nell’individuare degli eventi
+di dominio e riportarli al passato su un post-it arancione. Una volta
+individuati gli eventi, sono stati scritti su post-it blu i comandi che
+l’utente svolge per creare l’evento. In giallo è stato specificato
+l’attore, la persona che esegue il comando, mentre in verde la view,
+l’interfaccia software con la quale l’utente interagisce. Infine, con
+delle label si sono aggregati i post-it in unità di dominio. Si riporta
+di seguito lo screen della lavagna con i post-it e la relativa
+legenda.</p>
+<figure id="event_storming">
+<img src="report/img/EventStorming.png" />
+<figcaption>Event Storming</figcaption>
+</figure>
+<figure id="legend">
+<img src="report/img/Event_storming_legend.png" />
+<figcaption>Event Storming Legend</figcaption>
+</figure>
 <h2 id="ubiquitos-language">Ubiquitos Language</h2>
 <div class="adjustbox">
 <p><span>max width=1.1,center</span></p>
@@ -292,10 +310,56 @@ punti per la vittoria (in gergo "sbaglia la chiamata") scatta automatico
 l’11 a 0 per la squadra avversaria</td>
 <td style="text-align: left;">Call out</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Modalità di gioco</td>
+<td style="text-align: left;">regole di gioco classiche o varianti che
+influenzano aspetti come il punteggio, condizioni di vittoria/perdita,
+... Ne sono state implementate due: classica, 11 a 0.</td>
+<td style="text-align: left;">Game mode</td>
+</tr>
 </tbody>
 </table>
 </div>
 <h2 id="bounded-context">Bounded Context</h2>
+<p>Analizzando il dominio di MaraffaOnline, sono stati identificati tre
+bounded context. Nella figura si può osservare un primo bounded context,
+colorato di azzurro, che modella l’autenticazione dell’utente:</p>
+<ul>
+<li><p><strong>User:</strong> persona che possiede l’account</p></li>
+<li><p><strong>Statistic:</strong> dati dell’utente relativi al gioco
+come numero di vittorie, sconfitte, partite giocate e maraffe</p></li>
+<li><p><strong>Authentication:</strong> accesso all’applicativo
+MaraffaOnline da parte dell’utente</p></li>
+</ul>
+<p>Il secondo bounded context, colorato di verde, modella la
+partita:</p>
+<ul>
+<li><p><strong>Game:</strong> partita</p></li>
+<li><p><strong>Team:</strong> squadra composta da numero di giocatori /
+2</p></li>
+<li><p><strong>Score:</strong> punteggio delle due squadre</p></li>
+<li><p><strong>Statistic:</strong> dati relativi ai game
+giocati</p></li>
+<li><p><strong>Trick:</strong> presa di quattro carte da parte di un
+giocatore</p></li>
+<li><p><strong>Round:</strong> 10 prese</p></li>
+<li><p><strong>Card:</strong> carta</p></li>
+<li><p><strong>Player:</strong> giocatore</p></li>
+<li><p><strong>Deck:</strong> mazzo</p></li>
+<li><p><strong>Hand:</strong> carte che ha in mano un giocatore</p></li>
+</ul>
+<p>Infine l’ultimo, di colore arancione, modella la chat:</p>
+<ul>
+<li><p><strong>Chat:</strong> chat di gioco</p></li>
+<li><p><strong>Message:</strong> messaggio inviato nella chat</p></li>
+<li><p><strong>User:</strong> persona che invia il messaggio</p></li>
+</ul>
+<p>È importante notare che il concetto di user/player è polisemico: vi
+sono tre rappresentazioni diverse per afferire allo stesso concetto.</p>
+<figure id="bounded_context">
+<img src="report/img/BoundedCTX.png" />
+<figcaption>Context Map</figcaption>
+</figure>
 <h2 id="requisiti-e-casi-duso">Requisiti e casi d’uso</h2>
 <h3 id="requisiti">Requisiti</h3>
 <ol>
