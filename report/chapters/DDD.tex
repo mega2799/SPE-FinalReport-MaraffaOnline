@@ -2,7 +2,35 @@
 \label{ch:ddd} %Label of the chapter lit rev. The key ``ch:lit_rev'' can be used with command \ref{ch:lit_rev} to refer this Chapter.
 
 \section{Knowledge crunching session for the exploration of the problem space}
+Per ottenere maggior chiarezza sul dominio è stato utilizzato il metodo Even Storming. 
+La tecnica consiste nell'individuare degli eventi di dominio e riportarli al passato su un post-it arancione.
+Una volta individuati gli eventi, sono stati scritti su post-it blu i comandi che l'utente svolge per creare l'evento.
+In giallo è stato specificato l'attore, la persona che esegue il comando, mentre in verde la view, l'interfaccia software
+ con la quale l'utente interagisce.
+ Infine, con delle label si sono aggregati i post-it in unità di dominio.
+ Si riporta di seguito lo screen della lavagna con i post-it e la relativa legenda.
+ \begin{figure}[h!]
+    \centering 
+    \includegraphics[scale=0.45]{report/img/EventStorming.png}
+    \caption{Event Storming}
+    \label{event_storming}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering 
+    \includegraphics[scale=0.60]{report/img/Event_storming_legend.png}
+    \caption{Event Storming Legend}
+    \label{legend}
+\end{figure}
+
 \newpage
+
+
+
+
+
+
+
 \section{Ubiquitos Language}
 \begin{table}[!ht]
     \centering
@@ -34,11 +62,46 @@
         Squadra & Coppie di giocatori seduti opposti & Team \\ \hline
         Giocatore & Persona che interagisce con l’applicativo & Player, User \\ \hline
         Chiamata fuori & Se un giocatore pensa che la sua squadra abbia raggiunto i 41 punti (o 31 punti nella variante "corta" della partita), la squadra può  dichiarare di avere già nel mazzo delle prese i punti per vincere e chiudere in anticipo l'ultima partita. In questo modo la mano termina immediatamente, senza che vengano giocate le restanti prese e la squadra che si è "chiamata fuori" impedisce all'altra squadra di conquistare ulteriori prese. Se una squadra si chiama fuori e, dopo aver contato i punti delle prese effettuate ed averli sommati ai punti ottenuti nelle mani già giocate, non raggiunge i punti per la vittoria (in gergo "sbaglia la chiamata") scatta automatico l'11 a 0 per la squadra avversaria & Call out \\ \hline
+        Modalità di gioco & regole di gioco classiche o varianti che influenzano aspetti come il punteggio, condizioni di vittoria/perdita, ... Ne sono state implementate due: classica, 11 a 0.& Game mode \\ \hline
     \end{tabular}
     \end{adjustbox}
 \end{table}
 \newpage
 \section{Bounded Context}
+Analizzando il dominio di MaraffaOnline, sono stati identificati tre bounded context.
+Nella figura si può osservare un primo bounded context, colorato di azzurro, che modella l'autenticazione dell'utente:
+    \begin{itemize}
+        \item \textbf{User:} persona che possiede l'account
+        \item \textbf{Statistic:} dati dell'utente relativi al gioco come numero di vittorie, sconfitte, partite giocate e maraffe
+        \item \textbf{Authentication:} accesso all'applicativo MaraffaOnline da parte dell'utente
+    \end{itemize}
+Il secondo bounded context, colorato di verde, modella la partita:
+    \begin{itemize}
+        \item \textbf{Game:} partita
+        \item \textbf{Team:} squadra composta da numero di giocatori / 2
+        \item \textbf{Score:} punteggio delle due squadre
+        \item \textbf{Statistic:} dati relativi ai game giocati
+        \item \textbf{Trick:} presa di quattro carte da parte di un giocatore
+        \item \textbf{Round:} 10 prese
+        \item \textbf{Card:} carta
+        \item \textbf{Player:} giocatore
+        \item \textbf{Deck:} mazzo
+        \item \textbf{Hand:} carte che ha in mano un giocatore
+    \end{itemize}
+Infine l'ultimo, di colore arancione, modella la chat:
+    \begin{itemize}
+        \item \textbf{Chat:} chat di gioco
+        \item \textbf{Message:} messaggio inviato nella chat
+        \item \textbf{User:} persona che invia il messaggio
+    \end{itemize}
+È importante notare che il concetto di user/player è polisemico: vi sono tre rappresentazioni diverse per afferire allo stesso concetto.
+\begin{figure}[h!]
+    \centering 
+    \includegraphics[scale=0.45]{report/img/BoundedCTX.png}
+    \caption{Context Map}
+    \label{bounded_context}
+\end{figure}
+\newpage
 \section{Requisiti e casi d'uso}
 \subsection{Requisiti}
 \begin{enumerate}
