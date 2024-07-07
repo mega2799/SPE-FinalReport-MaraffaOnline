@@ -62,6 +62,21 @@ I conflitti di merge sono inevitabili in un ambiente di sviluppo collaborativo s
 % La gestione di confilitti, è stata gestita preferendo la risoluzione locale, in modo da evitare conflitti complessi e blocchi nel flusso di lavoro.
 La scelta tra merge e rebase è stata fatta in base al contesto e alla complessità delle modifiche, privilegiando la chiarezza della storia del codice seppur a discapito della linearità, 
 la scelta è stata quella di utilizzare il merge per mantenere una storia del codice più pulita e lineare.
+Questo è particolarmente utile per tracciare
+l’evoluzione del progetto e per individuare facilmente l’origine dei bug. Infatti, il merge evita
+di riscrivere la cronologia dei commit, il che può causare problemi se altri sviluppatori hanno 
+basato il loro lavoro sui commit riscritti.  il rebase può introdurre rischi significativi se non utilizzato con estrema cautela
+in quanto riscrive la cronologia, rendendo difficile tracciare le modifiche originarie e potenzialmente causando confusione tra i membri del team.
+
+% \subsection{Gestione dei conflitti in Git e scelta della tattica di merge}
+
+% La gestione dei conflitti in Git è una parte fondamentale del flusso di lavoro collaborativo. I conflitti si verificano quando due o più branch presentano modifiche incompatibili agli stessi file o alle stesse righe di codice. Per risolvere questi conflitti, Git offre due principali tattiche: merge e rebase.
+
+% Il merge è generalmente preferito al rebase in molti contesti di team per diversi motivi. Innanzitutto, il merge preserva la cronologia completa del progetto, mantenendo un registro di tutte le modifiche e delle fusioni effettuate. Questo è particolarmente utile per tracciare l'evoluzione del progetto e per individuare facilmente l'origine dei bug. Inoltre, il merge evita di riscrivere la cronologia dei commit, il che può causare problemi se altri sviluppatori hanno basato il loro lavoro sui commit riscritti. 
+
+% Il rebase, sebbene utile per mantenere una cronologia lineare e pulita, può complicare la risoluzione dei conflitti in quanto riscrive la cronologia, rendendo difficile tracciare le modifiche originarie e potenzialmente causando confusione tra i membri del team. In ambienti collaborativi, il rebase può introdurre rischi significativi se non utilizzato con estrema cautela.
+
+% In sintesi, mentre il rebase può essere utile in specifiche situazioni, il merge è solitamente preferito per la sua capacità di mantenere una cronologia trasparente e di evitare i problemi associati alla riscrittura della cronologia dei commit.
 
 
 \subsection{Strumenti di Supporto} %TODO questo utile potrebbe essere spostato in un'altra sezione
