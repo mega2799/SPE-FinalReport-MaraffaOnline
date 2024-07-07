@@ -32,8 +32,9 @@ Inoltre la licenza MIT è compatibile anche con altre licenze, anche con quelle 
  segnalare un bug o suggerire un'implementazione alternativa.
 \section{DVCS}
 
-La Git Policy rappresenta un insieme di linee guida e regole che governano l'uso di Git all'interno di un team di sviluppo. 
-Queste politiche sono fondamentali per garantire un flusso di lavoro coerente, prevenire conflitti di merge e mantenere una storia del codice chiara e facilmente navigabile. 
+Come strumeto di controllo di versione è stato scelto git, sono state adottate le seguenti best practices o git policy per garantire un flusso di lavoro coerente e prevenire conflitti di merge.
+% La Git Policy rappresenta un insieme di linee guida e regole che governano l'uso di Git all'interno di un team di sviluppo. 
+% Queste politiche sono fondamentali per garantire un flusso di lavoro coerente, prevenire conflitti di merge e mantenere una storia del codice chiara e facilmente navigabile. 
 
 \subsection{Struttura dei Branch}
 
@@ -50,16 +51,17 @@ Una delle componenti principali della Git Policy è la gestione dei branch. La s
 
 \subsection{Pull Request e Code Review}
 
-Le pull request (PR) sono essenziali per garantire la qualità del codice. Ogni PR dovrebbe è stata sottoposta a una code review da parte di uno o più membri del team. 
-Questo processo non solo aiuta a individuare errori e problemi di design, ma promuove anche la condivisione delle conoscenze e facilita visimanete, tramite la 
-comparaione di codice, la spiegazione di nuove funzionalità introdotte entro la fine dello sprint.
+Le pull request (PR) sono essenziali per garantire la qualità del codice. Ogni PR è stata sottoposta a una code review da parte di uno o più membri del team. 
+Questo processo non solo aiuta a individuare errori e problemi di design, ma promuove anche la condivisione delle conoscenze e facilita, tramite la 
+comparazione di codice, la spiegazione di nuove funzionalità introdotte entro la fine dello sprint.
 
 
 \subsection{Gestione dei Conflitti}
 
 I conflitti di merge sono inevitabili in un ambiente di sviluppo collaborativo soprattutto quando è difficile modulare le parti di un SW.
-La gestione di confilitti, è stata gestita preferendo la risoluzione locale, in modo da evitare conflitti complessi e blocchi nel flusso di lavoro.
-La scelta tra merge e rebase è stata fatta in base al contesto e alla complessità delle modifiche, privilegiando la chiarezza della storia del codice seppur a discapito della linearità.
+% La gestione di confilitti, è stata gestita preferendo la risoluzione locale, in modo da evitare conflitti complessi e blocchi nel flusso di lavoro.
+La scelta tra merge e rebase è stata fatta in base al contesto e alla complessità delle modifiche, privilegiando la chiarezza della storia del codice seppur a discapito della linearità, 
+la scelta è stata quella di utilizzare il merge per mantenere una storia del codice più pulita e lineare.
 
 
 \subsection{Strumenti di Supporto} %TODO questo utile potrebbe essere spostato in un'altra sezione
