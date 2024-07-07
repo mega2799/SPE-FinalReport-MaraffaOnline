@@ -18,6 +18,73 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        background-color: #ffffff;
+        color: #a0a0a0;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+    div.sourceCode
+      { color: #1f1c1b; background-color: #ffffff; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #1f1c1b; } /* Normal */
+    code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+    code span.an { color: #ca60ca; } /* Annotation */
+    code span.at { color: #0057ae; } /* Attribute */
+    code span.bn { color: #b08000; } /* BaseN */
+    code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+    code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #924c9d; } /* Char */
+    code span.cn { color: #aa5500; } /* Constant */
+    code span.co { color: #898887; } /* Comment */
+    code span.cv { color: #0095ff; } /* CommentVar */
+    code span.do { color: #607880; } /* Documentation */
+    code span.dt { color: #0057ae; } /* DataType */
+    code span.dv { color: #b08000; } /* DecVal */
+    code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+    code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+    code span.fl { color: #b08000; } /* Float */
+    code span.fu { color: #644a9b; } /* Function */
+    code span.im { color: #ff5500; } /* Import */
+    code span.in { color: #b08000; } /* Information */
+    code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+    code span.op { color: #1f1c1b; } /* Operator */
+    code span.ot { color: #006e28; } /* Other */
+    code span.pp { color: #006e28; } /* Preprocessor */
+    code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+    code span.sc { color: #3daee9; } /* SpecialChar */
+    code span.ss { color: #ff5500; } /* SpecialString */
+    code span.st { color: #bf0303; } /* String */
+    code span.va { color: #0057ae; } /* Variable */
+    code span.vs { color: #bf0303; } /* VerbatimString */
+    code span.wa { color: #bf0303; } /* Warning */
   </style>
   <link rel="stylesheet" href="latex2html.css" />
   <!--[if lt IE 9]>
@@ -95,7 +162,12 @@ assurance</a></li>
 delivery</a></li>
 <li><a href="#deployment" id="toc-deployment">Deployment</a></li>
 <li><a href="#containerization"
-id="toc-containerization">Containerization</a></li>
+id="toc-containerization">Containerization</a>
+<ul>
+<li><a href="#nodejs" id="toc-nodejs">NodeJS</a></li>
+<li><a href="#java" id="toc-java">Java</a></li>
+<li><a href="#angular" id="toc-angular">Angular</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#ch:con" id="toc-ch:con">Conclusions and Future Work</a>
 <ul>
@@ -112,7 +184,7 @@ id="toc-containerization">Containerization</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-04</p>
+<p>2024-07-07</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -477,19 +549,23 @@ prevenire conflitti di merge e mantenere una storia del codice chiara e
 facilmente navigabile.</p>
 <h3 id="struttura-dei-branch">Struttura dei Branch</h3>
 <p>Una delle componenti principali della Git Policy è la gestione dei
-branch. La struttura tipica prevede almeno tre tipi di branch: -
-<strong>Master/Main:</strong> Questo è il branch principale che contiene
-il codice di produzione. Ogni commit su questo branch dovrebbe essere
-stabile e pronto per il rilascio. Questo branch e stato protetto per
-evitare commit diretti, richiedendo quindi una revisione per ogni
-operazione di merge. - <strong>Develop:</strong> Qui viene integrato il
-lavoro di sviluppo corrente. È il branch dove confluiscono le feature
-prima di essere preparate per il rilascio. Questo branch dovrebbe essere
+branch. La struttura a feature prevede almeno tre tipi di branch:</p>
+<ul>
+<li><p><strong>Master/Main:</strong> Questo è il branch principale che
+contiene il codice di produzione. Ogni commit su questo branch dovrebbe
+essere stabile e pronto per il rilascio. Questo branch e stato protetto
+per evitare commit diretti, richiedendo quindi una revisione per ogni
+operazione di merge.</p></li>
+<li><p><strong>Develop:</strong> Qui viene integrato il lavoro di
+sviluppo corrente. È il branch dove confluiscono le feature prima di
+essere preparate per il rilascio. Questo branch dovrebbe essere
 costantemente aggiornato e testato per assicurare che sia in uno stato
-pronto per la produzione. - <strong>Feature Branches:</strong>
-Utilizzati per lo sviluppo di nuove funzionalità. Ogni feature branch
-deve derivare da ‘develop‘ e, una volta completata la feature, viene
-reintegrato in ‘develop‘ tramite una pull request.</p>
+pronto per la produzione.</p></li>
+<li><p><strong>Feature Branches:</strong> Utilizzati per lo sviluppo di
+nuove funzionalità. Ogni feature branch deve derivare da ‘develop‘ e,
+una volta completata la feature, viene reintegrato in ‘develop‘ tramite
+una pull request.</p></li>
+</ul>
 <h3 id="pull-request-e-code-review">Pull Request e Code Review</h3>
 <p>Le pull request (PR) sono essenziali per garantire la qualità del
 codice. Ogni PR è stata sottoposta a una code review da parte di uno o
@@ -500,24 +576,26 @@ funzionalità introdotte entro la fine dello sprint.</p>
 <h3 id="gestione-dei-conflitti">Gestione dei Conflitti</h3>
 <p>I conflitti di merge sono inevitabili in un ambiente di sviluppo
 collaborativo soprattutto quando è difficile modulare le parti di un SW.
-La gestione di conflitti, è stata gestita preferendo la risoluzione
-locale, in modo da evitare conflitti complessi e blocchi nel flusso di
-lavoro. La scelta tra merge e rebase è stata fatta in base al contesto e
-alla complessità delle modifiche, privilegiando la chiarezza della
-storia del codice seppur a discapito della linearità.</p>
+La scelta tra merge e rebase è stata fatta in base al contesto e alla
+complessità delle modifiche, privilegiando la chiarezza della storia del
+codice seppur a discapito della linearità.</p>
 <h3 id="strumenti-di-supporto">Strumenti di Supporto</h3>
 <p>Per implementare efficacemente queste best practices, è utile
-utilizzare strumenti di supporto come: - <strong>Git Hooks:</strong>
-Script che vengono eseguiti automaticamente in determinati punti del
-flusso di lavoro di Git, come prima di un commit o dopo un merge.
-Possono essere utilizzati per verificare la qualità del codice, eseguire
-test automatizzati, o applicare formattazioni standard. -
-<strong>Linting e Formattazione Automatizzata:</strong> Utilizza
+utilizzare strumenti di supporto come:</p>
+<ul>
+<li><p><strong>Git Hooks:</strong> Script che vengono eseguiti
+automaticamente in determinati punti del flusso di lavoro di Git, come
+prima di un commit o dopo un merge. Possono essere utilizzati per
+verificare la qualità del codice, eseguire test automatizzati, o
+applicare formattazioni standard.</p></li>
+<li><p><strong>Linting e Formattazione Automatizzata:</strong> Utilizza
 strumenti come ESLint o Prettier per mantenere uno stile di codice
-coerente e rilevare potenziali errori prima che vengano committati. -
-<strong>Monitoraggio e Analisi:</strong> Strumenti come SonarQube
+coerente e rilevare potenziali errori prima che vengano
+committati.</p></li>
+<li><p><strong>Monitoraggio e Analisi:</strong> Strumenti come SonarQube
 possono analizzare il codice per trovare problemi di sicurezza, bug, e
-debito tecnico.</p>
+debito tecnico.</p></li>
+</ul>
 <h3 id="commit-verification">Commit verification</h3>
 <p>È stato utilizzato il meccanismo di commit verification per
 assicurare:</p>
@@ -579,15 +657,15 @@ ai job di comunicare tra loro. Successivamente alla build il sistema
 viene testato (in entrambi i casi viene usata l’action di yarn) e infine
 viene effettuato il deploy del servizio containerizzato se l’evento è
 una pull request con la quale viene svolto il merge e quando l’action è
-closed (non sta progredendo e quindi l’esecuzione non è in corso). Nel
-deploy viene effettuato il chekout, si configura il nome del progetto,
-si configura la versione della build. Se il commit viene effettuato sul
-main si configura il nome del tag e la versione a "LATEST", nel caso non
-fosse nel main viene configurata la versione a "develop". Infine si
-effettua il login al Github container registry, la build e la push
-dell’immagine sul registro. L’immagine viene configurata in modo
-parametrico con delle variabili d’ambiente e il nome viene trasformato
-in minuscolo.</p>
+closed (non sta progredendo e quindi l’esecuzione non è in corso) oppure
+viene creata una release nel main branch. Nel deploy viene effettuato il
+chekout, si configura il nome del progetto, si configura la versione
+della build. Se il commit viene effettuato sul main si configura il nome
+del tag e la versione a "LATEST", nel caso non fosse nel main viene
+configurata la versione a "develop". Infine si effettua il login al
+Github container registry, la build e la push dell’immagine sul
+registro. L’immagine viene configurata in modo parametrico con delle
+variabili d’ambiente e il nome viene trasformato in minuscolo.</p>
 <p><strong>MiddlewareMaraffa:</strong> //TODO push su main, pull request
 su main e develop build e test se pullrequest.merge = true</p>
 <p>Parte finale <strong>ChatServer:</strong> Il servizio è sviluppato in
@@ -622,6 +700,71 @@ altri apetti del build process**</p>
 <h2 id="containerization">Containerization</h2>
 <p>** docker image for each microservice, docker file docker compose
 grouping containers and defining dependencies**</p>
+<p>Data l’architettura del progetto in microservizi, usare Docker per
+creare un’immagine per ogni servizio è stata una scelta naturale.
+L’obiettivo finale è avere un sistema facilmente deployabile e
+scalabile, eseguibile velocemente in un ambiente generico, con uno stack
+di container Docker che racchiuda tutto il sistema. Per fare ciò è stato
+necessario creare un Dockerfile per ogni servizio, in modo da poter
+creare un’immagine durante la fase di deploy della continuous
+integration.</p>
+<p>La <strong>strategia di containerizzazione</strong> per tutte le
+immagini create è stata quella di utilizzare un’immagine base di Alpine,
+in modo da avere immagini leggere e veloci da scaricare. Per ridurre la
+dimensione delle immagini, si è utilizzata un’immagine di sviluppo per
+compilare il codice e un’immagine di produzione per eseguire il codice
+compilato, copiando solo i file necessari.</p>
+<h3 id="nodejs">NodeJS</h3>
+<p>I servizi UserManagementMaraffa e BusinessLogic sono stati
+containerizzati utilizzando un’immagine di Node.js. Nell’esempio sotto,
+si può notare la distinzione tra i diversi stage.</p>
+<div class="sourceCode" id="list:dockerfile_nodejs"
+data-language="Python" data-caption="Dockerfile delle immagini NodeJS"
+label="list:dockerfile_nodejs"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="list:dockerfile_nodejs-1"><a href="#list:dockerfile_nodejs-1" aria-hidden="true" tabindex="-1"></a>FROM node:<span class="dv">20</span><span class="op">-</span>alpine <span class="im">as</span> base</span>
+<span id="list:dockerfile_nodejs-2"><a href="#list:dockerfile_nodejs-2" aria-hidden="true" tabindex="-1"></a>WORKDIR <span class="op">/</span>app</span>
+<span id="list:dockerfile_nodejs-3"><a href="#list:dockerfile_nodejs-3" aria-hidden="true" tabindex="-1"></a>COPY yarn.lock package.json <span class="op">/</span>app<span class="op">/</span></span>
+<span id="list:dockerfile_nodejs-4"><a href="#list:dockerfile_nodejs-4" aria-hidden="true" tabindex="-1"></a>RUN yarn install</span>
+<span id="list:dockerfile_nodejs-5"><a href="#list:dockerfile_nodejs-5" aria-hidden="true" tabindex="-1"></a>COPY . <span class="op">/</span>app</span>
+<span id="list:dockerfile_nodejs-6"><a href="#list:dockerfile_nodejs-6" aria-hidden="true" tabindex="-1"></a>RUN yarn build</span>
+<span id="list:dockerfile_nodejs-7"><a href="#list:dockerfile_nodejs-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:dockerfile_nodejs-8"><a href="#list:dockerfile_nodejs-8" aria-hidden="true" tabindex="-1"></a>FROM node:<span class="dv">20</span><span class="op">-</span>alpine</span>
+<span id="list:dockerfile_nodejs-9"><a href="#list:dockerfile_nodejs-9" aria-hidden="true" tabindex="-1"></a>WORKDIR <span class="op">/</span>app    </span>
+<span id="list:dockerfile_nodejs-10"><a href="#list:dockerfile_nodejs-10" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span><span class="im">from</span><span class="op">=</span>base <span class="op">/</span>app<span class="op">/</span>package.json <span class="op">/</span>app<span class="op">/</span>package.json</span>
+<span id="list:dockerfile_nodejs-11"><a href="#list:dockerfile_nodejs-11" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span><span class="im">from</span><span class="op">=</span>base <span class="op">/</span>app<span class="op">/</span>node_modules <span class="op">/</span>app<span class="op">/</span>node_modules</span>
+<span id="list:dockerfile_nodejs-12"><a href="#list:dockerfile_nodejs-12" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span><span class="im">from</span><span class="op">=</span>base <span class="op">/</span>app<span class="op">/</span>dist <span class="op">/</span>app<span class="op">/</span>dist</span>
+<span id="list:dockerfile_nodejs-13"><a href="#list:dockerfile_nodejs-13" aria-hidden="true" tabindex="-1"></a>EXPOSE <span class="dv">3000</span></span>
+<span id="list:dockerfile_nodejs-14"><a href="#list:dockerfile_nodejs-14" aria-hidden="true" tabindex="-1"></a>CMD [<span class="st">&quot;node&quot;</span>,<span class="st">&quot;dist/main.js&quot;</span>]</span></code></pre></div>
+<h3 id="java">Java</h3>
+<p>La containerizzazione del middleware ha richiesto alcuni passaggi
+aggiuntivi rispetto ai servizi in Node.js. È stato necessario adottare
+immagini diverse per gli stage di build e produzione, quindi usare
+un’immagine di Gradle per la build, nella quale eseguire i comandi di
+Gradle, e un’immagine di OpenJDK per l’esecuzione del JAR prodotto dalla
+build.</p>
+<p>Per la compilazione con Gradle, nonostante non sia una pratica
+corretta, è stato necessario mantenere nella repository il file
+gradle-wrapper.jar, in quanto non era possibile scaricarlo durante la
+build all’interno delle GitHub Actions. La build non utilizza il
+classico comando di Gradle per generare il file .jar, ma un task
+personalizzato che si occupa di generare il fatJar del servizio, poiché
+le dipendenze non venivano gestite correttamente all’interno del normale
+file .jar.</p>
+<div class="sourceCode" id="list:gradle_fatJar" data-language="Java"
+data-caption="Task del fatJar da includere nel container"
+label="list:gradle_fatJar"><pre class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_fatJar-1"><a href="#list:gradle_fatJar-1" aria-hidden="true" tabindex="-1"></a>tasks<span class="op">.</span><span class="fu">register</span><span class="op">&lt;</span>Jar<span class="op">&gt;(</span><span class="st">&quot;fatJar&quot;</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="list:gradle_fatJar-2"><a href="#list:gradle_fatJar-2" aria-hidden="true" tabindex="-1"></a>    archiveBaseName<span class="op">.</span><span class="fu">set</span><span class="op">(</span><span class="st">&quot;Middleware&quot;</span><span class="op">)</span></span>
+<span id="list:gradle_fatJar-3"><a href="#list:gradle_fatJar-3" aria-hidden="true" tabindex="-1"></a>    manifest <span class="op">{</span></span>
+<span id="list:gradle_fatJar-4"><a href="#list:gradle_fatJar-4" aria-hidden="true" tabindex="-1"></a>        attributes<span class="op">[</span><span class="st">&quot;Main-Class&quot;</span><span class="op">]</span> <span class="op">=</span> <span class="st">&quot;server.Main&quot;</span></span>
+<span id="list:gradle_fatJar-5"><a href="#list:gradle_fatJar-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="list:gradle_fatJar-6"><a href="#list:gradle_fatJar-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">from</span><span class="op">(</span>sourceSets<span class="op">.</span><span class="fu">main</span><span class="op">.</span><span class="fu">get</span><span class="op">().</span><span class="fu">output</span><span class="op">)</span></span>
+<span id="list:gradle_fatJar-7"><a href="#list:gradle_fatJar-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dependsOn</span><span class="op">(</span>configurations<span class="op">.</span><span class="fu">runtimeClasspath</span><span class="op">)</span></span>
+<span id="list:gradle_fatJar-8"><a href="#list:gradle_fatJar-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">from</span><span class="op">({</span> configurations<span class="op">.</span><span class="fu">runtimeClasspath</span><span class="op">.</span><span class="fu">get</span><span class="op">().</span><span class="fu">filter</span> <span class="op">{</span> it<span class="op">.</span><span class="fu">name</span><span class="op">.</span><span class="fu">endsWith</span><span class="op">(</span><span class="st">&quot;jar&quot;</span><span class="op">)</span> <span class="op">}.</span><span class="fu">map</span> <span class="op">{</span> <span class="fu">zipTree</span><span class="op">(</span>it<span class="op">)</span> <span class="op">}</span> <span class="op">})</span></span>
+<span id="list:gradle_fatJar-9"><a href="#list:gradle_fatJar-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dependsOn</span><span class="op">(</span><span class="st">&quot;compileJava&quot;</span><span class="op">)</span></span>
+<span id="list:gradle_fatJar-10"><a href="#list:gradle_fatJar-10" aria-hidden="true" tabindex="-1"></a>    duplicatesStrategy <span class="op">=</span> DuplicatesStrategy<span class="op">.</span><span class="fu">EXCLUDE</span> <span class="co">// Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build</span></span>
+<span id="list:gradle_fatJar-11"><a href="#list:gradle_fatJar-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="angular">Angular</h3>
+<p>– nginx e Angular in realtà</p>
 <h1 id="ch:con">Conclusions and Future Work</h1>
 <h2 id="conclusions">Conclusions</h2>
 <p>**spiega che verrà messo online nel sitoweb **</p>
