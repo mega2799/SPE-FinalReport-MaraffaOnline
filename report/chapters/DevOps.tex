@@ -142,61 +142,63 @@ il file deve compilare, gestire dip e configurare altri apetti del build process
 ** docker image for each microservice, docker file
 docker compose grouping containers and defining dependencies**
 
-Data l'architettura del progetto in microservizi usare docker per poter creare un'immagine per ogni servizio è stata una scelta naturale. 
-L'obbiettivo finale è poter avere un sistema facilmente deployabile e scalabile da poter eseguire velocemente in un generico ambiente, uno stack di container docker che racchiuda in sè tutto il sistema.
-Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in modo da poter creare un'immagine docker per ogni servizio durante la fase di deploy della continuous integration.
+Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
+L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
+Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in modo da poter creare un'immagine durante la fase di deploy della continuous integration.
 \vspace{1cm}
 
-La \textbf{stategia di containerizzazione} comunque a tutte le immagini create è stata quella di utilizzare un'immagine base di alpine, in modo da avere immagini leggere e veloci da scaricare e per poter ridurre la dimensione delle immagini 
-si è usata un multi-stage build, in modo da poter avere un'immagine di produzione più piccola e sicura. Cioè si è usata un'immagine di sviluppo per poter compilare il codice e un'immagine "di produzione" per poter eseguire il codice compilato
-copiando solo i file necessari. 
+La \textbf{strategia di containerizzazione} per tutte le immagini create è stata quella di utilizzare un'immagine base di Alpine, in modo da avere immagini leggere e veloci da scaricare. Per ridurre la dimensione delle immagini,
+si è utilizzata un'immagine di sviluppo per compilare il codice e un'immagine di produzione per eseguire il codice compilato, copiando solo i file necessari.
 
 \subsection{NodeJS}
 
-I servizi UserManagementMaraffa e BusinessLogic sono stati containerizzati utilizzando un'immagine di node.js. Si può notare nell'esempio sotto la distinzione tra i diversi stage. 
+I servizi UserManagementMaraffa e BusinessLogic sono stati containerizzati utilizzando un'immagine di Node.js. Nell'esempio sotto, si può notare la distinzione tra i diversi stage.
+\vspace{1cm}
 
-\begin{lstlisting}[language=Python, caption={Dockerfile delle immagini nodeJS}, label=list:dockerfile_nodejs]
-    FROM node:20-alpine as base
-    WORKDIR /app
-    COPY yarn.lock package.json /app/
-    RUN yarn install
-    COPY . /app
-    RUN yarn build
+\begin{lstlisting}[language=Python, caption={Dockerfile delle immagini NodeJS}, label=list:dockerfile_nodejs]
+FROM node:20-alpine as base
+WORKDIR /app
+COPY yarn.lock package.json /app/
+RUN yarn install
+COPY . /app
+RUN yarn build
 
-    FROM node:20-alpine
-    WORKDIR /app    
-    COPY --from=base /app/package.json /app/package.json
-    COPY --from=base /app/node_modules /app/node_modules
-    COPY --from=base /app/dist /app/dist
-    EXPOSE 3000
-    CMD ["node","dist/main.js"]
+FROM node:20-alpine
+WORKDIR /app    
+COPY --from=base /app/package.json /app/package.json
+COPY --from=base /app/node_modules /app/node_modules
+COPY --from=base /app/dist /app/dist
+EXPOSE 3000
+CMD ["node","dist/main.js"]
 \end{lstlisting}
 
 \subsection{Java}
 
-La containerizzazzione del middleware ha richiesto alcuni passaggi aggiuntivi rispetto ai servizi in node.js.
-E' stato necessario adottare immagini diverse per gli stage di build e produzione, quindi usare un'immagine di gradle per la build nella quale eseguire i comandi di gradle e un'immagine di 
-openjdk per l'esecuzione del Jar prodotto dalla build.
+La containerizzazione del middleware ha richiesto alcuni passaggi aggiuntivi rispetto ai servizi in Node.js.
+È stato necessario adottare immagini diverse per gli stage di build e produzione, quindi usare un'immagine di Gradle per la build, nella quale eseguire i comandi di Gradle, e un'immagine di 
+OpenJDK per l'esecuzione del JAR prodotto dalla build.
 
-Per la compilazione con gradle, nonostante non sia una pratica corretta è stato necessario dover mantenere nella repository il file gradle-wrapper.jar, in quanto non era possibile scaricarlo durante la build all'interno delle github actions.
-La build non utilizza il classimo comando di gradle per generare il file .jar ma un task personalizzato che si occupa di generare il fatJar del servizio, le dipendenze non venivano gestite correttamente all'interno del normale file .jar.
+Per la compilazione con Gradle, nonostante non sia una pratica corretta, è stato necessario mantenere nella repository il file gradle-wrapper.jar, in quanto non era possibile scaricarlo durante la build all'interno delle GitHub Actions.
+La build non utilizza il classico comando di Gradle per generare il file .jar, ma un task personalizzato che si occupa di generare il fatJar del servizio, poiché le dipendenze non venivano gestite correttamente all'interno del normale file .jar.
 
 \begin{lstlisting}[language=Java, caption={Task del fatJar da includere nel container}, label=list:gradle_fatJar]
-    tasks.register<Jar>("fatJar") {
-        archiveBaseName.set("Middleware")
-        manifest {
-            attributes["Main-Class"] = "server.Main"
-        }
-        from(sourceSets.main.get().output)
-        dependsOn(configurations.runtimeClasspath)
-        from({ configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) } })
-        dependsOn("compileJava")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build
-    } 
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("Middleware")
+    manifest {
+        attributes["Main-Class"] = "server.Main"
+    }
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({ configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) } })
+    dependsOn("compileJava")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build
+}
 \end{lstlisting}
 
 \subsection{Angular}
--- nginx e angular in realta
+
+-- nginx e Angular in realtà
+
 
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
