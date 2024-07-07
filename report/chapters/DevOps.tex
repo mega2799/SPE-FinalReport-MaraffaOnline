@@ -11,7 +11,8 @@ Per ogni release è stato adottato il semanting Versioning. È stato utilizzato 
 \end{itemize}
 Per ogni release viene creato anche un tag con la corrispondente versione.
 \subsection{Changelog e secrets}
-Ogni volta che is effettua una push sul main, viene generato un changelog. Il changelog è un file che contiene tutte le modifiche effettuate.
+Ogni volta che is effettua una push sul main, vie
+ne generato un changelog. Il changelog è un file che contiene tutte le modifiche effettuate: \href{https://github.com/Sofy24/UserManagementMaraffa/blob/main/CHANGELOG.md}{link al changelog}.
 Nel changelog vengono riportati ogni commit che indicano le modifiche apportate, i contributori e il codice sorgente.
 Se presenti, vengono inoltre riportate le sezioni: 
 \begin{itemize}
@@ -38,10 +39,12 @@ Come strumeto di controllo di versione è stato scelto git, sono state adottate 
 
 \subsection{Struttura dei Branch}
 
-Una delle componenti principali della Git Policy è la gestione dei branch. La struttura tipica prevede almeno tre tipi di branch:
-- \textbf{Master/Main:} Questo è il branch principale che contiene il codice di produzione. Ogni commit su questo branch dovrebbe essere stabile e pronto per il rilascio. Questo branch e stato protetto per evitare commit diretti, richiedendo quindi una revisione per ogni operazione di merge.
-- \textbf{Develop:} Qui viene integrato il lavoro di sviluppo corrente. È il branch dove confluiscono le feature prima di essere preparate per il rilascio. Questo branch dovrebbe essere costantemente aggiornato e testato per assicurare che sia in uno stato pronto per la produzione.
-- \textbf{Feature Branches:} Utilizzati per lo sviluppo di nuove funzionalità. Ogni feature branch deve derivare da `develop` e, una volta completata la feature, viene reintegrato in `develop` tramite una pull request.
+Una delle componenti principali della Git Policy è la gestione dei branch. La struttura a feature prevede almeno tre tipi di branch:
+\begin{itemize}
+    \item \textbf{Master/Main:} Questo è il branch principale che contiene il codice di produzione. Ogni commit su questo branch dovrebbe essere stabile e pronto per il rilascio. Questo branch e stato protetto per evitare commit diretti, richiedendo quindi una revisione per ogni operazione di merge.
+    \item  \textbf{Develop:} Qui viene integrato il lavoro di sviluppo corrente. È il branch dove confluiscono le feature prima di essere preparate per il rilascio. Questo branch dovrebbe essere costantemente aggiornato e testato per assicurare che sia in uno stato pronto per la produzione.
+    \item  \textbf{Feature Branches:} Utilizzati per lo sviluppo di nuove funzionalità. Ogni feature branch deve derivare da `develop` e, una volta completata la feature, viene reintegrato in `develop` tramite una pull request.
+\end{itemize}
 
 
 % \subsection{Commit e Messaggi di Commit}
@@ -63,13 +66,25 @@ I conflitti di merge sono inevitabili in un ambiente di sviluppo collaborativo s
 La scelta tra merge e rebase è stata fatta in base al contesto e alla complessità delle modifiche, privilegiando la chiarezza della storia del codice seppur a discapito della linearità, 
 la scelta è stata quella di utilizzare il merge per mantenere una storia del codice più pulita e lineare.
 
+\subsection{Gestione dei conflitti in Git e scelta della tattica di merge}
+
+La gestione dei conflitti in Git è una parte fondamentale del flusso di lavoro collaborativo. I conflitti si verificano quando due o più branch presentano modifiche incompatibili agli stessi file o alle stesse righe di codice. Per risolvere questi conflitti, Git offre due principali tattiche: merge e rebase.
+
+Il merge è generalmente preferito al rebase in molti contesti di team per diversi motivi. Innanzitutto, il merge preserva la cronologia completa del progetto, mantenendo un registro di tutte le modifiche e delle fusioni effettuate. Questo è particolarmente utile per tracciare l'evoluzione del progetto e per individuare facilmente l'origine dei bug. Inoltre, il merge evita di riscrivere la cronologia dei commit, il che può causare problemi se altri sviluppatori hanno basato il loro lavoro sui commit riscritti. 
+
+Il rebase, sebbene utile per mantenere una cronologia lineare e pulita, può complicare la risoluzione dei conflitti in quanto riscrive la cronologia, rendendo difficile tracciare le modifiche originarie e potenzialmente causando confusione tra i membri del team. In ambienti collaborativi, il rebase può introdurre rischi significativi se non utilizzato con estrema cautela.
+
+In sintesi, mentre il rebase può essere utile in specifiche situazioni, il merge è solitamente preferito per la sua capacità di mantenere una cronologia trasparente e di evitare i problemi associati alla riscrittura della cronologia dei commit.
+
 
 \subsection{Strumenti di Supporto} %TODO questo utile potrebbe essere spostato in un'altra sezione
 
 Per implementare efficacemente queste best practices, è utile utilizzare strumenti di supporto come:
-- \textbf{Git Hooks:} Script che vengono eseguiti automaticamente in determinati punti del flusso di lavoro di Git, come prima di un commit o dopo un merge. Possono essere utilizzati per verificare la qualità del codice, eseguire test automatizzati, o applicare formattazioni standard.
-- \textbf{Linting e Formattazione Automatizzata:} Utilizza strumenti come ESLint o Prettier per mantenere uno stile di codice coerente e rilevare potenziali errori prima che vengano committati.
-- \textbf{Monitoraggio e Analisi:} Strumenti come SonarQube possono analizzare il codice per trovare problemi di sicurezza, bug, e debito tecnico.
+\begin{itemize}
+    \item  \textbf{Git Hooks:} Script che vengono eseguiti automaticamente in determinati punti del flusso di lavoro di Git, come prima di un commit o dopo un merge. Possono essere utilizzati per verificare la qualità del codice, eseguire test automatizzati, o applicare formattazioni standard.
+    \item  \textbf{Linting e Formattazione Automatizzata:} Utilizza strumenti come ESLint o Prettier per mantenere uno stile di codice coerente e rilevare potenziali errori prima che vengano committati.
+    \item  \textbf{Monitoraggio e Analisi:} Strumenti come SonarQube possono analizzare il codice per trovare problemi di sicurezza, bug, e debito tecnico.
+\end{itemize}
 
 % \subsection{Strategy for version control}
 % **parla della git policy**
@@ -113,7 +128,10 @@ Per ogni repository è stata implementata una CI specifica. \\
 
 \textbf{UserManagementMaraffa e BusinessLogic:} Essendo le due repository estremamente simili e avendo entrambe un ambiente in node.js, è stato implementato un workflow pressochè analogo. Questo workflow reagisce all'evento push sul main branch, e pull request sui branch main e develop 
 e sono stati implementati 3 job: build, test e deploy.
-Dopo una checkout iniziale (fetch-depth è 0 in quanto il changelog necessita di tutta la history dei commit), viene creata una cache per permettere ai job di comunicare tra loro. Successivamente alla build il sistema viene testato (in entrambi i casi viene usata l'action di yarn) e infine viene effettuato il deploy del servizio containerizzato se l'evento è una pull request con la quale viene svolto il merge e quando l'action è closed (non sta progredendo e quindi l'esecuzione non è in corso). Nel deploy viene effettuato il chekout, si configura il nome del progetto, si configura la versione della build. Se il commit viene effettuato sul main si configura il nome del tag e la versione a "LATEST", nel caso non fosse nel main viene configurata la versione a "develop". Infine si effettua il login al Github container registry, la build e la push dell'immagine sul registro. L'immagine viene configurata in modo parametrico con delle variabili d'ambiente e il nome viene trasformato in minuscolo. 
+Dopo una checkout iniziale (fetch-depth è 0 in quanto il changelog necessita di tutta la history dei commit), viene creata una cache per permettere ai job di comunicare tra loro.
+Successivamente alla build il sistema viene testato (in entrambi i casi viene usata l'action di yarn) e infine viene effettuato il deploy del servizio containerizzato se l'evento è una pull request con la quale viene svolto il merge e quando l'action è closed (non sta progredendo e quindi l'esecuzione non è in corso) oppure viene creata una release nel main branch.
+Nel deploy viene effettuato il chekout, si configura il nome del progetto, si configura la versione della build. Se il commit viene effettuato sul main si configura il nome del tag e la versione a "LATEST", nel caso non fosse nel main viene configurata la versione a "develop". 
+Infine si effettua il login al Github container registry, la build e la push dell'immagine sul registro. L'immagine viene configurata in modo parametrico con delle variabili d'ambiente e il nome viene trasformato in minuscolo. 
 
 \textbf{MiddlewareMaraffa:} //TODO
 push su main, pull request su main e develop
@@ -135,6 +153,65 @@ il file deve compilare, gestire dip e configurare altri apetti del build process
 \section{Containerization}
 ** docker image for each microservice, docker file
 docker compose grouping containers and defining dependencies**
+
+Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
+L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
+Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in modo da poter creare un'immagine durante la fase di deploy della continuous integration.
+\vspace{1cm}
+
+La \textbf{strategia di containerizzazione} per tutte le immagini create è stata quella di utilizzare un'immagine base di Alpine, in modo da avere immagini leggere e veloci da scaricare. Per ridurre la dimensione delle immagini,
+si è utilizzata un'immagine di sviluppo per compilare il codice e un'immagine di produzione per eseguire il codice compilato, copiando solo i file necessari.
+
+\subsection{NodeJS}
+
+I servizi UserManagementMaraffa e BusinessLogic sono stati containerizzati utilizzando un'immagine di Node.js. Nell'esempio sotto, si può notare la distinzione tra i diversi stage.
+\vspace{1cm}
+
+\begin{lstlisting}[language=Python, caption={Dockerfile delle immagini NodeJS}, label=list:dockerfile_nodejs]
+FROM node:20-alpine as base
+WORKDIR /app
+COPY yarn.lock package.json /app/
+RUN yarn install
+COPY . /app
+RUN yarn build
+
+FROM node:20-alpine
+WORKDIR /app    
+COPY --from=base /app/package.json /app/package.json
+COPY --from=base /app/node_modules /app/node_modules
+COPY --from=base /app/dist /app/dist
+EXPOSE 3000
+CMD ["node","dist/main.js"]
+\end{lstlisting}
+
+\subsection{Java}
+
+La containerizzazione del middleware ha richiesto alcuni passaggi aggiuntivi rispetto ai servizi in Node.js.
+È stato necessario adottare immagini diverse per gli stage di build e produzione, quindi usare un'immagine di Gradle per la build, nella quale eseguire i comandi di Gradle, e un'immagine di 
+OpenJDK per l'esecuzione del JAR prodotto dalla build.
+
+Per la compilazione con Gradle, nonostante non sia una pratica corretta, è stato necessario mantenere nella repository il file gradle-wrapper.jar, in quanto non era possibile scaricarlo durante la build all'interno delle GitHub Actions.
+La build non utilizza il classico comando di Gradle per generare il file .jar, ma un task personalizzato che si occupa di generare il fatJar del servizio, poiché le dipendenze non venivano gestite correttamente all'interno del normale file .jar.
+
+\begin{lstlisting}[language=Java, caption={Task del fatJar da includere nel container}, label=list:gradle_fatJar]
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("Middleware")
+    manifest {
+        attributes["Main-Class"] = "server.Main"
+    }
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({ configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) } })
+    dependsOn("compileJava")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build
+}
+\end{lstlisting}
+
+\subsection{Angular}
+
+-- nginx e Angular in realtà
+
+
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
 % that a project report's structure could follow a particular paradigm. Hence, the organization of a report (effectively the Table of Content of a report) can vary depending on the type of project you are doing. Check which of the given examples suit your project. Alternatively, follow your supervisor's advice.
