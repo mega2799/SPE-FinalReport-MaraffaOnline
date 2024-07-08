@@ -157,7 +157,14 @@ id="toc-conventional-commits">Conventional commits</a></li>
 <li><a href="#build-automation" id="toc-build-automation">Build
 automation</a></li>
 <li><a href="#continuous-integration"
-id="toc-continuous-integration">Continuous Integration</a></li>
+id="toc-continuous-integration">Continuous Integration</a>
+<ul>
+<li><a href="#usermanagementmaraffa-e-businesslogic"
+id="toc-usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
+BusinessLogic:</a></li>
+<li><a href="#middlewaremaraffa"
+id="toc-middlewaremaraffa">MiddlewareMaraffa:</a></li>
+</ul></li>
 <li><a href="#automated-quality-assurance"
 id="toc-automated-quality-assurance">Automated quality
 assurance</a></li>
@@ -171,6 +178,8 @@ id="toc-containerization">Containerization</a>
 <li><a href="#java" id="toc-java">Java</a></li>
 <li><a href="#angular" id="toc-angular">Angular</a></li>
 </ul></li>
+<li><a href="#docker-compose-todo"
+id="toc-docker-compose-todo">Docker-compose TODO</a></li>
 </ul></li>
 <li><a href="#ch:con" id="toc-ch:con">Conclusions and Future Work</a>
 <ul>
@@ -654,28 +663,31 @@ utilizzata anche nel changelog.</p>
 diversa. La repository fornita è un contenitore di tutte le singole
 repository dei servizi. Per ogni repository è stata implementata una CI
 specifica.<br />
-<strong>UserManagementMaraffa e BusinessLogic:</strong> Essendo le due
-repository estremamente simili e avendo entrambe un ambiente in node.js,
-è stato implementato un workflow pressochè analogo. Questo workflow
-reagisce all’evento push sul main branch, e pull request sui branch main
-e develop e sono stati implementati 3 job: build, test e deploy. Dopo
-una checkout iniziale (fetch-depth è 0 in quanto il changelog necessita
-di tutta la history dei commit), viene creata una cache per permettere
-ai job di comunicare tra loro. Successivamente alla build il sistema
-viene testato (in entrambi i casi viene usata l’action di yarn) e infine
-viene effettuato il deploy del servizio containerizzato se l’evento è
-una pull request con la quale viene svolto il merge e quando l’action è
-closed (non sta progredendo e quindi l’esecuzione non è in corso). Nel
-deploy viene effettuato il chekout, si configura il nome del progetto,
-si configura la versione della build. Se il commit viene effettuato sul
-main si configura il nome del tag e la versione a "LATEST", nel caso non
-fosse nel main viene configurata la versione a "develop". Infine si
-effettua il login al Github container registry, la build e la push
-dell’immagine sul registro. L’immagine viene configurata in modo
-parametrico con delle variabili d’ambiente e il nome viene trasformato
-in minuscolo.</p>
-<p><strong>MiddlewareMaraffa:</strong> //TODO push su main, pull request
-su main e develop build e test se pullrequest.merge = true</p>
+</p>
+<h3 id="usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
+BusinessLogic:</h3>
+<p>Essendo le due repository estremamente simili e avendo entrambe un
+ambiente in node.js, è stato implementato un workflow pressochè analogo.
+Questo workflow reagisce all’evento push sul main branch, e pull request
+sui branch main e develop e sono stati implementati 3 job: build, test e
+deploy. Dopo una checkout iniziale (fetch-depth è 0 in quanto il
+changelog necessita di tutta la history dei commit), viene creata una
+cache per permettere ai job di comunicare tra loro. Successivamente alla
+build il sistema viene testato (in entrambi i casi viene usata l’action
+di yarn) e infine viene effettuato il deploy del servizio
+containerizzato se l’evento è una pull request con la quale viene svolto
+il merge e quando l’action è closed (non sta progredendo e quindi
+l’esecuzione non è in corso). Nel deploy viene effettuato il chekout, si
+configura il nome del progetto, si configura la versione della build. Se
+il commit viene effettuato sul main si configura il nome del tag e la
+versione a "LATEST", nel caso non fosse nel main viene configurata la
+versione a "develop". Infine si effettua il login al Github container
+registry, la build e la push dell’immagine sul registro. L’immagine
+viene configurata in modo parametrico con delle variabili d’ambiente e
+il nome viene trasformato in minuscolo.</p>
+<h3 id="middlewaremaraffa">MiddlewareMaraffa:</h3>
+<p>//TODO push su main, pull request su main e develop build e test se
+pullrequest.merge = true</p>
 <p>Parte finale <strong>ChatServer:</strong> Il servizio è sviluppato in
 un ambiente Java, pertanto dopo aver effettuato il checkout nel job
 build and test, si effettua il set-up di Java (distribuzione: temurin,
@@ -722,6 +734,13 @@ in modo da avere immagini leggere e veloci da scaricare. Per ridurre la
 dimensione delle immagini, si è utilizzata un’immagine di sviluppo per
 compilare il codice e un’immagine di produzione per eseguire il codice
 compilato, copiando solo i file necessari.</p>
+<figure>
+<p><img src="report/img/multi_stage.png" style="width:12cm"
+alt="image" /><br />
+</p>
+<figcaption>Comparazione tra le immagini multi-stage e le immagini
+tradizionali</figcaption>
+</figure>
 <h3 id="nodejs">NodeJS</h3>
 <p>I servizi UserManagementMaraffa e BusinessLogic sono stati
 containerizzati utilizzando un’immagine di Node.js. Nell’esempio sotto,
@@ -772,7 +791,41 @@ label="list:gradle_fatJar"><pre class="sourceCode java"><code class="sourceCode 
 <span id="list:gradle_fatJar-10"><a href="#list:gradle_fatJar-10" aria-hidden="true" tabindex="-1"></a>    duplicatesStrategy <span class="op">=</span> DuplicatesStrategy<span class="op">.</span><span class="fu">EXCLUDE</span> <span class="co">// Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build</span></span>
 <span id="list:gradle_fatJar-11"><a href="#list:gradle_fatJar-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3 id="angular">Angular</h3>
-<p>– nginx e Angular in realtà</p>
+<p>La containerizzazione del frontend ha richiesto l’utilizzo di
+un’immagine di Node.js per lo stage di build, mentre per l’esecuzione è
+stata utilizzata un’immagine di Nginx. Nginx serve per eseguire
+l’applicazione all’interno del container e per poterla raggiungere
+dall’esterno. Per fare ciò è stato necessario configurare Nginx tramite
+un file di configurazione che ha permesso anche di gestire un’operazione
+di reverse proxy per indirizzare le chiamate al backend.</p>
+<div class="sourceCode" id="list:nginx_frontend" data-language="Python"
+data-caption="Configurazione Nginx del front-end"
+label="list:nginx_frontend"><pre class="sourceCode python"><code class="sourceCode python"><span id="list:nginx_frontend-1"><a href="#list:nginx_frontend-1" aria-hidden="true" tabindex="-1"></a>server {</span>
+<span id="list:nginx_frontend-2"><a href="#list:nginx_frontend-2" aria-hidden="true" tabindex="-1"></a>    listen <span class="dv">80</span><span class="op">;</span></span>
+<span id="list:nginx_frontend-3"><a href="#list:nginx_frontend-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="list:nginx_frontend-4"><a href="#list:nginx_frontend-4" aria-hidden="true" tabindex="-1"></a>    location <span class="op">/</span> {</span>
+<span id="list:nginx_frontend-5"><a href="#list:nginx_frontend-5" aria-hidden="true" tabindex="-1"></a>        root <span class="op">/</span>usr<span class="op">/</span>share<span class="op">/</span>nginx<span class="op">/</span>html<span class="op">;</span></span>
+<span id="list:nginx_frontend-6"><a href="#list:nginx_frontend-6" aria-hidden="true" tabindex="-1"></a>        index index.html index.htm<span class="op">;</span></span>
+<span id="list:nginx_frontend-7"><a href="#list:nginx_frontend-7" aria-hidden="true" tabindex="-1"></a>        try_files $uri $uri<span class="op">/</span> <span class="op">/</span>index.html<span class="op">;</span></span>
+<span id="list:nginx_frontend-8"><a href="#list:nginx_frontend-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="list:nginx_frontend-9"><a href="#list:nginx_frontend-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:nginx_frontend-10"><a href="#list:nginx_frontend-10" aria-hidden="true" tabindex="-1"></a>    location <span class="op">/</span>api<span class="op">/</span> {</span>
+<span id="list:nginx_frontend-11"><a href="#list:nginx_frontend-11" aria-hidden="true" tabindex="-1"></a>        proxy_pass <span class="st">&quot;http://$</span><span class="sc">{API_HOST}</span><span class="st">:$</span><span class="sc">{API_PORT}</span><span class="st">/&quot;</span><span class="op">;</span></span>
+<span id="list:nginx_frontend-12"><a href="#list:nginx_frontend-12" aria-hidden="true" tabindex="-1"></a>        proxy_http_version <span class="fl">1.1</span><span class="op">;</span></span>
+<span id="list:nginx_frontend-13"><a href="#list:nginx_frontend-13" aria-hidden="true" tabindex="-1"></a>        proxy_set_header Upgrade $http_upgrade<span class="op">;</span></span>
+<span id="list:nginx_frontend-14"><a href="#list:nginx_frontend-14" aria-hidden="true" tabindex="-1"></a>        proxy_set_header Connection <span class="st">&#39;upgrade&#39;</span><span class="op">;</span></span>
+<span id="list:nginx_frontend-15"><a href="#list:nginx_frontend-15" aria-hidden="true" tabindex="-1"></a>        proxy_set_header Host $host<span class="op">;</span></span>
+<span id="list:nginx_frontend-16"><a href="#list:nginx_frontend-16" aria-hidden="true" tabindex="-1"></a>        proxy_cache_bypass $http_upgrade<span class="op">;</span></span>
+<span id="list:nginx_frontend-17"><a href="#list:nginx_frontend-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="list:nginx_frontend-18"><a href="#list:nginx_frontend-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>L’indirizzo del backend è stato configurato tramite variabili
+d’ambiente, in modo da poterlo cambiare facilmente in base all’ambiente
+in cui si trova il container, e queste variabili vengono sostituite a
+seconda dell’ambiente di deploy in cui l’applicativo Angular viene
+eseguito.</p>
+<h2 id="docker-compose-todo">Docker-compose TODO</h2>
+<p>TODO quando potremo testare un po’meglio e essere sicuri che
+effettivamente funzioni</p>
 <h1 id="ch:con">Conclusions and Future Work</h1>
 <h2 id="conclusions">Conclusions</h2>
 <p>**spiega che verrà messo online nel sitoweb **</p>
