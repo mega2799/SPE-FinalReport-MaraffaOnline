@@ -134,11 +134,11 @@ La stessa nomenclatura viene utilizzata anche nel changelog.
 Abbiamo deciso di implementare ogni servizio in una repository diversa. La repository fornita è un contenitore di tutte le singole repository dei servizi.
 Per ogni repository è stata implementata una CI specifica. \\
 
-\textbf{UserManagementMaraffa e BusinessLogic:} Essendo le due repository estremamente simili e avendo entrambe un ambiente in node.js, è stato implementato un workflow pressochè analogo. Questo workflow reagisce all'evento push sul main branch, e pull request sui branch main e develop 
+\subsection{UserManagementMaraffa e BusinessLogic:} Essendo le due repository estremamente simili e avendo entrambe un ambiente in node.js, è stato implementato un workflow pressochè analogo. Questo workflow reagisce all'evento push sul main branch, e pull request sui branch main e develop 
 e sono stati implementati 3 job: build, test e deploy.
 Dopo una checkout iniziale (fetch-depth è 0 in quanto il changelog necessita di tutta la history dei commit), viene creata una cache per permettere ai job di comunicare tra loro. Successivamente alla build il sistema viene testato (in entrambi i casi viene usata l'action di yarn) e infine viene effettuato il deploy del servizio containerizzato se l'evento è una pull request con la quale viene svolto il merge e quando l'action è closed (non sta progredendo e quindi l'esecuzione non è in corso). Nel deploy viene effettuato il chekout, si configura il nome del progetto, si configura la versione della build. Se il commit viene effettuato sul main si configura il nome del tag e la versione a "LATEST", nel caso non fosse nel main viene configurata la versione a "develop". Infine si effettua il login al Github container registry, la build e la push dell'immagine sul registro. L'immagine viene configurata in modo parametrico con delle variabili d'ambiente e il nome viene trasformato in minuscolo. 
 
-\textbf{MiddlewareMaraffa:} //TODO
+\subsection{MiddlewareMaraffa:} //TODO
 push su main, pull request su main e develop
 build e test se pullrequest.merge = true 
 
@@ -166,6 +166,12 @@ Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in mod
 
 La \textbf{strategia di containerizzazione} per tutte le immagini create è stata quella di utilizzare un'immagine base di Alpine, in modo da avere immagini leggere e veloci da scaricare. Per ridurre la dimensione delle immagini,
 si è utilizzata un'immagine di sviluppo per compilare il codice e un'immagine di produzione per eseguire il codice compilato, copiando solo i file necessari.
+
+\begin{figure}[H]
+\caption{Comparazione tra le immagini multi-stage e le immagini tradizionali}
+\centering
+\includegraphics[width=12cm]{report/img/multi_stage.png}\\[10.5cm]
+\end{figure}
 
 \subsection{NodeJS}
 
@@ -214,12 +220,11 @@ tasks.register<Jar>("fatJar") {
 
 \subsection{Angular}
 
-La containerizzazione del frontend ha richiesto l'utilizzo di un'immagine di Node.js per lo stage di build mentre per l'esecuzione è stata utilizzata un'immagine di Nginx.
-Nginx servirà per poter eseguire l'applizazione all'interno del container e per poterla raggiungere dall'esterno. Per fare ciò è stato necessario configurare Nginx tramite un 
-file di configurazione con il quale è stato anche possibile gestire un operazione di reverse proxy per poter indirizzare le chiamate al backend.
+La containerizzazione del frontend ha richiesto l'utilizzo di un'immagine di Node.js per lo stage di build, mentre per l'esecuzione è stata utilizzata un'immagine di Nginx.
+Nginx serve per eseguire l'applicazione all'interno del container e per poterla raggiungere dall'esterno. Per fare ciò è stato necessario configurare Nginx tramite un file di configurazione che ha permesso anche di gestire un'operazione di reverse proxy per indirizzare le chiamate al backend.
 
-\begin{lstlisting}[language=Python, caption={Nginx del front-end}, label=list:nginx_frontend]
-    server {
+\begin{lstlisting}[language=Python, caption={Configurazione Nginx del front-end}, label=list:nginx_frontend]
+server {
     listen 80;
     
     location / {
@@ -229,7 +234,6 @@ file di configurazione con il quale è stato anche possibile gestire un operazio
     }
 
     location /api/ {
-        # rewrite /api/(.*) /$1  break;
         proxy_pass "http://${API_HOST}:${API_PORT}/";
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -240,8 +244,8 @@ file di configurazione con il quale è stato anche possibile gestire un operazio
 }
 \end{lstlisting}
 
-L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in modo da poterlo cambiare facilmente in base all'ambiente in cui si trova il container.
-Che vengono poi sostituite a seconda dell'ambiente di deploy in cui l'applicativo in angular viene eseguito. 
+L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in modo da poterlo cambiare facilmente in base all'ambiente in cui si trova il container, e queste variabili vengono sostituite a seconda dell'ambiente di deploy in cui l'applicativo Angular viene eseguito.
+
 
 \section{Docker-compose TODO}
 TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
