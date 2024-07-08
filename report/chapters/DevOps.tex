@@ -159,7 +159,6 @@ il file deve compilare, gestire dip e configurare altri apetti del build process
 ** docker image for each microservice, docker file
 docker compose grouping containers and defining dependencies**
 
-
 Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
 L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
 Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in modo da poter creare un'immagine durante la fase di deploy della continuous integration.
@@ -215,7 +214,37 @@ tasks.register<Jar>("fatJar") {
 
 \subsection{Angular}
 
--- nginx e Angular in realtà
+La containerizzazione del frontend ha richiesto l'utilizzo di un'immagine di Node.js per lo stage di build mentre per l'esecuzione è stata utilizzata un'immagine di Nginx.
+Nginx servirà per poter eseguire l'applizazione all'interno del container e per poterla raggiungere dall'esterno. Per fare ciò è stato necessario configurare Nginx tramite un 
+file di configurazione con il quale è stato anche possibile gestire un operazione di reverse proxy per poter indirizzare le chiamate al backend.
+
+\begin{lstlisting}[language=Python, caption={Nginx del front-end}, label=list:nginx_frontend]
+    server {
+    listen 80;
+    
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        # rewrite /api/(.*) /$1  break;
+        proxy_pass "http://${API_HOST}:${API_PORT}/";
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+\end{lstlisting}
+
+L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in modo da poterlo cambiare facilmente in base all'ambiente in cui si trova il container.
+Che vengono poi sostituite a seconda dell'ambiente di deploy in cui l'applicativo in angular viene eseguito. 
+
+\section{Docker-compose TODO}
+TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
 
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
