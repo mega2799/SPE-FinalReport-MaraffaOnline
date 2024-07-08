@@ -1,7 +1,7 @@
 
 \chapter{DevOps}
 \label{ch:DevOps} % Label for method chapter
-\section{Semantic Versioning e Changelog e secrets}
+\section{Semantic Versioning, changelog e secrets}
 \subsection{Semantic Versioning}
 Per ogni release è stato adottato il semanting Versioning. È stato utilizzato il formato X.Y.Z, partendo da 1.0.0, ogni release incrementa il numero di versione in base a:
 \begin{itemize}
@@ -65,10 +65,16 @@ I conflitti di merge sono inevitabili in un ambiente di sviluppo collaborativo s
 La scelta tra merge e rebase è stata fatta in base al contesto e alla complessità delle modifiche, privilegiando la chiarezza della storia del codice seppur a discapito della linearità, 
 quindi di utilizzare il merge per mantenere una storia del codice più pulita e continua.
 Questo è particolarmente utile per tracciare
-l’evoluzione del progetto e per individuare facilmente l’origine dei bug. Infatti, il merge evita
-di riscrivere la cronologia dei commit, il che può causare problemi se altri sviluppatori hanno 
-basato il loro lavoro sui commit riscritti.  il rebase può introdurre rischi significativi se non utilizzato con estrema cautela
-in quanto riscrive la cronologia, rendendo difficile tracciare le modifiche originarie e potenzialmente causando confusione tra i membri del team.
+l’evoluzione del progetto e per individuare facilmente l’origine dei bug. 
+Infatti con il rebase c'è il rischio che venga cancellata una parte della history. In alcuni casi, può risultare molto pericoloso e 
+può introdurre rischi significativi se non utilizzato con estrema cautela:
+ipotizzando di introdurre un bug e successivamente di eseguire il rebase che cancella dalla history la modifica che ha introdotto il bug,
+risulterebbe particolarmente ostico tracciare le modifiche e risalire a questo cambiamento. Potenzialmente può creare anche confusione tra i membri del team.
+
+% Infatti, il merge evita 
+% di riscrivere la cronologia dei commit, il che può causare problemi se altri sviluppatori hanno 
+% basato il loro lavoro sui commit riscritti.  il rebase può introdurre rischi significativi se non utilizzato con estrema cautela
+% in quanto riscrive la cronologia, rendendo difficile tracciare le modifiche originarie e potenzialmente causando confusione tra i membri del team.
 
 % \subsection{Gestione dei conflitti in Git e scelta della tattica di merge}
 
