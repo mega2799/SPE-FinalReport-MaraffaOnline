@@ -32,7 +32,7 @@ Inoltre la licenza MIT è compatibile anche con altre licenze, anche con quelle 
  segnalare un bug o suggerire un'implementazione alternativa.
 \section{DVCS}
 
-Come strumeto di controllo di versione è stato scelto git, sono state adottate le seguenti best practices o git policy per garantire un flusso di lavoro coerente e prevenire conflitti di merge.
+Come strumento di controllo di versione è stato scelto git, sono state adottate le seguenti best practices o git policy per garantire un flusso di lavoro coerente e prevenire conflitti di merge.
 % La Git Policy rappresenta un insieme di linee guida e regole che governano l'uso di Git all'interno di un team di sviluppo. 
 % Queste politiche sono fondamentali per garantire un flusso di lavoro coerente, prevenire conflitti di merge e mantenere una storia del codice chiara e facilmente navigabile. 
 
@@ -150,6 +150,65 @@ il file deve compilare, gestire dip e configurare altri apetti del build process
 \section{Containerization}
 ** docker image for each microservice, docker file
 docker compose grouping containers and defining dependencies**
+
+
+Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
+L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
+Per fare ciò è stato necessario creare un Dockerfile per ogni servizio, in modo da poter creare un'immagine durante la fase di deploy della continuous integration.
+\vspace{1cm}
+
+La \textbf{strategia di containerizzazione} per tutte le immagini create è stata quella di utilizzare un'immagine base di Alpine, in modo da avere immagini leggere e veloci da scaricare. Per ridurre la dimensione delle immagini,
+si è utilizzata un'immagine di sviluppo per compilare il codice e un'immagine di produzione per eseguire il codice compilato, copiando solo i file necessari.
+
+\subsection{NodeJS}
+
+I servizi UserManagementMaraffa e BusinessLogic sono stati containerizzati utilizzando un'immagine di Node.js. Nell'esempio sotto, si può notare la distinzione tra i diversi stage.
+\vspace{1cm}
+
+\begin{lstlisting}[language=Python, caption={Dockerfile delle immagini NodeJS}, label=list:dockerfile_nodejs]
+FROM node:20-alpine as base
+WORKDIR /app
+COPY yarn.lock package.json /app/
+RUN yarn install
+COPY . /app
+RUN yarn build
+
+FROM node:20-alpine
+WORKDIR /app    
+COPY --from=base /app/package.json /app/package.json
+COPY --from=base /app/node_modules /app/node_modules
+COPY --from=base /app/dist /app/dist
+EXPOSE 3000
+CMD ["node","dist/main.js"]
+\end{lstlisting}
+
+\subsection{Java}
+
+La containerizzazione del middleware ha richiesto alcuni passaggi aggiuntivi rispetto ai servizi in Node.js.
+È stato necessario adottare immagini diverse per gli stage di build e produzione, quindi usare un'immagine di Gradle per la build, nella quale eseguire i comandi di Gradle, e un'immagine di 
+OpenJDK per l'esecuzione del JAR prodotto dalla build.
+
+Per la compilazione con Gradle, nonostante non sia una pratica corretta, è stato necessario mantenere nella repository il file gradle-wrapper.jar, in quanto non era possibile scaricarlo durante la build all'interno delle GitHub Actions.
+La build non utilizza il classico comando di Gradle per generare il file .jar, ma un task personalizzato che si occupa di generare il fatJar del servizio, poiché le dipendenze non venivano gestite correttamente all'interno del normale file .jar.
+
+\begin{lstlisting}[language=Java, caption={Task del fatJar da includere nel container}, label=list:gradle_fatJar]
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("Middleware")
+    manifest {
+        attributes["Main-Class"] = "server.Main"
+    }
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({ configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) } })
+    dependsOn("compileJava")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Puoi utilizzare altre strategie come DuplicatesStrategy.WARN per avvisare ma non fermare la build
+}
+\end{lstlisting}
+
+\subsection{Angular}
+
+-- nginx e Angular in realtà
+
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
 % that a project report's structure could follow a particular paradigm. Hence, the organization of a report (effectively the Table of Content of a report) can vary depending on the type of project you are doing. Check which of the given examples suit your project. Alternatively, follow your supervisor's advice.
