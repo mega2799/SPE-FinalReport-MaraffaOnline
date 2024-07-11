@@ -151,9 +151,10 @@ Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integr
 \section{Automated quality assurance}
 **code quality, testing, reporting**
 \subsection{Testing}
-All'interno della CI la fase di test è stata implementata con Jest per i servizi che usano nodeJS genrando di fatto un report abbastanza comprensibile direttamente nella finestra della CI. Il componente middleware, scritto in java invece, 
-generava risultati di test non così chiari. Per modificare questo comportamento è stata introdotta una dipendenza nel build gralde che permette di avere un report più dettagliato e comprensibile. 
-La libreria \href{\underline{Test Logger}}{https://plugins.gradle.org/plugin/com.adarshr.test-logger} tramite una piccola configurazione nel file build.gradle come qui riportata ha soddisfatto le nostre esigenze.
+
+Per ogni servizio in questo sistema è stato adoperato, ove possibile, il paradigma di programmazione TDD, cioè Test Driven Development. Questo approccio prevede che i test siano scritti prima del codice, in modo da guidare lo sviluppo e garantire che il codice prodotto soddisfi i requisiti specificati.
+All'interno della CI, la fase di test è stata implementata con Jest per quanto riguarda i servizi che usano Node.js, generando di fatto un report abbastanza comprensibile direttamente nella finestra della CI. Il componente middleware, scritto in Java, invece, generava risultati di test non così chiari. Per modificare questo comportamento, è stata introdotta una dipendenza nel build Gradle che permette di avere un report più dettagliato e comprensibile. 
+La libreria \href{https://plugins.gradle.org/plugin/com.adarshr.test-logger}{\underline{Test Logger}}, tramite una piccola configurazione nel file build.gradle come qui riportata, ha soddisfatto le nostre esigenze.
 
 \begin{lstlisting}[language=Java, caption={Test logger}, label=list:gradle_testlogger]
 import com.adarshr.gradle.testlogger.TestLoggerExtension
@@ -181,6 +182,31 @@ testlogger {
 }
 \end{lstlisting}
 
+\section{Code quality e linting}
+
+Durante lo sviluppo dei servizi è stata adottata una politica di code quality e linting per garantire la coerenza e la leggibilità del codice.
+
+Per i servizi in Node.js, è stato utilizzato ESLint assieme a Prettier. ESlint è uno strumento di analisi statica del codice che aiuta a identificare e correggere gli errori di codice, le pratiche non ottimali e le violazioni dello stile di codice.
+Questi strumenti necessitano soltanto di un file di configurazione che è presente nelle repository e che i software per la scrittura di codice, come ad esempio VScode possono adoperare.
+
+Il componente in java ha adottato Checkstyle, un tool di analisi statica del codice che aiuta a garantire che il codice Java rispetti uno standard di codifica predefinito. Anche in questo caso è stato sufficiente aggiungere una dipendenza nel build.gradle per ottenere un report dettagliato e comprensibile ed un 
+file di configurazione che è stato inserito nella repository. Per poter poi automatizzare il processo di formattazione del codice il più possibile è stata aggiunta la libreria \href{\underline{Spotless}}{https://github.com/diffplug/spotless}. L'aggiunta di queste dipendeze nel 
+file build.gradle è stata sufficiente per garantire la formattazione del codice e la sua coerenza.
+\begin{lstlisting}[language=Java, caption={Code quality}, label=list:gradle_codequality]
+spotless {
+ java {
+        importOrder() // standard import order
+        removeUnusedImports()
+        googleJavaFormat() // has its own section below
+        eclipse()          // has its own section below
+    }
+}
+checkstyle {
+    toolVersion = "8.44" // Versione di Checkstyle
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml") // Configurazione di Checkstyle
+    // showViolations = true
+}
+\end{lstlisting}
 
 \section{Automated delivery}
 **automatizzare l'esecuzione iniziale del sistema con build.gradle che specifica come
