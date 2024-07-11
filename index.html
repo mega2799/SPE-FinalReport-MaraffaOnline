@@ -164,10 +164,16 @@ id="toc-usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
 BusinessLogic:</a></li>
 <li><a href="#middlewaremaraffa"
 id="toc-middlewaremaraffa">MiddlewareMaraffa:</a></li>
+<li><a href="#act-per-testare-ci" id="toc-act-per-testare-ci">Act per
+testare CI</a></li>
 </ul></li>
 <li><a href="#automated-quality-assurance"
-id="toc-automated-quality-assurance">Automated quality
-assurance</a></li>
+id="toc-automated-quality-assurance">Automated quality assurance</a>
+<ul>
+<li><a href="#testing" id="toc-testing">Testing</a></li>
+</ul></li>
+<li><a href="#code-quality-e-linting"
+id="toc-code-quality-e-linting">Code quality e linting</a></li>
 <li><a href="#automated-delivery" id="toc-automated-delivery">Automated
 delivery</a></li>
 <li><a href="#deployment" id="toc-deployment">Deployment</a></li>
@@ -199,7 +205,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-10</p>
+<p>2024-07-11</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -691,9 +697,11 @@ il nome viene trasformato in minuscolo.</p>
 <h3 id="middlewaremaraffa">MiddlewareMaraffa:</h3>
 <p>//TODO push su main, pull request su main e develop build e test se
 pullrequest.merge = true</p>
-<p>Parte finale <strong>ChatServer:</strong> Il servizio è sviluppato in
-un ambiente Java, pertanto dopo aver effettuato il checkout nel job
-build and test, si effettua il set-up di Java (distribuzione: temurin,
+<p>Parte finale</p>
+<ul>
+<li><p><strong>ChatServer:</strong> Il servizio è sviluppato in un
+ambiente Java, pertanto dopo aver effettuato il checkout nel job build
+and test, si effettua il set-up di Java (distribuzione: temurin,
 versione 20). Viene svolto il set-up di Gradle, in cui viene usata
 un’action per la build e creata una cache. Inoltre viene aggiunto un
 commento con un riassunto dei risultati dei job alla pull request, il
@@ -708,12 +716,94 @@ se è una push sul master o se la stringa con il riferimento a github
 contiene "tags/v". Infine se tutti il job da cui dipende
 (build-and-test) non è fallito e non è stato interrotto. Con
 l’istruzione run si verifica che non ci siano stati dei fallimenti nel
-job deploy and test.</p>
-<p><strong>FrontendMaraffa:</strong> //TODO Sarebbe figo spiegare come i
-nostri workflow hanno ridotto i conflitti di integrazione, il
-rilevamento precoce di bug e i problemi di compatibilità.</p>
+job deploy and test.</p></li>
+<li><p><strong>FrontendMaraffa:</strong> //TODO Sarebbe figo spiegare
+come i nostri workflow hanno ridotto i conflitti di integrazione, il
+rilevamento precoce di bug e i problemi di compatibilità.</p></li>
+</ul>
+<h3 id="act-per-testare-ci">Act per testare CI</h3>
+<p>TODO</p>
 <h2 id="automated-quality-assurance">Automated quality assurance</h2>
 <p>**code quality, testing, reporting**</p>
+<h3 id="testing">Testing</h3>
+<p>Per ogni servizio in questo sistema è stato adottato, ove possibile,
+il paradigma di programmazione TDD, cioè Test Driven Development. Questo
+approccio prevede che i test siano scritti prima del codice, in modo da
+guidare lo sviluppo e garantire che il codice prodotto soddisfi i
+requisiti specificati. All’interno della CI, la fase di test è stata
+implementata con Jest per quanto riguarda i servizi che usano Node.js,
+generando di fatto un report abbastanza comprensibile direttamente nella
+finestra della CI. Il componente middleware, scritto in Java, invece,
+generava risultati di test non così chiari. Per modificare questo
+comportamento, è stata introdotta una dipendenza nel build Gradle che
+permette di avere un report più dettagliato e comprensibile. La libreria
+<a
+href="https://plugins.gradle.org/plugin/com.adarshr.test-logger"><u>Test
+Logger</u></a>, tramite una piccola configurazione nel file build.gradle
+come qui riportata, ha soddisfatto le nostre esigenze.</p>
+<div class="sourceCode" id="list:gradle_testlogger" data-language="Java"
+data-caption="Test logger" label="list:gradle_testlogger"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_testlogger-1"><a href="#list:gradle_testlogger-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">com</span><span class="op">.</span><span class="im">adarshr</span><span class="op">.</span><span class="im">gradle</span><span class="op">.</span><span class="im">testlogger</span><span class="op">.</span><span class="im">TestLoggerExtension</span></span>
+<span id="list:gradle_testlogger-2"><a href="#list:gradle_testlogger-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">com</span><span class="op">.</span><span class="im">adarshr</span><span class="op">.</span><span class="im">gradle</span><span class="op">.</span><span class="im">testlogger</span><span class="op">.</span><span class="im">TestLoggerPlugin</span></span>
+<span id="list:gradle_testlogger-3"><a href="#list:gradle_testlogger-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">com</span><span class="op">.</span><span class="im">adarshr</span><span class="op">.</span><span class="im">gradle</span><span class="op">.</span><span class="im">testlogger</span><span class="op">.</span><span class="im">theme</span><span class="op">.</span><span class="im">ThemeType</span></span>
+<span id="list:gradle_testlogger-4"><a href="#list:gradle_testlogger-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:gradle_testlogger-5"><a href="#list:gradle_testlogger-5" aria-hidden="true" tabindex="-1"></a>testlogger <span class="op">{</span></span>
+<span id="list:gradle_testlogger-6"><a href="#list:gradle_testlogger-6" aria-hidden="true" tabindex="-1"></a>    theme <span class="op">=</span> ThemeType<span class="op">.</span><span class="fu">MOCHA</span></span>
+<span id="list:gradle_testlogger-7"><a href="#list:gradle_testlogger-7" aria-hidden="true" tabindex="-1"></a>    showExceptions <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-8"><a href="#list:gradle_testlogger-8" aria-hidden="true" tabindex="-1"></a>    showStackTraces <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-9"><a href="#list:gradle_testlogger-9" aria-hidden="true" tabindex="-1"></a>    showFullStackTraces <span class="op">=</span> <span class="kw">false</span></span>
+<span id="list:gradle_testlogger-10"><a href="#list:gradle_testlogger-10" aria-hidden="true" tabindex="-1"></a>    showCauses <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-11"><a href="#list:gradle_testlogger-11" aria-hidden="true" tabindex="-1"></a>    slowThreshold <span class="op">=</span> <span class="dv">2000</span></span>
+<span id="list:gradle_testlogger-12"><a href="#list:gradle_testlogger-12" aria-hidden="true" tabindex="-1"></a>    showSummary <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-13"><a href="#list:gradle_testlogger-13" aria-hidden="true" tabindex="-1"></a>    showSimpleNames <span class="op">=</span> <span class="kw">false</span></span>
+<span id="list:gradle_testlogger-14"><a href="#list:gradle_testlogger-14" aria-hidden="true" tabindex="-1"></a>    showPassed <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-15"><a href="#list:gradle_testlogger-15" aria-hidden="true" tabindex="-1"></a>    showSkipped <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-16"><a href="#list:gradle_testlogger-16" aria-hidden="true" tabindex="-1"></a>    showFailed <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-17"><a href="#list:gradle_testlogger-17" aria-hidden="true" tabindex="-1"></a>    showOnlySlow <span class="op">=</span> <span class="kw">false</span></span>
+<span id="list:gradle_testlogger-18"><a href="#list:gradle_testlogger-18" aria-hidden="true" tabindex="-1"></a>    showStandardStreams <span class="op">=</span> <span class="kw">false</span></span>
+<span id="list:gradle_testlogger-19"><a href="#list:gradle_testlogger-19" aria-hidden="true" tabindex="-1"></a>    showPassedStandardStreams <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-20"><a href="#list:gradle_testlogger-20" aria-hidden="true" tabindex="-1"></a>    showSkippedStandardStreams <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-21"><a href="#list:gradle_testlogger-21" aria-hidden="true" tabindex="-1"></a>    showFailedStandardStreams <span class="op">=</span> <span class="kw">true</span></span>
+<span id="list:gradle_testlogger-22"><a href="#list:gradle_testlogger-22" aria-hidden="true" tabindex="-1"></a>    logLevel <span class="op">=</span> LogLevel<span class="op">.</span><span class="fu">LIFECYCLE</span></span>
+<span id="list:gradle_testlogger-23"><a href="#list:gradle_testlogger-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="code-quality-e-linting">Code quality e linting</h2>
+<p>Durante lo sviluppo dei servizi è stata adottata una politica di code
+quality e linting per garantire la coerenza e la leggibilità del
+codice.</p>
+<p>Per i servizi in Node.js, sono stati utilizzati ESLint assieme a
+Prettier. ESLint è uno strumento di analisi statica del codice che aiuta
+a identificare e correggere gli errori di codice, le pratiche non
+ottimali e le violazioni dello stile di codice. Questi strumenti
+necessitano soltanto di un file di configurazione che è presente nelle
+repository e che i software per la scrittura di codice, come ad esempio
+VSCode, possono adoperare.</p>
+<p>Il componente in Java ha adottato Checkstyle, un tool di analisi
+statica del codice che aiuta a garantire che il codice Java rispetti uno
+standard di codifica predefinito. Anche in questo caso è stato
+sufficiente aggiungere una dipendenza nel build.gradle per ottenere un
+report dettagliato e comprensibile ed un file di configurazione che è
+stato inserito nella repository. Per automatizzare il processo di
+formattazione del codice il più possibile è stata aggiunta la libreria
+<a href="https://github.com/diffplug/spotless"><u>Spotless</u></a>.
+L’aggiunta di queste dipendenze nel file build.gradle è stata
+sufficiente per garantire la formattazione del codice e la sua
+coerenza.</p>
+<div class="sourceCode" id="list:gradle_codequality"
+data-language="Java" data-caption="Code quality"
+label="list:gradle_codequality"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_codequality-1"><a href="#list:gradle_codequality-1" aria-hidden="true" tabindex="-1"></a>spotless <span class="op">{</span></span>
+<span id="list:gradle_codequality-2"><a href="#list:gradle_codequality-2" aria-hidden="true" tabindex="-1"></a>    java <span class="op">{</span></span>
+<span id="list:gradle_codequality-3"><a href="#list:gradle_codequality-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">importOrder</span><span class="op">()</span> <span class="co">// standard import order</span></span>
+<span id="list:gradle_codequality-4"><a href="#list:gradle_codequality-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">removeUnusedImports</span><span class="op">()</span></span>
+<span id="list:gradle_codequality-5"><a href="#list:gradle_codequality-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">googleJavaFormat</span><span class="op">()</span> <span class="co">// has its own section below</span></span>
+<span id="list:gradle_codequality-6"><a href="#list:gradle_codequality-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">eclipse</span><span class="op">()</span>          <span class="co">// has its own section below</span></span>
+<span id="list:gradle_codequality-7"><a href="#list:gradle_codequality-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="list:gradle_codequality-8"><a href="#list:gradle_codequality-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="list:gradle_codequality-9"><a href="#list:gradle_codequality-9" aria-hidden="true" tabindex="-1"></a>checkstyle <span class="op">{</span></span>
+<span id="list:gradle_codequality-10"><a href="#list:gradle_codequality-10" aria-hidden="true" tabindex="-1"></a>    toolVersion <span class="op">=</span> <span class="st">&quot;8.44&quot;</span> <span class="co">// Versione di Checkstyle</span></span>
+<span id="list:gradle_codequality-11"><a href="#list:gradle_codequality-11" aria-hidden="true" tabindex="-1"></a>    configFile <span class="op">=</span> <span class="fu">file</span><span class="op">(</span><span class="st">&quot;${rootDir}/config/checkstyle/checkstyle.xml&quot;</span><span class="op">)</span> <span class="co">// Configurazione di Checkstyle</span></span>
+<span id="list:gradle_codequality-12"><a href="#list:gradle_codequality-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// showViolations = true</span></span>
+<span id="list:gradle_codequality-13"><a href="#list:gradle_codequality-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h2 id="automated-delivery">Automated delivery</h2>
 <p>**automatizzare l’esecuzione iniziale del sistema con build.gradle
 che specifica come il file deve compilare, gestire dip e configurare
