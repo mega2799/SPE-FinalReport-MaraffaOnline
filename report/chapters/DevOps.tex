@@ -150,14 +150,44 @@ Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integr
 
 \section{Automated quality assurance}
 **code quality, testing, reporting**
+\subsection{Testing}
+All'interno della CI la fase di test è stata implementata con Jest per i servizi che usano nodeJS genrando di fatto un report abbastanza comprensibile direttamente nella finestra della CI. Il componente middleware, scritto in java invece, 
+generava risultati di test non così chiari. Per modificare questo comportamento è stata introdotta una dipendenza nel build gralde che permette di avere un report più dettagliato e comprensibile. 
+La libreria \href{\underline{Test Logger}}{https://plugins.gradle.org/plugin/com.adarshr.test-logger} tramite una piccola configurazione nel file build.gradle come qui riportata ha soddisfatto le nostre esigenze.
+
+\begin{lstlisting}[language=Java, caption={Test logger}, label=list:gradle_testlogger]
+import com.adarshr.gradle.testlogger.TestLoggerExtension
+import com.adarshr.gradle.testlogger.TestLoggerPlugin
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
+testlogger {
+    theme = ThemeType.MOCHA
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 2000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
+    showOnlySlow = false
+    showStandardStreams = false
+    showPassedStandardStreams = true
+    showSkippedStandardStreams = true
+    showFailedStandardStreams = true
+    logLevel = LogLevel.LIFECYCLE
+}
+\end{lstlisting}
+
+
 \section{Automated delivery}
 **automatizzare l'esecuzione iniziale del sistema con build.gradle che specifica come
 il file deve compilare, gestire dip e configurare altri apetti del build process**
 \section{Deployment}
 è opzionale
 \section{Containerization}
-% ** docker image for each microservice, docker file
-% docker compose grouping containers and defining dependencies**
 
 Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
 L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
