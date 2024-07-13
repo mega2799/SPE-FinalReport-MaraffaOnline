@@ -205,7 +205,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-11</p>
+<p>2024-07-13</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -915,6 +915,22 @@ in cui si trova il container, e queste variabili vengono sostituite a
 seconda dell’ambiente di deploy in cui l’applicativo Angular viene
 eseguito.</p>
 <h2 id="docker-compose-todo">Docker-compose TODO</h2>
+<p>Infine il risultato prodotto è stata un file docker-compose che
+raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra
+i container e semplificando il deploy è stato creato un network interno
+per poter permettere la comunicazione dei container tra di loro e
+particolari network invece per connettere i database ai servizi che ne
+fanno uso. Sono state inserite anche delle dipendenze tra i servizi, ad
+esempio lo user service ha come vincolo che il container del database
+sia avviato prima di esso. Sono stati inseriti dei servizi che
+permettono di monitorare i database:</p>
+<ul>
+<li><p><strong>Adminer:</strong> un’interfaccia web per la gestione dei
+database, che permette di visualizzare i dati, creare tabelle, eseguire
+query e molto altro.</p></li>
+<li><p><strong>Mongo Express:</strong> un’interfaccia web per la
+gestione dei database MongoDB.</p></li>
+</ul>
 <p>TODO quando potremo testare un po’meglio e essere sicuri che
 effettivamente funzioni</p>
 <h2 id="degna-di-nota-la-cicd-per-le-relazioni">Degna di nota la CI/CD
