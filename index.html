@@ -172,8 +172,12 @@ id="toc-automated-quality-assurance">Automated quality assurance</a>
 <ul>
 <li><a href="#testing" id="toc-testing">Testing</a></li>
 </ul></li>
-<li><a href="#code-quality-e-linting"
-id="toc-code-quality-e-linting">Code quality e linting</a></li>
+<li><a href="#code_quality" id="toc-code_quality">Code quality e
+linting</a></li>
+<li><a
+href="#checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo"
+id="toc-checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo">Checkstyle,
+javadoc, github page [NON so se va bene qua ma lo scrivo] </a></li>
 <li><a href="#automated-delivery" id="toc-automated-delivery">Automated
 delivery</a></li>
 <li><a href="#deployment" id="toc-deployment">Deployment</a></li>
@@ -766,7 +770,7 @@ class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_test
 <span id="list:gradle_testlogger-21"><a href="#list:gradle_testlogger-21" aria-hidden="true" tabindex="-1"></a>    showFailedStandardStreams <span class="op">=</span> <span class="kw">true</span></span>
 <span id="list:gradle_testlogger-22"><a href="#list:gradle_testlogger-22" aria-hidden="true" tabindex="-1"></a>    logLevel <span class="op">=</span> LogLevel<span class="op">.</span><span class="fu">LIFECYCLE</span></span>
 <span id="list:gradle_testlogger-23"><a href="#list:gradle_testlogger-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h2 id="code-quality-e-linting">Code quality e linting</h2>
+<h2 id="code_quality">Code quality e linting</h2>
 <p>Durante lo sviluppo dei servizi è stata adottata una politica di code
 quality e linting per garantire la coerenza e la leggibilità del
 codice.</p>
@@ -804,6 +808,70 @@ class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_code
 <span id="list:gradle_codequality-11"><a href="#list:gradle_codequality-11" aria-hidden="true" tabindex="-1"></a>    configFile <span class="op">=</span> <span class="fu">file</span><span class="op">(</span><span class="st">&quot;${rootDir}/config/checkstyle/checkstyle.xml&quot;</span><span class="op">)</span> <span class="co">// Configurazione di Checkstyle</span></span>
 <span id="list:gradle_codequality-12"><a href="#list:gradle_codequality-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// showViolations = true</span></span>
 <span id="list:gradle_codequality-13"><a href="#list:gradle_codequality-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2
+id="checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo">Checkstyle,
+javadoc, github page [NON so se va bene qua ma lo scrivo] </h2>
+<p>Dopo aver eseguito i controlli di stile sul codice sono stati trovati
+numerosi errori e warning, che sono stati corretti automaticamente da un
+plugin che ha sistemato ciò che Spotless non era riuscito a correggere.
+Il plugin in questione è <a
+href="https://github.com/openrewrite/rewrite"><u>OpenRewrite</u></a>,
+che ha permesso di correggere molti errori e di risparmiare un lungo e
+noioso lavoro di correzione manuale.</p>
+<div class="sourceCode" id="list:openrewrite" data-language="Bash"
+data-caption="Output di OpenRewrite" label="list:openrewrite"><pre
+class="sourceCode Bash"><code class="sourceCode bash"><span id="list:openrewrite-1"><a href="#list:openrewrite-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Changes</span> have been made to app<span class="dt">\s</span>rc<span class="dt">\m</span>ain<span class="dt">\j</span>ava<span class="dt">\u</span>serModule<span class="dt">\U</span>serController.java by:</span>
+<span id="list:openrewrite-2"><a href="#list:openrewrite-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">org.openrewrite.staticanalysis.CodeCleanup</span></span>
+<span id="list:openrewrite-3"><a href="#list:openrewrite-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">org.openrewrite.java.format.MethodParamPad</span></span>
+<span id="list:openrewrite-4"><a href="#list:openrewrite-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Changes</span> have been made to app<span class="dt">\s</span>rc<span class="dt">\m</span>ain<span class="dt">\j</span>ava<span class="dt">\u</span>serModule<span class="dt">\U</span>serService.java by:</span>
+<span id="list:openrewrite-5"><a href="#list:openrewrite-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">org.openrewrite.staticanalysis.CodeCleanup</span></span>
+<span id="list:openrewrite-6"><a href="#list:openrewrite-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">org.openrewrite.staticanalysis.NeedBraces</span></span>
+<span id="list:openrewrite-7"><a href="#list:openrewrite-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Changes</span> have been made to app<span class="dt">\s</span>rc<span class="dt">\t</span>est<span class="dt">\j</span>ava<span class="dt">\i</span>ntegration<span class="dt">\B</span>usinessLogicTestIntegration.java by:</span>
+<span id="list:openrewrite-8"><a href="#list:openrewrite-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">org.openrewrite.staticanalysis.CodeCleanup</span></span>
+<span id="list:openrewrite-9"><a href="#list:openrewrite-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">org.openrewrite.java.format.MethodParamPad</span></span>
+<span id="list:openrewrite-10"><a href="#list:openrewrite-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Please</span> review and commit the results.</span>
+<span id="list:openrewrite-11"><a href="#list:openrewrite-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Estimate</span> time saved: 1h 24m </span></code></pre></div>
+<p>Dopo aver corretto gli errori di stile, è stato generato il Javadoc
+per il codice, in modo da avere una documentazione automatica e
+aggiornata. Inoltre, è stato creato un sito web tramite GitHub Pages per
+avere una documentazione più user-friendly e facilmente accessibile.</p>
+<p>Per fare ciò si è optato per l’utilizzo di una GitHub Action che,
+tramite condizioni come una push su determinati branch, genera
+automaticamente il Javadoc. Questa documentazione viene pubblicata su un
+branch ‘javadoc‘, automaticamente creato, e tramite le impostazioni del
+repository, viene pubblicata su GitHub Pages, in modo da avere una
+documentazione sempre aggiornata e facilmente accessibile.</p>
+<p><img src="report/img/github_javadoc.jpg" style="width:12cm"
+alt="image" /><br />
+La documentazione del componente middleware sarà sempre reperibile all’
+indirizzo delle githubpages del progetto con il suffisso javadoc<br />
+come ad esempio <a
+href="https://sofy24.github.io/MiddlewareMaraffa/javadoc/"><u>https://sofy24.github.io/MiddlewareMaraffa/javadoc/</u></a>.</p>
+<div class="sourceCode" id="list:javadoc_action" data-language="Bash"
+data-caption="Configurazione della GitHub Action per il Javadoc"
+label="list:javadoc_action"><pre class="sourceCode Bash"><code class="sourceCode bash"><span id="list:javadoc_action-1"><a href="#list:javadoc_action-1" aria-hidden="true" tabindex="-1"></a><span class="ex">name:</span> Deploy Javadoc</span>
+<span id="list:javadoc_action-2"><a href="#list:javadoc_action-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:javadoc_action-3"><a href="#list:javadoc_action-3" aria-hidden="true" tabindex="-1"></a><span class="ex">on:</span></span>
+<span id="list:javadoc_action-4"><a href="#list:javadoc_action-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">push:</span></span>
+<span id="list:javadoc_action-5"><a href="#list:javadoc_action-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">branches:</span> [main, <span class="st">&quot;develop&quot;</span>, <span class="st">&quot;style-doc&quot;</span>]</span>
+<span id="list:javadoc_action-6"><a href="#list:javadoc_action-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:javadoc_action-7"><a href="#list:javadoc_action-7" aria-hidden="true" tabindex="-1"></a><span class="ex">jobs:</span></span>
+<span id="list:javadoc_action-8"><a href="#list:javadoc_action-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">publish:</span></span>
+<span id="list:javadoc_action-9"><a href="#list:javadoc_action-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">runs-on:</span> ubuntu-22.04</span>
+<span id="list:javadoc_action-10"><a href="#list:javadoc_action-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">permissions:</span></span>
+<span id="list:javadoc_action-11"><a href="#list:javadoc_action-11" aria-hidden="true" tabindex="-1"></a>      <span class="ex">contents:</span> write <span class="co"># if you have a protection rule on your repository, you&#39;ll need to give write permission to the workflow.</span></span>
+<span id="list:javadoc_action-12"><a href="#list:javadoc_action-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">steps:</span></span>
+<span id="list:javadoc_action-13"><a href="#list:javadoc_action-13" aria-hidden="true" tabindex="-1"></a>      <span class="ex">-</span> name: Checkout</span>
+<span id="list:javadoc_action-14"><a href="#list:javadoc_action-14" aria-hidden="true" tabindex="-1"></a>        <span class="ex">uses:</span> actions/checkout@v4</span>
+<span id="list:javadoc_action-15"><a href="#list:javadoc_action-15" aria-hidden="true" tabindex="-1"></a>      <span class="ex">-</span> name: Deploy JavaDoc</span>
+<span id="list:javadoc_action-16"><a href="#list:javadoc_action-16" aria-hidden="true" tabindex="-1"></a>        <span class="ex">uses:</span> MathieuSoysal/Javadoc-publisher.yml@v2.5.0</span>
+<span id="list:javadoc_action-17"><a href="#list:javadoc_action-17" aria-hidden="true" tabindex="-1"></a>        <span class="ex">with:</span></span>
+<span id="list:javadoc_action-18"><a href="#list:javadoc_action-18" aria-hidden="true" tabindex="-1"></a>          <span class="ex">GITHUB_TOKEN:</span> <span class="va">${</span><span class="er">{ secrets.GITHUB_TOKEN </span><span class="va">}</span>}</span>
+<span id="list:javadoc_action-19"><a href="#list:javadoc_action-19" aria-hidden="true" tabindex="-1"></a>          <span class="ex">javadoc-source-folder:</span> app/build/docs/javadoc</span>
+<span id="list:javadoc_action-20"><a href="#list:javadoc_action-20" aria-hidden="true" tabindex="-1"></a>          <span class="ex">javadoc-branch:</span> javadoc</span>
+<span id="list:javadoc_action-21"><a href="#list:javadoc_action-21" aria-hidden="true" tabindex="-1"></a>          <span class="ex">java-version:</span> 20</span>
+<span id="list:javadoc_action-22"><a href="#list:javadoc_action-22" aria-hidden="true" tabindex="-1"></a>          <span class="ex">target-folder:</span> javadoc  <span class="co"># url will be https://&lt;username&gt;.github.io/&lt;repo&gt;/javadoc, This can be left as nothing to generate javadocs in the root folder.</span></span>
+<span id="list:javadoc_action-23"><a href="#list:javadoc_action-23" aria-hidden="true" tabindex="-1"></a>          <span class="ex">project:</span> gradle</span></code></pre></div>
 <h2 id="automated-delivery">Automated delivery</h2>
 <p>**automatizzare l’esecuzione iniziale del sistema con build.gradle
 che specifica come il file deve compilare, gestire dip e configurare
