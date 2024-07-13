@@ -129,8 +129,8 @@ Riportiamo di seguito la nomenclatura usata:
 Inoltre sono evidenziati i breaking changes per le modifiche non più compatibili con le versioni precedenti.
 La stessa nomenclatura viene utilizzata anche nel changelog.
 
-\section{Build automation}
 \section{Continuous Integration}
+\section{Build automation}
 Abbiamo deciso di implementare ogni servizio in una repository diversa. La repository fornita è un contenitore di tutte le singole repository dei servizi.
 Per ogni repository è stata implementata una CI specifica. \\
 
@@ -143,21 +143,84 @@ push su main, pull request su main e develop
 build e test se pullrequest.merge = true 
 
 Parte finale 
-\textbf{ChatServer:} Il servizio è sviluppato in un ambiente Java, pertanto dopo aver effettuato il checkout nel job build and test,  si effettua il set-up di Java (distribuzione: temurin, versione 20). Viene svolto il set-up di Gradle, in cui viene usata un'action per la build e creata una cache. Inoltre viene aggiunto un commento con un riassunto dei risultati dei job  alla pull request, il cui valore è impostato a "on-failure". Si noti che il suo valore di default è "never"; se fosse "always", si potrebbero verificare scenari indesiderati. Il riassunto dei risultati dei job risulta particolarmente utile: un utente che vuole esaminare la pull request riesce a comprendere lo stato dei job (se sono stati eseguiti correttamente oppure no) in modo leggibile e intuitivo. Successivamente si effettua il deploy del container di rabbitMQ se l'evento è una pull request oppure se è una push sul master o se la stringa con il riferimento a github contiene "tags/v". Infine se tutti il job da cui dipende (build-and-test) non è fallito e non è stato interrotto. Con l'istruzione run si verifica che non ci siano stati dei fallimenti nel job deploy and test.
 
-\textbf{FrontendMaraffa:} //TODO
+
+\begin{itemize}
+\item \textbf{ChatServer:} Il servizio è sviluppato in un ambiente Java, pertanto dopo aver effettuato il checkout nel job build and test,  si effettua il set-up di Java (distribuzione: temurin, versione 20). Viene svolto il set-up di Gradle, in cui viene usata un'action per la build e creata una cache. Inoltre viene aggiunto un commento con un riassunto dei risultati dei job  alla pull request, il cui valore è impostato a "on-failure". Si noti che il suo valore di default è "never"; se fosse "always", si potrebbero verificare scenari indesiderati. Il riassunto dei risultati dei job risulta particolarmente utile: un utente che vuole esaminare la pull request riesce a comprendere lo stato dei job (se sono stati eseguiti correttamente oppure no) in modo leggibile e intuitivo. Successivamente si effettua il deploy del container di rabbitMQ se l'evento è una pull request oppure se è una push sul master o se la stringa con il riferimento a github contiene "tags/v". Infine se tutti il job da cui dipende (build-and-test) non è fallito e non è stato interrotto. Con l'istruzione run si verifica che non ci siano stati dei fallimenti nel job deploy and test.
+
+\item \textbf{FrontendMaraffa:} //TODO
 Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integrazione, il rilevamento precoce di bug e i problemi di compatibilità.
+
+\end{itemize}
+\subsection{Act per testare CI}
+TODO
 
 \section{Automated quality assurance}
 **code quality, testing, reporting**
+\subsection{Testing}
+
+Per ogni servizio in questo sistema è stato adottato, ove possibile, il paradigma di programmazione TDD, cioè Test Driven Development. Questo approccio prevede che i test siano scritti prima del codice, in modo da guidare lo sviluppo e garantire che il codice prodotto soddisfi i requisiti specificati.
+All'interno della CI, la fase di test è stata implementata con Jest per quanto riguarda i servizi che usano Node.js, generando di fatto un report abbastanza comprensibile direttamente nella finestra della CI. Il componente middleware, scritto in Java, invece, generava risultati di test non così chiari. Per modificare questo comportamento, è stata introdotta una dipendenza nel build Gradle che permette di avere un report più dettagliato e comprensibile. 
+La libreria \href{https://plugins.gradle.org/plugin/com.adarshr.test-logger}{\underline{Test Logger}}, tramite una piccola configurazione nel file build.gradle come qui riportata, ha soddisfatto le nostre esigenze.
+
+\begin{lstlisting}[language=Java, caption={Test logger}, label=list:gradle_testlogger]
+import com.adarshr.gradle.testlogger.TestLoggerExtension
+import com.adarshr.gradle.testlogger.TestLoggerPlugin
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
+testlogger {
+    theme = ThemeType.MOCHA
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 2000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
+    showOnlySlow = false
+    showStandardStreams = false
+    showPassedStandardStreams = true
+    showSkippedStandardStreams = true
+    showFailedStandardStreams = true
+    logLevel = LogLevel.LIFECYCLE
+}
+\end{lstlisting}
+
+\section{Code quality e linting}
+
+Durante lo sviluppo dei servizi è stata adottata una politica di code quality e linting per garantire la coerenza e la leggibilità del codice.
+
+Per i servizi in Node.js, sono stati utilizzati ESLint assieme a Prettier. ESLint è uno strumento di analisi statica del codice che aiuta a identificare e correggere gli errori di codice, le pratiche non ottimali e le violazioni dello stile di codice.
+Questi strumenti necessitano soltanto di un file di configurazione che è presente nelle repository e che i software per la scrittura di codice, come ad esempio VSCode, possono adoperare.
+
+Il componente in Java ha adottato Checkstyle, un tool di analisi statica del codice che aiuta a garantire che il codice Java rispetti uno standard di codifica predefinito. Anche in questo caso è stato sufficiente aggiungere una dipendenza nel build.gradle per ottenere un report dettagliato e comprensibile ed un file di configurazione che è stato inserito nella repository. Per automatizzare il processo di formattazione del codice il più possibile è stata aggiunta la libreria \href{https://github.com/diffplug/spotless}{\underline{Spotless}}. L'aggiunta di queste dipendenze nel file build.gradle è stata sufficiente per garantire la formattazione del codice e la sua coerenza.
+
+\begin{lstlisting}[language=Java, caption={Code quality}, label=list:gradle_codequality]
+spotless {
+    java {
+        importOrder() // standard import order
+        removeUnusedImports()
+        googleJavaFormat() // has its own section below
+        eclipse()          // has its own section below
+    }
+}
+checkstyle {
+    toolVersion = "8.44" // Versione di Checkstyle
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml") // Configurazione di Checkstyle
+    // showViolations = true
+}
+\end{lstlisting}
+
+
 \section{Automated delivery}
 **automatizzare l'esecuzione iniziale del sistema con build.gradle che specifica come
 il file deve compilare, gestire dip e configurare altri apetti del build process**
 \section{Deployment}
 è opzionale
 \section{Containerization}
-** docker image for each microservice, docker file
-docker compose grouping containers and defining dependencies**
 
 Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
 L'obiettivo finale è avere un sistema facilmente deployabile e scalabile, eseguibile velocemente in un ambiente generico, con uno stack di container Docker che racchiuda tutto il sistema.
@@ -261,6 +324,7 @@ Sono stati inseriti dei servizi che permettono di monitorare i database:
 
 TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
 
+\section{Degna di nota la CI/CD per le relazioni}
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
 % that a project report's structure could follow a particular paradigm. Hence, the organization of a report (effectively the Table of Content of a report) can vary depending on the type of project you are doing. Check which of the given examples suit your project. Alternatively, follow your supervisor's advice.
