@@ -248,6 +248,17 @@ L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in mo
 
 
 \section{Docker-compose TODO}
+
+Infine il risultato prodotto è stata un file docker-compose che raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra i container e semplificando il deploy
+è stato creato un network interno per poter permettere la comunicazione dei container tra di loro e particolari network invece per connettere i database ai servizi che ne fanno uso.
+Sono state inserite anche delle dipendenze tra i servizi, ad esempio lo user service ha come vincolo che il container del database sia avviato prima di esso. 
+\vspace{0.5cm}
+Sono stati inseriti dei servizi che permettono di monitorare i database: 
+\begin{itemize}
+    \item \textbf{Adminer:} un'interfaccia web per la gestione dei database, che permette di visualizzare i dati, creare tabelle, eseguire query e molto altro.
+    \item \textbf{Mongo Express:} un'interfaccia web per la gestione dei database MongoDB.
+\end{itemize}
+
 TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
 
 
