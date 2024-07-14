@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Latex PDF and HTML
         run: |
-          mkdir ./public
+          mkdir ./public  ./public/report/img
             pandoc -s --highlight-style kate --toc -c latex2html.css report/main.tex -o public/index.html
           cp latex2html.css public
           pdflatex report/main.tex
