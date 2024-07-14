@@ -28,11 +28,13 @@ jobs:
 
       - name: Build Latex PDF and HTML
         run: |
-          mkdir ./public
-            pandoc -s --highlight-style kate --toc -c latex2html.css report/main.tex -o public/index.html
+          mkdir -p ./public/report/img
+          pandoc -s --highlight-style kate --toc -c latex2html.css report/main.tex -o public/index.html
           cp latex2html.css public
+          cp report/img/* public/report/img
           pdflatex report/main.tex
           pdflatex report/main.tex
+
 
       # Save the TeX Live installation to cache for future use
       - name: Save TeX Live Cache

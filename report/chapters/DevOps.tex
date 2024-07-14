@@ -187,7 +187,8 @@ testlogger {
 }
 \end{lstlisting}
 
-\section{Code quality e linting}
+\section{Code quality e linting} 
+\label{code_quality}
 
 Durante lo sviluppo dei servizi è stata adottata una politica di code quality e linting per garantire la coerenza e la leggibilità del codice.
 
@@ -215,6 +216,61 @@ checkstyle {
 \subsection{Act per testare CI}
 
 È stato trovato un utilissimo strumento per poter velocizzare il processo di creazione della CI, \href{https://github.com/nektos/act}{\underline{Act}}. Questo strumento permette di eseguire le GitHub Actions localmente senza dover obbligatoriamente fare un push sul repository e quindi senza "sporcare" la cronologia dei commit. Richiede che Docker sia attivo ed è in grado di creare un container che utilizza l'immagine specificata nel file di configurazione della CI e di eseguire i job. Per eseguire Act è stato creato uno script in bash per poter automatizzare ulteriormente il testing delle CI, in cui viene letto il contenuto del file .env.example che popolerà l'environment del container con le variabili d'ambiente necessarie per il corretto funzionamento della CI, e le imposta come variabili d'ambiente della GitHub Action che si sta testando. Per poter usare Act è necessario semplificare leggermente il trigger per i job, che in ambiente di produzione è solitamente la chiusura di una pull request, mentre per testare velocemente è necessario impostarlo su una push.
+
+\section{Checkstyle, javadoc, github page [NON so se va bene qua ma lo scrivo] }
+
+% Il componente middleware è stato sviluppato in Java e per garantire la qualità del codice sono stati utilizzati strumenti come Checkstyle e Spotless, come citato in \ref{code_quality}. 
+Dopo aver eseguito i controlli di stile sul codice sono stati trovati numerosi errori e warning, che sono stati corretti automaticamente da un plugin che ha sistemato ciò che Spotless non era riuscito a correggere. Il plugin in questione è \href{https://github.com/openrewrite/rewrite}{\underline{OpenRewrite}}, che ha permesso di correggere molti errori e di risparmiare un lungo e noioso lavoro di correzione manuale.
+
+\begin{lstlisting}[language=Bash, caption={Output di OpenRewrite}, label=list:openrewrite]
+Changes have been made to app\src\main\java\userModule\UserController.java by:
+    org.openrewrite.staticanalysis.CodeCleanup
+        org.openrewrite.java.format.MethodParamPad
+Changes have been made to app\src\main\java\userModule\UserService.java by:
+    org.openrewrite.staticanalysis.CodeCleanup
+        org.openrewrite.staticanalysis.NeedBraces
+Changes have been made to app\src\test\java\integration\BusinessLogicTestIntegration.java by:
+    org.openrewrite.staticanalysis.CodeCleanup
+        org.openrewrite.java.format.MethodParamPad
+Please review and commit the results.
+Estimate time saved: 1h 24m 
+\end{lstlisting}
+
+Dopo aver corretto gli errori di stile, è stato generato il Javadoc per il codice, in modo da avere una documentazione automatica e aggiornata. Inoltre, è stato creato un sito web tramite GitHub Pages per avere una documentazione più user-friendly e facilmente accessibile. 
+
+Per fare ciò si è optato per l'utilizzo di una GitHub Action che, tramite condizioni come una push su determinati branch, genera automaticamente il Javadoc. Questa documentazione viene pubblicata su un branch `javadoc`, automaticamente creato, e tramite le impostazioni del repository, viene pubblicata su GitHub Pages, in modo da avere una documentazione sempre aggiornata e facilmente accessibile.
+
+\includegraphics[width=12cm]{report/img/github_javadoc.jpg}\\[1.5cm]
+
+La documentazione del componente middleware sarà sempre reperibile
+all' indirizzo delle githubpages del progetto con il suffisso javadoc \\ come ad esempio \href{https://sofy24.github.io/MiddlewareMaraffa/javadoc/}{\underline{https://sofy24.github.io/MiddlewareMaraffa/javadoc/}}.
+
+\begin{lstlisting}[language=Bash, caption={Configurazione della GitHub Action per il Javadoc}, label=list:javadoc_action]
+name: Deploy Javadoc
+
+on:
+  push:
+    branches: [main, "develop", "style-doc"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write # if you have a protection rule on your repository, you'll need to give write permission to the workflow.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy JavaDoc
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.5.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-source-folder: app/build/docs/javadoc
+          javadoc-branch: javadoc
+          java-version: 20
+          target-folder: javadoc  # url will be https://<username>.github.io/<repo>/javadoc, This can be left as nothing to generate javadocs in the root folder.
+          project: gradle
+\end{lstlisting}
+
 
 \section{Automated delivery}
 **automatizzare l'esecuzione iniziale del sistema con build.gradle che specifica come
@@ -312,9 +368,27 @@ L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in mo
 
 
 \section{Docker-compose TODO}
+
+Infine il risultato prodotto è stata un file docker-compose che raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra i container e semplificando il deploy
+è stato creato un network interno per poter permettere la comunicazione dei container tra di loro e particolari network invece per connettere i database ai servizi che ne fanno uso.
+Sono state inserite anche delle dipendenze tra i servizi, ad esempio lo user service ha come vincolo che il container del database sia avviato prima di esso. 
+\vspace{0.5cm}
+Sono stati inseriti dei servizi che permettono di monitorare i database: 
+\begin{itemize}
+    \item \textbf{Adminer:} un'interfaccia web per la gestione dei database, che permette di visualizzare i dati, creare tabelle, eseguire query e molto altro.
+    \item \textbf{Mongo Express:} un'interfaccia web per la gestione dei database MongoDB.
+\end{itemize}
+
 TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
 
 \section{Degna di nota la CI/CD per le relazioni}
+
+Per lo sviluppo di questa, e di future relazioni, è stata creata una CI/CD. Questa è poi stata inclusa a sua volta in un template GitHub appositamente nato per lo sviluppo di nuove relazioni. Contiene una serie di documenti in LaTeX, che rappresentano uno scheletro per le relazioni, e la CI per poter pubblicare la relazione in continuous integration in formato HTML sulla piattaforma GitHub Pages e fornire una release contenente il PDF della relazione. L'utilizzo di GitHub rende lo sviluppo della relazione più semplice, non obbligando a scegliere strumenti come Overleaf come editor di testo, mantenendo la relazione versionata e permettendo di lavorare in parallelo con altri membri del team sfruttando tutte le comodità offerte da Git.
+
+A questo \href{https://github.com/mega2799/Report-ghPages-latex}{\underline{link}} il template spiega alcuni dei passaggi per poterlo utilizzare. In alternativa, è stato inserito anche un file bash che permette, tramite un container Docker, di creare localmente il PDF della relazione utilizzando i software pandoc e latexmk.
+
+Sono stati fondamentali i lavori di \href{https://github.com/MemerGamer/LaTex-Publishing}{\underline{Memer Gamer}} per la base del workflow delle pubblicazioni su GitHub Pages e \href{https://www.overleaf.com/latex/templates/university-of-reading-computer-science-report-template-and-guide/xhttddjhkwrf}{\underline{Varun Ojha}} per il template.
+
 
 % We mentioned in Chapter~\ref{ch:into} %[example backward reference to a chapter or section.]
 % that a project report's structure could follow a particular paradigm. Hence, the organization of a report (effectively the Table of Content of a report) can vary depending on the type of project you are doing. Check which of the given examples suit your project. Alternatively, follow your supervisor's advice.
