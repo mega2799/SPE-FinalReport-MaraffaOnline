@@ -152,8 +152,6 @@ Parte finale
 Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integrazione, il rilevamento precoce di bug e i problemi di compatibilità.
 
 \end{itemize}
-\subsection{Act per testare CI}
-TODO
 
 \section{Automated quality assurance}
 **code quality, testing, reporting**
@@ -214,6 +212,9 @@ checkstyle {
 }
 \end{lstlisting}
 
+\subsection{Act per testare CI}
+
+È stato trovato un utilissimo strumento per poter velocizzare il processo di creazione della CI, \href{https://github.com/nektos/act}{\underline{Act}}. Questo strumento permette di eseguire le GitHub Actions localmente senza dover obbligatoriamente fare un push sul repository e quindi senza "sporcare" la cronologia dei commit. Richiede che Docker sia attivo ed è in grado di creare un container che utilizza l'immagine specificata nel file di configurazione della CI e di eseguire i job. Per eseguire Act è stato creato uno script in bash per poter automatizzare ulteriormente il testing delle CI, in cui viene letto il contenuto del file .env.example che popolerà l'environment del container con le variabili d'ambiente necessarie per il corretto funzionamento della CI, e le imposta come variabili d'ambiente della GitHub Action che si sta testando. Per poter usare Act è necessario semplificare leggermente il trigger per i job, che in ambiente di produzione è solitamente la chiusura di una pull request, mentre per testare velocemente è necessario impostarlo su una push.
 
 \section{Automated delivery}
 **automatizzare l'esecuzione iniziale del sistema con build.gradle che specifica come
