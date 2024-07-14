@@ -118,10 +118,25 @@ id="toc-requisiti-e-casi-duso">Requisiti e casi d’uso</a>
 <li><a href="#ch:implementation"
 id="toc-ch:implementation">Implementation</a>
 <ul>
-<li><a href="#implementation"
-id="toc-implementation">Implementation</a></li>
-<li><a href="#task.registry"
-id="toc-task.registry">TASK.REGISTRY?????</a></li>
+<li><a href="#componenti" id="toc-componenti">Componenti</a>
+<ul>
+<li><a href="#business-logic" id="toc-business-logic">Business
+Logic</a></li>
+<li><a href="#user-service" id="toc-user-service">User Service</a></li>
+<li><a href="#front-end" id="toc-front-end">Front-End</a></li>
+<li><a href="#middleware" id="toc-middleware">Middleware</a></li>
+</ul></li>
+<li><a href="#tecnologie" id="toc-tecnologie">Tecnologie</a>
+<ul>
+<li><a href="#swagger---openapi" id="toc-swagger---openapi">Swagger -
+OpenAPI</a></li>
+<li><a href="#postman" id="toc-postman">Postman</a></li>
+<li><a href="#log-automatici" id="toc-log-automatici">Log
+automatici</a></li>
+<li><a href="#lettura-variabili-dambiente"
+id="toc-lettura-variabili-dambiente">Lettura variabili
+d’ambiente</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#ch:DevOps" id="toc-ch:DevOps">DevOps</a>
 <ul>
@@ -189,9 +204,18 @@ id="toc-containerization">Containerization</a>
 <li><a href="#java" id="toc-java">Java</a></li>
 <li><a href="#angular" id="toc-angular">Angular</a></li>
 </ul></li>
-<li><a href="#lettura-variabili-dambiente"
-id="toc-lettura-variabili-dambiente">Lettura variabili
+<li><a href="#lettura-variabili-dambiente-1"
+id="toc-lettura-variabili-dambiente-1">Lettura variabili
 d’ambiente</a></li>
+<li><a href="#monitoraggio" id="toc-monitoraggio">Monitoraggio</a>
+<ul>
+<li><a href="#grafana" id="toc-grafana">Grafana</a></li>
+<li><a href="#prometheus" id="toc-prometheus">Prometheus</a></li>
+<li><a href="#cadvisor" id="toc-cadvisor">cAdvisor</a></li>
+<li><a href="#integrazione-e-configurazione"
+id="toc-integrazione-e-configurazione">Integrazione e
+Configurazione</a></li>
+</ul></li>
 <li><a href="#docker-compose-todo"
 id="toc-docker-compose-todo">Docker-compose TODO</a></li>
 <li><a href="#degna-di-nota-la-cicd-per-le-relazioni"
@@ -518,8 +542,236 @@ l’interazione dell’utente con l’applicazione.</p>
 <p>**Spiegare per quale motivo i pattern del DDD non sono stati
 applicati** (shared kernel, publish consumer, ...)</p>
 <h1 id="ch:implementation">Implementation</h1>
-<h2 id="implementation">Implementation</h2>
-<h2 id="task.registry">TASK.REGISTRY?????</h2>
+<h2 id="componenti">Componenti</h2>
+<p>Entrambi questi servizi sono stati realizzati con lo stack NestJS, un
+framework per Node.js che semplifica la realizzazione di web server e
+API REST. Si occupano rispettivamente di gestire la logica di gioco e la
+gestione degli utenti che vogliono utilizzare il sistema, due core
+business del progetto.</p>
+<h3 id="business-logic">Business Logic</h3>
+<p>Questo servizio mantiene al proprio interno tutte le regole del gioco
+e il calcolo dei punteggi. Ha svariati endpoint che permettono al
+middleware di avere il minor numero possibile di responsabilità,
+delegando al servizio di business logic le operazioni riguardanti il
+gioco.</p>
+<p>Questa scelta è stata fatta per mantenere il middleware il più
+leggero possibile e per evitare che si occupi di operazioni non di sua
+competenza. Inoltre, in futuro sarà possibile aggiungere nuovi giochi
+modificando il meno possibile il middleware, che dovrà semplicemente
+occuparsi della gestione delle partite e comunicare tempestivamente con
+i servizi di business logic in base al gioco scelto.</p>
+<h3 id="user-service">User Service</h3>
+<p>Questo servizio gestisce gli utenti, quindi la loro registrazione,
+autenticazione e gestione dei dati personali. Anche in questo caso, il
+middleware delega al servizio di gestione degli utenti le operazioni
+riguardanti gli utenti, per mantenere il middleware il più leggero
+possibile e per evitare che si occupi di operazioni non di sua
+competenza. Il core di questo servizio è dato dalla combinazione di
+NestJS e TypeORM, che permettono di gestire in modo semplice e veloce la
+persistenza dei dati e le operazioni CRUD su un database MySQL. Oltre
+alle informazioni degli utenti, il database contiene anche le
+informazioni riguardanti le partite giocate e le statistiche personali
+di ogni utente del sistema.</p>
+<h3 id="front-end">Front-End</h3>
+<p>Il front-end è stato realizzato con Angular e si occupa di gestire
+l’interfaccia grafica e la comunicazione con il middleware. Sono state
+realizzate diverse pagine, tra cui la home page, la pagina di
+registrazione, la pagina di login, la pagina di gioco e la pagina di
+profilo utente. Utilizza API REST per comunicare con il middleware e
+ottenere i dati necessari per il funzionamento del gioco, mentre
+utilizza WebSockets per la comunicazione in tempo reale con il
+middleware.</p>
+<h3 id="middleware">Middleware</h3>
+<p><img src="report/img/middleware.png" style="width:12cm"
+alt="image" /><br />
+Come già citato, il middleware è il cuore del sistema. L’architettura
+utilizzata per la gestione delle partite è quella di un multi-agente, in
+cui ogni agente si occupa di gestire una partita e di orchestrare la
+comunicazione con gli altri servizi, come ad esempio il front-end.
+Questo core è stato realizzato con Vertx, che è stato utilizzato anche
+per creare un web-server in Java.</p>
+<p>Inoltre, al middleware è collegato un database NoSQL su MongoDB, che
+viene aggiornato a ogni trick completato dai giocatori per creare uno
+storico delle partite e salvare le loro decisioni in gioco. Questa
+raccolta di dati sarà parte di uno sviluppo futuro, in cui, dopo aver
+raccolto una grande quantità di dati di partite, si potrà tentare di
+creare un modello di machine learning per sviluppare un’intelligenza
+artificiale che possa giocare al posto di un giocatore umano.</p>
+<h2 id="tecnologie">Tecnologie</h2>
+<h3 id="swagger---openapi">Swagger - OpenAPI</h3>
+<p>Uno dei requisiti fondamentali di questo progetto è stata la
+documentazione delle API. Per fare ciò è stato utilizzato Swagger, un
+framework open-source che permette di descrivere, produrre e consumare
+servizi web RESTful. Swagger permette di testare le API direttamente
+dalla documentazione, grazie a un’interfaccia grafica che consente di
+inviare richieste e visualizzare le risposte.</p>
+<p>Per i servizi creati in Node.js è stata utilizzata una libreria ad
+hoc, in grado di generare la documentazione automaticamente tramite i
+corretti decoratori. Al contrario, per i servizi in Java non esiste
+alcuna libreria in grado di generare automaticamente la documentazione
+API a partire dai metodi esposti, quindi è stata creata manualmente.
+Grazie a un lavoro preliminare open-source svolto da <a
+href="https://github.com/anupsaund"><u>Anup Saund</u></a> sulla sua
+repository <a
+href="https://github.com/anupsaund/vertx-auto-swagger"><u>Vertx auto
+swagger</u></a>, è stato possibile creare automaticamente un file HTML
+contenente la documentazione delle API esposte dai servizi in Java.
+Purtroppo, questo file non era in grado di aggiornarsi automaticamente
+in caso di modifiche alle rotte, quindi è stato necessario adattarlo per
+renderlo più flessibile e adatto al nostro progetto.</p>
+<p>Vertx è una libreria davvero completa e ben strutturata. È stato
+possibile creare un Router in grado di gestire tutte le rotte del
+progetto in Java utilizzando una semplice classe astratta che ha
+definito tutti i metodi utilizzati nel progetto, tramite la quale si è
+potuto razionalizzare il codice e creare dinamicamente la funzionalità
+richiesta.</p>
+<div class="sourceCode" id="list:java_swagger_interface"
+data-language="Java"
+data-caption="Semplice interfaccia per le rotte HTTP"
+label="list:java_swagger_interface"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="list:java_swagger_interface-1"><a href="#list:java_swagger_interface-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span><span class="im"> httpRest</span><span class="op">;</span></span>
+<span id="list:java_swagger_interface-2"><a href="#list:java_swagger_interface-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:java_swagger_interface-3"><a href="#list:java_swagger_interface-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">io</span><span class="op">.</span><span class="im">vertx</span><span class="op">.</span><span class="im">core</span><span class="op">.</span><span class="im">Handler</span><span class="op">;</span></span>
+<span id="list:java_swagger_interface-4"><a href="#list:java_swagger_interface-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">io</span><span class="op">.</span><span class="im">vertx</span><span class="op">.</span><span class="im">core</span><span class="op">.</span><span class="im">http</span><span class="op">.</span><span class="im">HttpMethod</span><span class="op">;</span></span>
+<span id="list:java_swagger_interface-5"><a href="#list:java_swagger_interface-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">io</span><span class="op">.</span><span class="im">vertx</span><span class="op">.</span><span class="im">ext</span><span class="op">.</span><span class="im">web</span><span class="op">.</span><span class="im">RoutingContext</span><span class="op">;</span></span>
+<span id="list:java_swagger_interface-6"><a href="#list:java_swagger_interface-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:java_swagger_interface-7"><a href="#list:java_swagger_interface-7" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">interface</span> IRouteResponse <span class="op">{</span></span>
+<span id="list:java_swagger_interface-8"><a href="#list:java_swagger_interface-8" aria-hidden="true" tabindex="-1"></a>    HttpMethod <span class="fu">getMethod</span><span class="op">();</span></span>
+<span id="list:java_swagger_interface-9"><a href="#list:java_swagger_interface-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span> <span class="fu">getRoute</span><span class="op">();</span></span>
+<span id="list:java_swagger_interface-10"><a href="#list:java_swagger_interface-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">Handler</span><span class="op">&lt;</span>RoutingContext<span class="op">&gt;</span> <span class="fu">getHandler</span><span class="op">();</span></span>
+<span id="list:java_swagger_interface-11"><a href="#list:java_swagger_interface-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>La parte realmente complicata è stata fare in modo che le annotazioni
+presenti nel codice sorgente venissero lette e trasformate in un file
+JSON che rappresentasse correttamente la documentazione delle API. Dopo
+alcuni tentativi, è stato possibile automatizzare anche questa
+operazione.</p>
+<div class="sourceCode" id="list:java_swagger_modules"
+data-language="Java"
+data-caption="Aggiunta dei moduli delle classi contenenti rotte HTTP"
+label="list:java_swagger_modules"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="list:java_swagger_modules-1"><a href="#list:java_swagger_modules-1" aria-hidden="true" tabindex="-1"></a><span class="dt">final</span> ImmutableSet<span class="op">&lt;</span>ClassPath<span class="op">.</span><span class="fu">ClassInfo</span><span class="op">&gt;</span> modelClasses <span class="op">=</span> ImmutableSet<span class="op">.&lt;</span>ClassPath<span class="op">.</span><span class="fu">ClassInfo</span><span class="op">&gt;</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="list:java_swagger_modules-2"><a href="#list:java_swagger_modules-2" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addAll</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">getClassesInPackage</span><span class="op">(</span><span class="st">&quot;game&quot;</span><span class="op">))</span></span>
+<span id="list:java_swagger_modules-3"><a href="#list:java_swagger_modules-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addAll</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">getClassesInPackage</span><span class="op">(</span><span class="st">&quot;userModule&quot;</span><span class="op">))</span></span>
+<span id="list:java_swagger_modules-4"><a href="#list:java_swagger_modules-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addAll</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">getClassesInPackage</span><span class="op">(</span><span class="st">&quot;BLManagement&quot;</span><span class="op">))</span></span>
+<span id="list:java_swagger_modules-5"><a href="#list:java_swagger_modules-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addAll</span><span class="op">(</span><span class="kw">this</span><span class="op">.</span><span class="fu">getClassesInPackage</span><span class="op">(</span><span class="st">&quot;chatModule&quot;</span><span class="op">))</span></span>
+<span id="list:java_swagger_modules-6"><a href="#list:java_swagger_modules-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span></code></pre></div>
+<p>Java permette di creare oggetti molto complessi, diversi dai JSON /
+object solitamente utilizzati in JavaScript. Era fondamentale poter
+adoperare questi schemi per avere una documentazione ricca e per poter
+testare velocemente le API senza utilizzare necessariamente un client
+come Postman.</p>
+<p>Infine, per poter mostrare correttamente la documentazione, è stato
+necessario creare un file HTML che permettesse di visualizzare la
+documentazione in modo chiaro e ordinato. Questo file statico, presente
+nella repository del progetto, utilizza come fonte il file JSON di
+OpenAPI che viene rigenerato a ogni build del progetto, in modo da avere
+sempre la documentazione aggiornata.</p>
+<h3 id="postman">Postman</h3>
+<p>Swagger ha semplificato lo sviluppo delle API e il loro
+funzionamento, ma non è sostenibile per testare chiamate API successive
+che seguono un certo ordine o che necessitano di payload specifici.
+Postman è stato fondamentale per risolvere questo problema.</p>
+<p>È stata creata una raccolta di richieste, comodamente esportate da
+Swagger senza alcun bisogno di riscrittura. Queste possono contenere
+payload parametrizzati grazie alle variabili di ambiente settabili una
+volta per tutte, come ad esempio il GameID, che altrimenti, una volta
+creato, deve essere copiato e incollato in ogni richiesta successiva che
+lo richiede.</p>
+<p>L’altro grande vantaggio di utilizzare Postman è stata la
+funzionalità Flows, che permette di creare un diagramma di flusso delle
+richieste e di salvare alcune risposte in variabili. Fino a quando non
+si è arrivati ad avere un frontend funzionante, questi Flows sono stati
+utili per trovare eventuali bug e avere ben chiaro il flusso di chiamate
+che sarebbero dovute essere implementate nel frontend, il che ha
+velocizzato lo sviluppo del frontend, seppur in minima parte.</p>
+<p>E’ stato realizzato un flow che simulasse la creazione di una
+partita, l’iscrizione di 4 giocatori, l’avvio della partita e la
+simulazione di un turno completo di gioco. Questo ha permesso di testare
+in modo spedito molte delle funzionalità del sistema, e di trovare
+eventuali bug in modo altrettanto rapido.</p>
+<p><img src="report/img/postManFlow.png" style="width:18cm;height:10cm"
+alt="image" /><br />
+</p>
+<h3 id="log-automatici">Log automatici</h3>
+<p>Il servizio core del sistema è il middleware e per poterlo monitorare
+è stato necessario implementare un sistema di log automatici. Tenere
+traccia di tutte le operazioni è un compito molto complesso e avrebbe
+reso difficile un eventuale debug su un software in produzione che in
+caso di errore potrebbe riavviarsi e perdere definitivamente
+quell’errore. Grazie a Vertx, che offre "gratuitamente" un logger, e
+alla libreria <a
+href="https://mvnrepository.com/artifact/ch.qos.logback/logback-classic"><u>LogBack</u></a>,
+i log legati alle funzionalità più importanti sono trascritti su file
+.log in modo da poterli analizzare in caso di problemi.</p>
+<p>Questo sistema poi si è evoluto grazie a una configurazione di
+LogBack in un file XML, tramite il quale è possibile personalizzare
+completamente il sistema di log, decidendo quali package loggare, in
+quali file trascriverli, scegliere il livello di log (info, debug,
+error, ecc.) e attuare un sistema di log rotate. Secondo questa
+configurazione, i log oltre una certa dimensione vengono compressi e
+rinominati per non occupare troppo spazio, e si può anche impostare il
+numero di questi file compressi da mantenere.</p>
+<div class="sourceCode" id="list:xml_logback" data-language="Xml"
+data-caption="File configurazione Log automatici"
+label="list:xml_logback"><pre class="sourceCode Xml"><code class="sourceCode xml"><span id="list:xml_logback-1"><a href="#list:xml_logback-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">appender</span><span class="ot"> name=</span><span class="st">&quot;DEBUG_LOG&quot;</span><span class="ot"> class=</span><span class="st">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span>
+<span id="list:xml_logback-2"><a href="#list:xml_logback-2" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">file</span>&gt;${DEBUG_FILE}&lt;/<span class="kw">file</span>&gt;</span>
+<span id="list:xml_logback-3"><a href="#list:xml_logback-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">rollingPolicy</span><span class="ot"> class=</span><span class="st">&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy&quot;</span>&gt;</span>
+<span id="list:xml_logback-4"><a href="#list:xml_logback-4" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">fileNamePattern</span>&gt;${DEBUG_FILE}.%d{yyyy-MM-dd}.%i.gz&lt;/<span class="kw">fileNamePattern</span>&gt;</span>
+<span id="list:xml_logback-5"><a href="#list:xml_logback-5" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">maxFileSize</span>&gt;900MB&lt;/<span class="kw">maxFileSize</span>&gt;</span>
+<span id="list:xml_logback-6"><a href="#list:xml_logback-6" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">maxHistory</span>&gt;14&lt;/<span class="kw">maxHistory</span>&gt;</span>
+<span id="list:xml_logback-7"><a href="#list:xml_logback-7" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">totalSizeCap</span>&gt;2GB&lt;/<span class="kw">totalSizeCap</span>&gt;</span>
+<span id="list:xml_logback-8"><a href="#list:xml_logback-8" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">rollingPolicy</span>&gt;</span>
+<span id="list:xml_logback-9"><a href="#list:xml_logback-9" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">encoder</span>&gt;</span>
+<span id="list:xml_logback-10"><a href="#list:xml_logback-10" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">pattern</span>&gt;${LOG_PATTERN}&lt;/<span class="kw">pattern</span>&gt;</span>
+<span id="list:xml_logback-11"><a href="#list:xml_logback-11" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">encoder</span>&gt;</span>
+<span id="list:xml_logback-12"><a href="#list:xml_logback-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">appender</span>&gt;</span>
+<span id="list:xml_logback-13"><a href="#list:xml_logback-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:xml_logback-14"><a href="#list:xml_logback-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:xml_logback-15"><a href="#list:xml_logback-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">&lt;!-- Il package game usera la configurazione del log di debug --&gt;</span></span>
+<span id="list:xml_logback-16"><a href="#list:xml_logback-16" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">logger</span><span class="ot"> level=</span><span class="st">&quot;INFO&quot;</span><span class="ot"> name=</span><span class="st">&quot;game&quot;</span><span class="ot"> additivity=</span><span class="st">&quot;false&quot;</span>&gt;</span>
+<span id="list:xml_logback-17"><a href="#list:xml_logback-17" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">appender-ref</span><span class="ot"> ref=</span><span class="st">&quot;DEBUG_LOG_ASYNC&quot;</span>/&gt;</span>
+<span id="list:xml_logback-18"><a href="#list:xml_logback-18" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">logger</span>&gt;</span></code></pre></div>
+<p>Questo sistema si adatta perfettamente a un software dockerizzabile
+che ha montato un volume relativo alla cartella /log, che può anche
+essere un volume remoto, da cui è possibile consultare velocemente i log
+in caso di problemi.</p>
+<div class="sourceCode" id="list:dockerfile_log" data-language="Python"
+data-caption="Volume di log nel dockerfile l.13 da montare successivamente"
+label="list:dockerfile_log"><pre class="sourceCode python"><code class="sourceCode python"><span id="list:dockerfile_log-1"><a href="#list:dockerfile_log-1" aria-hidden="true" tabindex="-1"></a>FROM gradle:<span class="fl">8.6.0</span><span class="op">-</span>jdk17 AS build</span>
+<span id="list:dockerfile_log-2"><a href="#list:dockerfile_log-2" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span>chown<span class="op">=</span>gradle:gradle . <span class="op">/</span>home<span class="op">/</span>gradle<span class="op">/</span>src</span>
+<span id="list:dockerfile_log-3"><a href="#list:dockerfile_log-3" aria-hidden="true" tabindex="-1"></a>WORKDIR <span class="op">/</span>home<span class="op">/</span>gradle<span class="op">/</span>src</span>
+<span id="list:dockerfile_log-4"><a href="#list:dockerfile_log-4" aria-hidden="true" tabindex="-1"></a>RUN gradle assemble</span>
+<span id="list:dockerfile_log-5"><a href="#list:dockerfile_log-5" aria-hidden="true" tabindex="-1"></a>RUN gradle fatJar </span>
+<span id="list:dockerfile_log-6"><a href="#list:dockerfile_log-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:dockerfile_log-7"><a href="#list:dockerfile_log-7" aria-hidden="true" tabindex="-1"></a>FROM openjdk:<span class="dv">19</span></span>
+<span id="list:dockerfile_log-8"><a href="#list:dockerfile_log-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:dockerfile_log-9"><a href="#list:dockerfile_log-9" aria-hidden="true" tabindex="-1"></a>RUN mkdir <span class="op">/</span>app</span>
+<span id="list:dockerfile_log-10"><a href="#list:dockerfile_log-10" aria-hidden="true" tabindex="-1"></a>RUN mkdir <span class="op">/</span>app<span class="op">/</span>log</span>
+<span id="list:dockerfile_log-11"><a href="#list:dockerfile_log-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:dockerfile_log-12"><a href="#list:dockerfile_log-12" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span><span class="im">from</span><span class="op">=</span>build <span class="op">/</span>home<span class="op">/</span>gradle<span class="op">/</span>src<span class="op">/</span>app<span class="op">/</span>build<span class="op">/</span>libs<span class="op">/</span> <span class="op">/</span>app<span class="op">/</span></span>
+<span id="list:dockerfile_log-13"><a href="#list:dockerfile_log-13" aria-hidden="true" tabindex="-1"></a>COPY <span class="op">--</span><span class="im">from</span><span class="op">=</span>build <span class="op">/</span>home<span class="op">/</span>gradle<span class="op">/</span>src<span class="op">/</span>app<span class="op">/</span>log <span class="op">/</span>app<span class="op">/</span>log</span>
+<span id="list:dockerfile_log-14"><a href="#list:dockerfile_log-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:dockerfile_log-15"><a href="#list:dockerfile_log-15" aria-hidden="true" tabindex="-1"></a>EXPOSE <span class="dv">3003</span></span>
+<span id="list:dockerfile_log-16"><a href="#list:dockerfile_log-16" aria-hidden="true" tabindex="-1"></a>ENTRYPOINT [<span class="st">&quot;java&quot;</span>,<span class="st">&quot;-jar&quot;</span>,<span class="st">&quot;/app/Middleware.jar&quot;</span>]</span></code></pre></div>
+<h3 id="lettura-variabili-dambiente">Lettura variabili d’ambiente</h3>
+<p>Data la scelta di dockerizzare interamente i servizi, è stato
+necessario l’utilizzo di variabili d’ambiente. Questo ha permesso di
+creare un sistema di deploy molto flessibile, in cui è possibile
+cambiare l’indirizzo del servizio a cui connettersi semplicemente
+modificando il file di configurazione del Docker Compose. I servizi in
+NodeJS leggono il contenuto delle variabili d’ambiente tramite il modulo
+‘process.env‘, mentre i servizi in Java utilizzano ‘System.getenv‘.
+Questi comportamenti sono corretti per lo sviluppo locale e per ambienti
+di produzione in cui le variabili d’ambiente sono settate
+correttamente.</p>
+<p>Per quanto riguarda invece lo sviluppo in CI, è stato necessario
+creare un file ‘.env.example‘ che contenesse tutte le variabili
+d’ambiente necessarie al funzionamento del servizio, in modo da poterle
+settare correttamente nel CI/CD, soprattutto per la fase di testing, e
+metterlo sulla repository. È importante tenere a mente che non
+dovrebbero mai essere caricati dati sensibili su strumenti di controllo
+di versione. In questo caso, non ci sono database o account cloud
+eventualmente raggiungibili dall’esterno.</p>
 <h1 id="ch:DevOps">DevOps</h1>
 <h2 id="semantic-versioning-changelog-e-secrets">Semantic Versioning,
 changelog e secrets</h2>
@@ -1000,7 +1252,7 @@ d’ambiente, in modo da poterlo cambiare facilmente in base all’ambiente
 in cui si trova il container, e queste variabili vengono sostituite a
 seconda dell’ambiente di deploy in cui l’applicativo Angular viene
 eseguito.</p>
-<h2 id="lettura-variabili-dambiente">Lettura variabili d’ambiente</h2>
+<h2 id="lettura-variabili-dambiente-1">Lettura variabili d’ambiente</h2>
 <p>Data la scelta di dockerizzare interamente i servizi, è stato
 necessario l’utilizzo di variabili d’ambiente. Questo ha permesso di
 creare un sistema di deploy molto flessibile, in cui è possibile
@@ -1019,6 +1271,97 @@ metterlo sulla repository. È importante tenere a mente che non
 dovrebbero mai essere caricati dati sensibili su strumenti di controllo
 di versione. In questo caso, non ci sono database o account cloud
 eventualmente raggiungibili dall’esterno.</p>
+<h2 id="monitoraggio">Monitoraggio</h2>
+<p>In un progetto composto da microservizi deployati con container, il
+monitoraggio è essenziale per garantire il corretto funzionamento e la
+performance ottimale del sistema. Per realizzare un monitoraggio
+efficace dei container, sono stati impiegati i container di Grafana,
+Prometheus e cAdvisor.</p>
+<h3 id="grafana">Grafana</h3>
+<p>Grafana è uno strumento open-source per la visualizzazione e
+l’analisi delle metriche raccolte. Viene utilizzato per creare dashboard
+personalizzate che mostrano lo stato e le performance dei microservizi.
+Con Grafana, è possibile configurare alert che notificano immediatamente
+eventuali problemi nel sistema, permettendo una risposta rapida e
+mirata.</p>
+<h3 id="prometheus">Prometheus</h3>
+<p>Prometheus è un sistema di monitoraggio e di allarme progettato per
+raccogliere e memorizzare metriche in serie temporali. È stato
+configurato per raccogliere metriche dai container dei microservizi e da
+cAdvisor. Prometheus esegue la raccolta dei dati a intervalli regolari e
+li memorizza in un database time-series, rendendoli disponibili per
+l’analisi e la visualizzazione in Grafana.</p>
+<h3 id="cadvisor">cAdvisor</h3>
+<p>cAdvisor (Container Advisor) è uno strumento che fornisce
+informazioni sulle risorse utilizzate dai container, come CPU, memoria,
+rete e disco. È stato integrato con Prometheus per raccogliere e
+esportare le metriche dei container. cAdvisor offre una visione
+dettagliata delle performance di ogni container, aiutando a identificare
+e risolvere problemi di utilizzo delle risorse.</p>
+<h3 id="integrazione-e-configurazione">Integrazione e
+Configurazione</h3>
+<p>L’integrazione di Grafana, Prometheus e cAdvisor ha permesso di
+creare un sistema di monitoraggio completo. I container di cAdvisor
+raccolgono le metriche di utilizzo delle risorse dai container dei
+microservizi e le esportano a Prometheus. Prometheus memorizza queste
+metriche e le rende disponibili per la visualizzazione in Grafana. Le
+dashboard di Grafana sono configurate per mostrare le metriche chiave e
+fornire un’analisi dettagliata dello stato del sistema.</p>
+<p>La configurazione di questi strumenti è stata gestita tramite Docker
+Compose, permettendo una facile implementazione e scalabilità del
+sistema di monitoraggio. Le variabili d’ambiente e i file di
+configurazione sono stati impostati per garantire la corretta
+connessione e funzionamento dei container di monitoraggio.</p>
+<div class="sourceCode" id="list:docker_compose_monitoring"
+data-language="Python"
+data-caption="Esempio di configurazione Docker Compose"
+label="list:docker_compose_monitoring"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="list:docker_compose_monitoring-1"><a href="#list:docker_compose_monitoring-1" aria-hidden="true" tabindex="-1"></a>cadvisor:</span>
+<span id="list:docker_compose_monitoring-2"><a href="#list:docker_compose_monitoring-2" aria-hidden="true" tabindex="-1"></a>    container_name: cadvisor</span>
+<span id="list:docker_compose_monitoring-3"><a href="#list:docker_compose_monitoring-3" aria-hidden="true" tabindex="-1"></a>    image: gcr.io<span class="op">/</span>cadvisor<span class="op">/</span>cadvisor:latest</span>
+<span id="list:docker_compose_monitoring-4"><a href="#list:docker_compose_monitoring-4" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose_monitoring-5"><a href="#list:docker_compose_monitoring-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;8080:8080&quot;</span></span>
+<span id="list:docker_compose_monitoring-6"><a href="#list:docker_compose_monitoring-6" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose_monitoring-7"><a href="#list:docker_compose_monitoring-7" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/:/rootfs&quot;</span></span>
+<span id="list:docker_compose_monitoring-8"><a href="#list:docker_compose_monitoring-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/var/run:/var/run&quot;</span></span>
+<span id="list:docker_compose_monitoring-9"><a href="#list:docker_compose_monitoring-9" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/sys:/sys&quot;</span></span>
+<span id="list:docker_compose_monitoring-10"><a href="#list:docker_compose_monitoring-10" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/var/lib/docker/:/var/lib/docker&quot;</span></span>
+<span id="list:docker_compose_monitoring-11"><a href="#list:docker_compose_monitoring-11" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/dev/disk/:/dev/disk&quot;</span></span>
+<span id="list:docker_compose_monitoring-12"><a href="#list:docker_compose_monitoring-12" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose_monitoring-13"><a href="#list:docker_compose_monitoring-13" aria-hidden="true" tabindex="-1"></a>    devices:</span>
+<span id="list:docker_compose_monitoring-14"><a href="#list:docker_compose_monitoring-14" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/dev/kmsg&quot;</span></span>
+<span id="list:docker_compose_monitoring-15"><a href="#list:docker_compose_monitoring-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose_monitoring-16"><a href="#list:docker_compose_monitoring-16" aria-hidden="true" tabindex="-1"></a>  prometheus:</span>
+<span id="list:docker_compose_monitoring-17"><a href="#list:docker_compose_monitoring-17" aria-hidden="true" tabindex="-1"></a>    container_name: prometheus</span>
+<span id="list:docker_compose_monitoring-18"><a href="#list:docker_compose_monitoring-18" aria-hidden="true" tabindex="-1"></a>    image: prom<span class="op">/</span>prometheus:latest</span>
+<span id="list:docker_compose_monitoring-19"><a href="#list:docker_compose_monitoring-19" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose_monitoring-20"><a href="#list:docker_compose_monitoring-20" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;9090:9090&quot;</span></span>
+<span id="list:docker_compose_monitoring-21"><a href="#list:docker_compose_monitoring-21" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose_monitoring-22"><a href="#list:docker_compose_monitoring-22" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./prometheus.yml:/etc/prometheus/prometheus.yml&quot;</span></span>
+<span id="list:docker_compose_monitoring-23"><a href="#list:docker_compose_monitoring-23" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose_monitoring-24"><a href="#list:docker_compose_monitoring-24" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose_monitoring-25"><a href="#list:docker_compose_monitoring-25" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> cadvisor</span>
+<span id="list:docker_compose_monitoring-26"><a href="#list:docker_compose_monitoring-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose_monitoring-27"><a href="#list:docker_compose_monitoring-27" aria-hidden="true" tabindex="-1"></a>  grafana:</span>
+<span id="list:docker_compose_monitoring-28"><a href="#list:docker_compose_monitoring-28" aria-hidden="true" tabindex="-1"></a>    container_name: grafana</span>
+<span id="list:docker_compose_monitoring-29"><a href="#list:docker_compose_monitoring-29" aria-hidden="true" tabindex="-1"></a>    image: grafana<span class="op">/</span>grafana:latest</span>
+<span id="list:docker_compose_monitoring-30"><a href="#list:docker_compose_monitoring-30" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose_monitoring-31"><a href="#list:docker_compose_monitoring-31" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;3000:3000&quot;</span></span>
+<span id="list:docker_compose_monitoring-32"><a href="#list:docker_compose_monitoring-32" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose_monitoring-33"><a href="#list:docker_compose_monitoring-33" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> GF_PATHS_PROVISIONING<span class="op">=/</span>etc<span class="op">/</span>grafana<span class="op">/</span>provisioning</span>
+<span id="list:docker_compose_monitoring-34"><a href="#list:docker_compose_monitoring-34" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> DS_PROMETHEUS<span class="op">=</span>prometheus</span>
+<span id="list:docker_compose_monitoring-35"><a href="#list:docker_compose_monitoring-35" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose_monitoring-36"><a href="#list:docker_compose_monitoring-36" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;grafana-data:/var/lib/grafana&quot;</span></span>
+<span id="list:docker_compose_monitoring-37"><a href="#list:docker_compose_monitoring-37" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml&quot;</span></span>
+<span id="list:docker_compose_monitoring-38"><a href="#list:docker_compose_monitoring-38" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./dashboard.json:/var/lib/grafana/dashboards/dashboard.json&quot;</span></span>
+<span id="list:docker_compose_monitoring-39"><a href="#list:docker_compose_monitoring-39" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./default.yaml:/etc/grafana/provisioning/dashboards/default.yaml&quot;</span></span>
+<span id="list:docker_compose_monitoring-40"><a href="#list:docker_compose_monitoring-40" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose_monitoring-41"><a href="#list:docker_compose_monitoring-41" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose_monitoring-42"><a href="#list:docker_compose_monitoring-42" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> prometheus</span></code></pre></div>
+<p>Con questa configurazione, il sistema di monitoraggio offre una
+visione completa delle performance e dello stato dei microservizi,
+permettendo di mantenere un’operatività ottimale e di intervenire
+prontamente in caso di anomalie.</p>
 <h2 id="docker-compose-todo">Docker-compose TODO</h2>
 <p>Infine il risultato prodotto è stata un file docker-compose che
 raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra
