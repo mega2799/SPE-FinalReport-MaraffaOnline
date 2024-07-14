@@ -1003,6 +1003,29 @@ gestione dei database MongoDB.</p></li>
 effettivamente funzioni</p>
 <h2 id="degna-di-nota-la-cicd-per-le-relazioni">Degna di nota la CI/CD
 per le relazioni</h2>
+<p>Per lo sviluppo di questa, e di future relazioni, è stata creata una
+CI/CD. Questa è poi stata inclusa a sua volta in un template GitHub
+appositamente nato per lo sviluppo di nuove relazioni. Contiene una
+serie di documenti in LaTeX, che rappresentano uno scheletro per le
+relazioni, e la CI per poter pubblicare la relazione in continuous
+integration in formato HTML sulla piattaforma GitHub Pages e fornire una
+release contenente il PDF della relazione. L’utilizzo di GitHub rende lo
+sviluppo della relazione più semplice, non obbligando a scegliere
+strumenti come Overleaf come editor di testo, mantenendo la relazione
+versionata e permettendo di lavorare in parallelo con altri membri del
+team sfruttando tutte le comodità offerte da Git.</p>
+<p>A questo <a
+href="https://github.com/mega2799/Report-ghPages-latex"><u>link</u></a>
+il template spiega alcuni dei passaggi per poterlo utilizzare. In
+alternativa, è stato inserito anche un file bash che permette, tramite
+un container Docker, di creare localmente il PDF della relazione
+utilizzando i software pandoc e latexmk.</p>
+<p>Sono stati fondamentali i lavori di <a
+href="https://github.com/MemerGamer/LaTex-Publishing"><u>Memer
+Gamer</u></a> per la base del workflow delle pubblicazioni su GitHub
+Pages e <a
+href="https://www.overleaf.com/latex/templates/university-of-reading-computer-science-report-template-and-guide/xhttddjhkwrf"><u>Varun
+Ojha</u></a> per il template.</p>
 <h1 id="ch:con">Conclusions and Future Work</h1>
 <h2 id="conclusions">Conclusions</h2>
 <p>**spiega che verrà messo online nel sitoweb **</p>
