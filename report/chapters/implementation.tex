@@ -2,6 +2,174 @@
 % in this template few examples are mention
 \chapter{Implementation}
 \label{ch:implementation} % Label for method chapter
-\section{Implementation}
+% \section{Implementation}
 
-\section{TASK.REGISTRY?????}
+% \section{TASK.REGISTRY?????}
+
+
+
+\section{Componenti}
+
+% \section{Servizi di Business Logic e User Service}
+
+Entrambi questi servizi sono stati realizzati con lo stack NestJS, un framework per Node.js che semplifica la realizzazione di web server e API REST.
+Si occupano rispettivamente di gestire la logica di gioco e la gestione degli utenti che vogliono utilizzare il sistema, due core business del progetto.
+
+\subsection{Business Logic}
+
+Questo servizio mantiene al proprio interno tutte le regole del gioco e il calcolo dei punteggi. 
+Ha svariati endpoint che permettono al middleware di avere il minor numero possibile di responsabilità, delegando al servizio di business logic le operazioni riguardanti il gioco.
+
+Questa scelta è stata fatta per mantenere il middleware il più leggero possibile e per evitare che si occupi di operazioni non di sua competenza. Inoltre, in futuro sarà possibile aggiungere nuovi giochi modificando il meno possibile il middleware, che dovrà semplicemente occuparsi della gestione delle partite e comunicare tempestivamente con i servizi di business logic in base al gioco scelto.
+
+\subsection{User Service}
+
+Questo servizio gestisce gli utenti, quindi la loro registrazione, autenticazione e gestione dei dati personali.
+Anche in questo caso, il middleware delega al servizio di gestione degli utenti le operazioni riguardanti gli utenti, per mantenere il middleware il più leggero possibile e per evitare che si occupi di operazioni non di sua competenza.
+Il core di questo servizio è dato dalla combinazione di NestJS e TypeORM, che permettono di gestire in modo semplice e veloce la persistenza dei dati e le operazioni CRUD su un database MySQL.
+Oltre alle informazioni degli utenti, il database contiene anche le informazioni riguardanti le partite giocate e le statistiche personali di ogni utente del sistema.
+
+\subsection{Front-End}
+
+Il front-end è stato realizzato con Angular e si occupa di gestire l'interfaccia grafica e la comunicazione con il middleware.
+Sono state realizzate diverse pagine, tra cui la home page, la pagina di registrazione, la pagina di login, la pagina di gioco e la pagina di profilo utente.
+Utilizza API REST per comunicare con il middleware e ottenere i dati necessari per il funzionamento del gioco, mentre utilizza WebSockets per la comunicazione in tempo reale con il middleware. 
+
+%TODO altro da dire sui servizi ?
+
+\subsection{Middleware}
+
+
+\includegraphics[width=12cm]{report/img/middleware.png}\\[10.5cm]
+
+Come già citato, il middleware è il cuore del sistema. L'architettura utilizzata per la gestione delle partite è quella di un multi-agente, in cui ogni agente si occupa di gestire una partita 
+e di orchestrare la comunicazione con gli altri servizi, come ad esempio il front-end. Questo core è stato realizzato con Vertx, che è stato utilizzato anche per creare un web-server in Java.
+
+Inoltre, al middleware è collegato un database NoSQL su MongoDB, che viene aggiornato a ogni trick completato dai giocatori per creare uno storico delle partite e salvare le loro decisioni in gioco. 
+Questa raccolta di dati sarà parte di uno sviluppo futuro, in cui, dopo aver raccolto una grande quantità di dati di partite, si potrà tentare di creare un modello di machine learning per sviluppare un'intelligenza artificiale che possa giocare al posto di un giocatore umano.
+
+
+
+\section{Tecnologie}
+% (-swagger, -postman, autogenerazione javadoc?, JWT per autenticazione utenti,
+%  docker, nodejs, typescript, mongodb, jest, angular, figma, ...)
+\subsection{Swagger - OpenAPI}
+
+Uno dei requisiti fondamentali di questo progetto è stata la documentazione delle API.
+Per fare ciò è stato utilizzato Swagger, un framework open-source che permette di descrivere, produrre e consumare servizi web RESTful. 
+Swagger permette di testare le API direttamente dalla documentazione, grazie a un'interfaccia grafica che consente di inviare richieste e visualizzare le risposte.
+
+\vspace{1cm}
+
+Per i servizi creati in Node.js è stata utilizzata una libreria ad hoc, in grado di generare la documentazione automaticamente tramite i corretti decoratori.
+Al contrario, per i servizi in Java non esiste alcuna libreria in grado di generare automaticamente la documentazione API a partire dai metodi esposti, quindi è stata creata manualmente.
+Grazie a un lavoro preliminare open-source svolto da \href{https://github.com/anupsaund}{\underline{Anup Saund}} sulla sua repository \href{https://github.com/anupsaund/vertx-auto-swagger}{\underline{Vertx auto swagger}}, è stato possibile creare automaticamente un file HTML contenente la documentazione delle API esposte dai servizi in Java. 
+Purtroppo, questo file non era in grado di aggiornarsi automaticamente in caso di modifiche alle rotte, quindi è stato necessario adattarlo per renderlo più flessibile e adatto al nostro progetto.
+
+\vspace{1cm}
+
+Vertx è una libreria davvero completa e ben strutturata. È stato possibile creare un Router in grado di gestire tutte le rotte del progetto in Java utilizzando una semplice classe astratta che ha definito tutti i metodi utilizzati nel progetto, tramite la quale si è potuto razionalizzare il codice e creare dinamicamente la funzionalità richiesta.
+
+\begin{lstlisting}[language=Java, caption={Semplice interfaccia per le rotte HTTP}, label=list:java_swagger_interface]
+package httpRest;
+
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.RoutingContext;
+
+public interface IRouteResponse {
+    HttpMethod getMethod();
+    String getRoute();
+    Handler<RoutingContext> getHandler();
+}
+\end{lstlisting}
+
+La parte realmente complicata è stata fare in modo che le annotazioni presenti nel codice sorgente venissero lette e trasformate in un file JSON che rappresentasse correttamente la documentazione delle API. 
+Dopo alcuni tentativi, è stato possibile automatizzare anche questa operazione.
+
+\begin{lstlisting}[language=Java, caption={Aggiunta dei moduli delle classi contenenti rotte HTTP}, label=list:java_swagger_modules]
+final ImmutableSet<ClassPath.ClassInfo> modelClasses = ImmutableSet.<ClassPath.ClassInfo>builder()
+        .addAll(this.getClassesInPackage("game"))
+        .addAll(this.getClassesInPackage("userModule"))
+        .addAll(this.getClassesInPackage("BLManagement"))
+        .addAll(this.getClassesInPackage("chatModule"))
+        .build();
+\end{lstlisting}
+
+\vspace{1cm}
+
+Java permette di creare oggetti molto complessi, diversi dai JSON / object solitamente utilizzati in JavaScript. Era fondamentale poter adoperare questi schemi per avere una documentazione ricca e per poter testare velocemente le API senza utilizzare necessariamente un client come Postman. 
+
+Infine, per poter mostrare correttamente la documentazione, è stato necessario creare un file HTML che permettesse di visualizzare la documentazione in modo chiaro e ordinato. Questo file statico, presente nella repository del progetto, utilizza come fonte il file JSON di OpenAPI che viene rigenerato a ogni build del progetto, in modo da avere sempre la documentazione aggiornata.
+
+\subsection{Postman}
+
+Swagger ha semplificato lo sviluppo delle API e il loro funzionamento, ma non è sostenibile per testare chiamate API successive che seguono un certo ordine o che necessitano di payload specifici. Postman è stato fondamentale per risolvere questo problema.
+
+È stata creata una raccolta di richieste, comodamente esportate da Swagger senza alcun bisogno di riscrittura. Queste possono contenere payload parametrizzati grazie alle variabili di ambiente settabili una volta per tutte, come ad esempio il GameID, che altrimenti, una volta creato, deve essere copiato e incollato in ogni richiesta successiva che lo richiede.
+
+L'altro grande vantaggio di utilizzare Postman è stata la funzionalità Flows, che permette di creare un diagramma di flusso delle richieste e di salvare alcune risposte in variabili. Fino a quando non si è arrivati ad avere un frontend funzionante, questi Flows sono stati utili per trovare eventuali bug e avere ben chiaro il flusso di chiamate che sarebbero dovute essere implementate nel frontend, il che ha velocizzato lo sviluppo del frontend, seppur in minima parte.
+
+E' stato realizzato un flow che simulasse la creazione di una partita, l'iscrizione di 4 giocatori, l'avvio della partita e la simulazione di un turno completo di gioco. Questo ha permesso di testare in modo spedito molte delle funzionalità del sistema, e di trovare eventuali bug in modo altrettanto rapido.
+
+\includegraphics[width=18cm, height=10cm]{report/img/postManFlow.png}\\[7.5cm]
+
+
+\subsection{Log automatici}
+
+Il servizio core del sistema è il middleware e per poterlo monitorare è stato necessario implementare un sistema di log automatici. Tenere traccia di tutte le operazioni è un compito molto complesso e avrebbe reso difficile un eventuale debug su un software in produzione che in caso di errore potrebbe riavviarsi e perdere definitivamente quell'errore.
+Grazie a Vertx, che offre "gratuitamente" un logger, e alla libreria \href{https://mvnrepository.com/artifact/ch.qos.logback/logback-classic}{\underline{LogBack}}, i log legati alle funzionalità più importanti sono trascritti su file .log in modo da poterli analizzare in caso di problemi.
+
+Questo sistema poi si è evoluto grazie a una configurazione di LogBack in un file XML, tramite il quale è possibile personalizzare completamente il sistema di log, decidendo quali package loggare, in quali file trascriverli, scegliere il livello di log (info, debug, error, ecc.) e attuare un sistema di log rotate. Secondo questa configurazione, i log oltre una certa dimensione vengono compressi e rinominati per non occupare troppo spazio, e si può anche impostare il numero di questi file compressi da mantenere.
+
+\begin{lstlisting}[language=Xml, caption={File configurazione Log automatici}, label=list:xml_logback]
+    <appender name="DEBUG_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEBUG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${DEBUG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>900MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- Il package game usera la configurazione del log di debug -->
+    <logger level="INFO" name="game" additivity="false">
+        <appender-ref ref="DEBUG_LOG_ASYNC"/>
+    </logger>
+
+\end{lstlisting}
+
+\vspace{1cm}
+
+Questo sistema si adatta perfettamente a un software dockerizzabile che ha montato un volume relativo alla cartella /log, che può anche essere un volume remoto, da cui è possibile consultare velocemente i log in caso di problemi.
+
+\begin{lstlisting}[language=Python, caption={Volume di log nel dockerfile l.13 da montare successivamente}, label=list:dockerfile_log]
+FROM gradle:8.6.0-jdk17 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle assemble
+RUN gradle fatJar 
+
+FROM openjdk:19
+
+RUN mkdir /app
+RUN mkdir /app/log
+
+COPY --from=build /home/gradle/src/app/build/libs/ /app/
+COPY --from=build /home/gradle/src/app/log /app/log
+
+EXPOSE 3003
+ENTRYPOINT ["java","-jar","/app/Middleware.jar"]
+\end{lstlisting}
+
+
+\subsection{Lettura variabili d'ambiente}
+
+Data la scelta di dockerizzare interamente i servizi, è stato necessario l'utilizzo di variabili d'ambiente. Questo ha permesso di creare un sistema di deploy molto flessibile, in cui è possibile cambiare l'indirizzo del servizio a cui connettersi semplicemente modificando il file di configurazione del Docker Compose. I servizi in NodeJS leggono il contenuto delle variabili d'ambiente tramite il modulo `process.env`, mentre i servizi in Java utilizzano `System.getenv`. Questi comportamenti sono corretti per lo sviluppo locale e per ambienti di produzione in cui le variabili d'ambiente sono settate correttamente.
+
+Per quanto riguarda invece lo sviluppo in CI, è stato necessario creare un file `.env.example` che contenesse tutte le variabili d'ambiente necessarie al funzionamento del servizio, in modo da poterle settare correttamente nel CI/CD, soprattutto per la fase di testing, e metterlo sulla repository. È importante tenere a mente che non dovrebbero mai essere caricati dati sensibili su strumenti di controllo di versione. In questo caso, non ci sono database o account cloud eventualmente raggiungibili dall'esterno.
