@@ -154,7 +154,6 @@ Sarebbe figo spiegare come i nostri workflow hanno ridotto i conflitti di integr
 \end{itemize}
 
 \section{Automated quality assurance}
-**code quality, testing, reporting**
 \subsection{Testing}
 
 Per ogni servizio in questo sistema è stato adottato, ove possibile, il paradigma di programmazione TDD, cioè Test Driven Development. Questo approccio prevede che i test siano scritti prima del codice, in modo da guidare lo sviluppo e garantire che il codice prodotto soddisfi i requisiti specificati.
@@ -187,6 +186,10 @@ testlogger {
 }
 \end{lstlisting}
 
+\subsection{Act per testare CI}
+
+È stato trovato un utilissimo strumento per poter velocizzare il processo di creazione della CI, \href{https://github.com/nektos/act}{\underline{Act}}. Questo strumento permette di eseguire le GitHub Actions localmente senza dover obbligatoriamente fare un push sul repository e quindi senza "sporcare" la cronologia dei commit. Richiede che Docker sia attivo ed è in grado di creare un container che utilizza l'immagine specificata nel file di configurazione della CI e di eseguire i job. Per eseguire Act è stato creato uno script in bash per poter automatizzare ulteriormente il testing delle CI, in cui viene letto il contenuto del file .env.example che popolerà l'environment del container con le variabili d'ambiente necessarie per il corretto funzionamento della CI, e le imposta come variabili d'ambiente della GitHub Action che si sta testando. Per poter usare Act è necessario semplificare leggermente il trigger per i job, che in ambiente di produzione è solitamente la chiusura di una pull request, mentre per testare velocemente è necessario impostarlo su una push.
+
 \section{Code quality e linting} 
 \label{code_quality}
 
@@ -213,11 +216,8 @@ checkstyle {
 }
 \end{lstlisting}
 
-\subsection{Act per testare CI}
 
-È stato trovato un utilissimo strumento per poter velocizzare il processo di creazione della CI, \href{https://github.com/nektos/act}{\underline{Act}}. Questo strumento permette di eseguire le GitHub Actions localmente senza dover obbligatoriamente fare un push sul repository e quindi senza "sporcare" la cronologia dei commit. Richiede che Docker sia attivo ed è in grado di creare un container che utilizza l'immagine specificata nel file di configurazione della CI e di eseguire i job. Per eseguire Act è stato creato uno script in bash per poter automatizzare ulteriormente il testing delle CI, in cui viene letto il contenuto del file .env.example che popolerà l'environment del container con le variabili d'ambiente necessarie per il corretto funzionamento della CI, e le imposta come variabili d'ambiente della GitHub Action che si sta testando. Per poter usare Act è necessario semplificare leggermente il trigger per i job, che in ambiente di produzione è solitamente la chiusura di una pull request, mentre per testare velocemente è necessario impostarlo su una push.
-
-\section{Checkstyle, javadoc, github page [NON so se va bene qua ma lo scrivo] }
+\subsection{Checkstyle, javadoc, github page }
 
 % Il componente middleware è stato sviluppato in Java e per garantire la qualità del codice sono stati utilizzati strumenti come Checkstyle e Spotless, come citato in \ref{code_quality}. 
 Dopo aver eseguito i controlli di stile sul codice sono stati trovati numerosi errori e warning, che sono stati corretti automaticamente da un plugin che ha sistemato ciò che Spotless non era riuscito a correggere. Il plugin in questione è \href{https://github.com/openrewrite/rewrite}{\underline{OpenRewrite}}, che ha permesso di correggere molti errori e di risparmiare un lungo e noioso lavoro di correzione manuale.
@@ -290,7 +290,7 @@ si è utilizzata un'immagine di sviluppo per compilare il codice e un'immagine d
 \begin{figure}[H]
 \caption{Comparazione tra le immagini multi-stage e le immagini tradizionali}
 \centering
-\includegraphics[width=12cm]{report/img/multi_stage.png}\\[10.5cm]
+\includegraphics[width=12cm]{report/img/multi_stage.png}\\[4.5cm]
 \end{figure}
 
 \subsection{NodeJS}
@@ -365,6 +365,13 @@ server {
 \end{lstlisting}
 
 L'indirizzo del backend è stato configurato tramite variabili d'ambiente, in modo da poterlo cambiare facilmente in base all'ambiente in cui si trova il container, e queste variabili vengono sostituite a seconda dell'ambiente di deploy in cui l'applicativo Angular viene eseguito.
+
+
+\section{Lettura variabili d'ambiente}
+
+Data la scelta di dockerizzare interamente i servizi, è stato necessario l'utilizzo di variabili d'ambiente. Questo ha permesso di creare un sistema di deploy molto flessibile, in cui è possibile cambiare l'indirizzo del servizio a cui connettersi semplicemente modificando il file di configurazione del Docker Compose. I servizi in NodeJS leggono il contenuto delle variabili d'ambiente tramite il modulo `process.env`, mentre i servizi in Java utilizzano `System.getenv`. Questi comportamenti sono corretti per lo sviluppo locale e per ambienti di produzione in cui le variabili d'ambiente sono settate correttamente.
+
+Per quanto riguarda invece lo sviluppo in CI, è stato necessario creare un file `.env.example` che contenesse tutte le variabili d'ambiente necessarie al funzionamento del servizio, in modo da poterle settare correttamente nel CI/CD, soprattutto per la fase di testing, e metterlo sulla repository. È importante tenere a mente che non dovrebbero mai essere caricati dati sensibili su strumenti di controllo di versione. In questo caso, non ci sono database o account cloud eventualmente raggiungibili dall'esterno.
 
 
 \section{Docker-compose TODO}
