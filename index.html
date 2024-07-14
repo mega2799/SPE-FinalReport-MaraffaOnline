@@ -164,8 +164,6 @@ id="toc-usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
 BusinessLogic:</a></li>
 <li><a href="#middlewaremaraffa"
 id="toc-middlewaremaraffa">MiddlewareMaraffa:</a></li>
-<li><a href="#act-per-testare-ci" id="toc-act-per-testare-ci">Act per
-testare CI</a></li>
 </ul></li>
 <li><a href="#automated-quality-assurance"
 id="toc-automated-quality-assurance">Automated quality assurance</a>
@@ -173,7 +171,11 @@ id="toc-automated-quality-assurance">Automated quality assurance</a>
 <li><a href="#testing" id="toc-testing">Testing</a></li>
 </ul></li>
 <li><a href="#code_quality" id="toc-code_quality">Code quality e
-linting</a></li>
+linting</a>
+<ul>
+<li><a href="#act-per-testare-ci" id="toc-act-per-testare-ci">Act per
+testare CI</a></li>
+</ul></li>
 <li><a
 href="#checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo"
 id="toc-checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo">Checkstyle,
@@ -725,8 +727,6 @@ job deploy and test.</p></li>
 come i nostri workflow hanno ridotto i conflitti di integrazione, il
 rilevamento precoce di bug e i problemi di compatibilità.</p></li>
 </ul>
-<h3 id="act-per-testare-ci">Act per testare CI</h3>
-<p>TODO</p>
 <h2 id="automated-quality-assurance">Automated quality assurance</h2>
 <p>**code quality, testing, reporting**</p>
 <h3 id="testing">Testing</h3>
@@ -808,6 +808,24 @@ class="sourceCode java"><code class="sourceCode java"><span id="list:gradle_code
 <span id="list:gradle_codequality-11"><a href="#list:gradle_codequality-11" aria-hidden="true" tabindex="-1"></a>    configFile <span class="op">=</span> <span class="fu">file</span><span class="op">(</span><span class="st">&quot;${rootDir}/config/checkstyle/checkstyle.xml&quot;</span><span class="op">)</span> <span class="co">// Configurazione di Checkstyle</span></span>
 <span id="list:gradle_codequality-12"><a href="#list:gradle_codequality-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// showViolations = true</span></span>
 <span id="list:gradle_codequality-13"><a href="#list:gradle_codequality-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="act-per-testare-ci">Act per testare CI</h3>
+<p>È stato trovato un utilissimo strumento per poter velocizzare il
+processo di creazione della CI, <a
+href="https://github.com/nektos/act"><u>Act</u></a>. Questo strumento
+permette di eseguire le GitHub Actions localmente senza dover
+obbligatoriamente fare un push sul repository e quindi senza "sporcare"
+la cronologia dei commit. Richiede che Docker sia attivo ed è in grado
+di creare un container che utilizza l’immagine specificata nel file di
+configurazione della CI e di eseguire i job. Per eseguire Act è stato
+creato uno script in bash per poter automatizzare ulteriormente il
+testing delle CI, in cui viene letto il contenuto del file .env.example
+che popolerà l’environment del container con le variabili d’ambiente
+necessarie per il corretto funzionamento della CI, e le imposta come
+variabili d’ambiente della GitHub Action che si sta testando. Per poter
+usare Act è necessario semplificare leggermente il trigger per i job,
+che in ambiente di produzione è solitamente la chiusura di una pull
+request, mentre per testare velocemente è necessario impostarlo su una
+push.</p>
 <h2
 id="checkstyle-javadoc-github-page-non-so-se-va-bene-qua-ma-lo-scrivo">Checkstyle,
 javadoc, github page [NON so se va bene qua ma lo scrivo] </h2>
