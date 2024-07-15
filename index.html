@@ -159,6 +159,8 @@ id="toc-licensing-e-issue-template">Licensing e issue template</a></li>
 <ul>
 <li><a href="#struttura-dei-branch"
 id="toc-struttura-dei-branch">Struttura dei Branch</a></li>
+<li><a href="#struttura-delle-repository"
+id="toc-struttura-delle-repository">Struttura delle repository</a></li>
 <li><a href="#pull-request-e-code-review"
 id="toc-pull-request-e-code-review">Pull Request e Code Review</a></li>
 <li><a href="#gestione-dei-conflitti"
@@ -891,6 +893,16 @@ nuove funzionalità. Ogni feature branch deve derivare da ‘develop‘ e,
 una volta completata la feature, viene reintegrato in ‘develop‘ tramite
 una pull request.</p></li>
 </ul>
+<h3 id="struttura-delle-repository">Struttura delle repository</h3>
+<p>Data la natura del sistema, sono state necessarie numerose repository
+Git per evitare confusione, separare correttamente i componenti e
+poterli rilasciare indipendentemente. Il sistema, tuttavia, è comunque
+utilizzabile e rintracciabile attraverso la repository GitLab di ateneo
+PikaLab, poiché è stata implementata una repository con submodules che
+le contiene. Inoltre, in questa repository si può trovare il
+docker-compose per il deploy del sistema completo e sempre aggiornato,
+assieme ad alcuni file statici per il suo funzionamento e
+configurazione.</p>
 <h3 id="pull-request-e-code-review">Pull Request e Code Review</h3>
 <p>Le pull request (PR) sono essenziali per garantire la qualità del
 codice. Ogni PR è stata sottoposta a una code review da parte di uno o
@@ -913,7 +925,10 @@ non utilizzato con estrema cautela: ipotizzando di introdurre un bug e
 successivamente di eseguire il rebase che cancella dalla history la
 modifica che ha introdotto il bug, risulterebbe particolarmente ostico
 tracciare le modifiche e risalire a questo cambiamento. Potenzialmente
-può creare anche confusione tra i membri del team.</p>
+può creare anche confusione tra i membri del team. Per lo stesso motivo,
+non è mati stato utilizzato il merge con squash commit che di fatto
+avrebbe modificato la cronologia dei commit e reso difficile tracciare
+le modifiche originarie.</p>
 <h3
 id="strumenti-di-supporto-todo-questo-utile-potrebbe-essere-spostato-in-unaltra-sezione">Strumenti
 di Supporto TODO questo utile potrebbe essere spostato in un’altra
