@@ -113,16 +113,20 @@ id="toc-requisiti-e-casi-duso">Requisiti e casi d’uso</a>
 <li><a href="#requisiti" id="toc-requisiti">Requisiti</a></li>
 <li><a href="#casi-duso" id="toc-casi-duso">Casi d’uso</a></li>
 </ul></li>
-<li><a href="#riflessioni" id="toc-riflessioni">Riflessioni</a></li>
+<li><a href="#design-generale-del-software"
+id="toc-design-generale-del-software">Design generale del
+software</a></li>
+<li><a href="#pattern-del-ddd" id="toc-pattern-del-ddd">Pattern del
+DDD</a></li>
 </ul></li>
 <li><a href="#ch:implementation"
 id="toc-ch:implementation">Implementation</a>
 <ul>
 <li><a href="#componenti" id="toc-componenti">Componenti</a>
 <ul>
-<li><a href="#business-logic" id="toc-business-logic">Business
-Logic</a></li>
-<li><a href="#user-service" id="toc-user-service">User Service</a></li>
+<li><a href="#servizi-di-business-logic-e-user-service"
+id="toc-servizi-di-business-logic-e-user-service">Servizi di Business
+Logic e User Service</a></li>
 <li><a href="#front-end" id="toc-front-end">Front-End</a></li>
 <li><a href="#middleware" id="toc-middleware">Middleware</a></li>
 </ul></li>
@@ -237,7 +241,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-14</p>
+<p>2024-07-15</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -538,17 +542,58 @@ l’interazione dell’utente con l’applicazione.</p>
 <img src="report/img/Casi_duso.png" />
 <figcaption>Schema dei casi d’uso</figcaption>
 </figure>
-<h2 id="riflessioni">Riflessioni</h2>
-<p>**Spiegare per quale motivo i pattern del DDD non sono stati
-applicati** (shared kernel, publish consumer, ...)</p>
+<h2 id="design-generale-del-software">Design generale del software</h2>
+<p>L’architettura del software è basata su micro-servizi autonomi e
+indipendenti tra loro, la cui comunicazione avviene tramite API REST.
+Esiste un middleware che si occupa della gestione e dell’orchestrazione
+dei micro-servizi, fungendo da ponte per collegare le varie
+tecnologie.</p>
+<p>I microservizi sviluppati si occupano di varie aree legate alla
+natura del progetto e sono:</p>
+<ul>
+<li><p><strong>UserService</strong>: si occupa della gestione degli
+utenti, quindi la loro registrazione, autenticazione e gestione dei dati
+personali.</p></li>
+<li><p><strong>BusinessLogic</strong>: si occupa di mantenere al proprio
+interno tutte le regole del gioco.</p></li>
+<li><p><strong>Front-End</strong>: si occupa di gestire l’interfaccia
+grafica e la comunicazione con il middleware.</p></li>
+<li><p><strong>Middleware</strong>: si occupa della gestione delle
+comunicazioni tra i vari microservizi e svolge la funzione di "motore di
+gioco".</p></li>
+</ul>
+<p><img src="report/img/Architecture.png" style="width:12cm"
+alt="image" /><br />
+</p>
+<h2 id="pattern-del-ddd">Pattern del DDD</h2>
+<p>Il pattern di DDD che è stato applicato, data l’architettura del
+sistema a microservizi, è quello del Consumer-Supplier.</p>
+<ul>
+<li><p>Permette una distinta separazione dei bounded context e quindi
+della business logic e delle responsabilità. Questo permette ai servizi
+di essere il più indipendenti possibili e di evolvere in modo
+indipendente, aggiornando il sistema.</p></li>
+<li><p>Ove possibile, ogni bounded context è stato sviluppato in un
+microservizio separato, in modo da garantire la massima indipendenza e
+scalabilità, mantenendo una chiara definizione del dominio e delle
+proprie responsabilità di business.</p></li>
+<li><p>Il pattern Consumer-Supplier permette una cosa fondamentale per
+il nostro sistema, ossia la <strong>scalabilità</strong> in base alle
+richieste del consumer.</p></li>
+<li><p>La manutentibilità dei singoli componenti che possono,
+ipoteticamente, essere sviluppati da team diversi in modo parallelo,
+definendo al meglio i confini del dominio.</p></li>
+</ul>
 <h1 id="ch:implementation">Implementation</h1>
 <h2 id="componenti">Componenti</h2>
+<h3 id="servizi-di-business-logic-e-user-service">Servizi di Business
+Logic e User Service</h3>
 <p>Entrambi questi servizi sono stati realizzati con lo stack NestJS, un
 framework per Node.js che semplifica la realizzazione di web server e
 API REST. Si occupano rispettivamente di gestire la logica di gioco e la
 gestione degli utenti che vogliono utilizzare il sistema, due core
 business del progetto.</p>
-<h3 id="business-logic">Business Logic</h3>
+<h4 id="business-logic">Business Logic</h4>
 <p>Questo servizio mantiene al proprio interno tutte le regole del gioco
 e il calcolo dei punteggi. Ha svariati endpoint che permettono al
 middleware di avere il minor numero possibile di responsabilità,
@@ -560,7 +605,7 @@ competenza. Inoltre, in futuro sarà possibile aggiungere nuovi giochi
 modificando il meno possibile il middleware, che dovrà semplicemente
 occuparsi della gestione delle partite e comunicare tempestivamente con
 i servizi di business logic in base al gioco scelto.</p>
-<h3 id="user-service">User Service</h3>
+<h4 id="user-service">User Service</h4>
 <p>Questo servizio gestisce gli utenti, quindi la loro registrazione,
 autenticazione e gestione dei dati personali. Anche in questo caso, il
 middleware delega al servizio di gestione degli utenti le operazioni
@@ -574,7 +619,10 @@ informazioni riguardanti le partite giocate e le statistiche personali
 di ogni utente del sistema.</p>
 <h3 id="front-end">Front-End</h3>
 <p>Il front-end è stato realizzato con Angular e si occupa di gestire
-l’interfaccia grafica e la comunicazione con il middleware. Sono state
+l’interfaccia grafica e la comunicazione con il middleware. Il progetto
+pilota di questo frontend è un template di una generica app in angular,
+questo velocizzato in parte fornendo una struttura e alcune best
+practice di angular di cui non si era a conoscenza. Sono state
 realizzate diverse pagine, tra cui la home page, la pagina di
 registrazione, la pagina di login, la pagina di gioco e la pagina di
 profilo utente. Utilizza API REST per comunicare con il middleware e
