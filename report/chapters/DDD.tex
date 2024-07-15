@@ -149,34 +149,27 @@ Si riporta di seguito lo schema dei casi d'uso che modella l'interazione dell'ut
 \label{use_case}
 \end{figure}
 
-
 \section{Design generale del software}
 
-L'architettura del software è basata su micro-servizi autonomi e indipendenti tra loro e la loro comunicazione avviene tramite API REST.
-Esiste un middleware che si occupa della gestione e dell'orchestrazione dei micro-servizi, facendo appunto da ponte collegando le varie diverse tencologie.
+L'architettura del software è basata su micro-servizi autonomi e indipendenti tra loro, la cui comunicazione avviene tramite API REST.
+Esiste un middleware che si occupa della gestione e dell'orchestrazione dei micro-servizi, fungendo da ponte per collegare le varie tecnologie.
 
-I microservizi che si sono scelti di sviluppare si occupano di varie aree legate alla natura del progetto e sono:
+I microservizi sviluppati si occupano di varie aree legate alla natura del progetto e sono:
 \begin{itemize}
-    % \item \textbf{ChatService}: si occupa della gestione delle chat tra utenti.
     \item \textbf{UserService}: si occupa della gestione degli utenti, quindi la loro registrazione, autenticazione e gestione dei dati personali.
-    \item \textbf{BusinessLogic}: si occupa di mantenere al proprio interno tutte le regole proprie del gioco
+    \item \textbf{BusinessLogic}: si occupa di mantenere al proprio interno tutte le regole del gioco.
     \item \textbf{Front-End}: si occupa di gestire l'interfaccia grafica e la comunicazione con il middleware.
-    \item \textbf{Middleware}: si occupa della gestione delle comunicazioni tra i vari microservizi, e svolge la funzione di "motore di gioco".
+    \item \textbf{Middleware}: si occupa della gestione delle comunicazioni tra i vari microservizi e svolge la funzione di "motore di gioco".
 \end{itemize}
-
 
 \includegraphics[width=12cm]{report/img/Architecture.png}\\[10.5cm]
 
-
 \section{Pattern del DDD}
 
-Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier
+Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier.
 \begin{itemize}
-    \item Permette una distinta separazione dei buonded context e quindi di business logic e responsabilità. Questo permette ai servizi di essere il più indipendenti possibili
-    e di evolvere in modo indipendente, aggiornando il sistema.
-    \item Ove possibile ogni bounded context è stato sviluppato in un microservizio separato, in modo da garantire la massima indipendenza e scalabilità. Mantendo una chiara definizione 
-    del dominio e delle proprie responsabilità di business.
+    \item Permette una distinta separazione dei bounded context e quindi della business logic e delle responsabilità. Questo permette ai servizi di essere il più indipendenti possibili e di evolvere in modo indipendente, aggiornando il sistema.
+    \item Ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, in modo da garantire la massima indipendenza e scalabilità, mantenendo una chiara definizione del dominio e delle proprie responsabilità di business.
     \item Il pattern Consumer-Supplier permette una cosa fondamentale per il nostro sistema, ossia la \textbf{scalabilità} in base alle richieste del consumer.
-    \item La manutentabilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo definendo al meglio i confini del dominio.
+    \item La manutentibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
 \end{itemize}
-
