@@ -10,19 +10,19 @@
 
 \section{Componenti}
 
-% \section{Servizi di Business Logic e User Service}
+\subsection{Servizi di Business Logic e User Service}
 
 Entrambi questi servizi sono stati realizzati con lo stack NestJS, un framework per Node.js che semplifica la realizzazione di web server e API REST.
 Si occupano rispettivamente di gestire la logica di gioco e la gestione degli utenti che vogliono utilizzare il sistema, due core business del progetto.
 
-\subsection{Business Logic}
+\subsubsection{Business Logic}
 
 Questo servizio mantiene al proprio interno tutte le regole del gioco e il calcolo dei punteggi. 
 Ha svariati endpoint che permettono al middleware di avere il minor numero possibile di responsabilità, delegando al servizio di business logic le operazioni riguardanti il gioco.
 
 Questa scelta è stata fatta per mantenere il middleware il più leggero possibile e per evitare che si occupi di operazioni non di sua competenza. Inoltre, in futuro sarà possibile aggiungere nuovi giochi modificando il meno possibile il middleware, che dovrà semplicemente occuparsi della gestione delle partite e comunicare tempestivamente con i servizi di business logic in base al gioco scelto.
 
-\subsection{User Service}
+\subsubsection{User Service}
 
 Questo servizio gestisce gli utenti, quindi la loro registrazione, autenticazione e gestione dei dati personali.
 Anche in questo caso, il middleware delega al servizio di gestione degli utenti le operazioni riguardanti gli utenti, per mantenere il middleware il più leggero possibile e per evitare che si occupi di operazioni non di sua competenza.
@@ -31,7 +31,8 @@ Oltre alle informazioni degli utenti, il database contiene anche le informazioni
 
 \subsection{Front-End}
 
-Il front-end è stato realizzato con Angular e si occupa di gestire l'interfaccia grafica e la comunicazione con il middleware.
+Il front-end è stato realizzato con Angular e si occupa di gestire l'interfaccia grafica e la comunicazione con il middleware. 
+Il progetto pilota di questo frontend è un template di una generica app in angular, questo velocizzato in parte fornendo una struttura e alcune best practice di angular di cui non si era a conoscenza. 
 Sono state realizzate diverse pagine, tra cui la home page, la pagina di registrazione, la pagina di login, la pagina di gioco e la pagina di profilo utente.
 Utilizza API REST per comunicare con il middleware e ottenere i dati necessari per il funzionamento del gioco, mentre utilizza WebSockets per la comunicazione in tempo reale con il middleware. 
 
