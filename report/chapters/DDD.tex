@@ -167,9 +167,13 @@ I microservizi sviluppati si occupano di varie aree legate alla natura del proge
 \section{Pattern del DDD}
 
 Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier.
+Di seguito, si riportano le motivazione secondo le quali è stato scelto:
 \begin{itemize}
-    \item Permette una distinta separazione dei bounded context e quindi della business logic e delle responsabilità. Questo permette ai servizi di essere il più indipendenti possibili e di evolvere in modo indipendente, aggiornando il sistema.
-    \item Ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, in modo da garantire la massima indipendenza e scalabilità, mantenendo una chiara definizione del dominio e delle proprie responsabilità di business.
-    \item Il pattern Consumer-Supplier permette una cosa fondamentale per il nostro sistema, ossia la \textbf{scalabilità} in base alle richieste del consumer.
-    \item La manutentibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
+    \item servizi loosely coupled
+    \item evoluzione indipendente dei servizi, durante l'aggiornamento del sistema.
+    \item Ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, ottenendo, così, una distinta separazione della business logic e delle responsabilità. 
+    \item chiara definizione del dominio
+    \item la \textbf{scalabilità} in base alle richieste del consumer.
+    \item La manutenibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
+
 \end{itemize}
