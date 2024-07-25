@@ -175,8 +175,6 @@ verification</a></li>
 <li><a href="#conventional-commits"
 id="toc-conventional-commits">Conventional commits</a></li>
 </ul></li>
-<li><a href="#continuous-integration"
-id="toc-continuous-integration">Continuous Integration</a></li>
 <li><a href="#build-automation" id="toc-build-automation">Build
 automation</a>
 <ul>
@@ -185,7 +183,11 @@ id="toc-usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
 BusinessLogic:</a></li>
 <li><a href="#middlewaremaraffa"
 id="toc-middlewaremaraffa">MiddlewareMaraffa:</a></li>
+<li><a href="#frontendmaraffa"
+id="toc-frontendmaraffa">FrontendMaraffa:</a></li>
 </ul></li>
+<li><a href="#continuous-integration"
+id="toc-continuous-integration">Continuous Integration</a></li>
 <li><a href="#automated-quality-assurance"
 id="toc-automated-quality-assurance">Automated quality assurance</a>
 <ul>
@@ -230,8 +232,7 @@ per le relazioni</a></li>
 </ul></li>
 <li><a href="#ch:con" id="toc-ch:con">Conclusions and Future Work</a>
 <ul>
-<li><a href="#conclusions" id="toc-conclusions">Conclusions</a></li>
-<li><a href="#future-work" id="toc-future-work">Future work</a></li>
+<li><a href="#conclusioni" id="toc-conclusioni">Conclusioni</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -243,7 +244,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-17</p>
+<p>2024-07-25</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -569,20 +570,19 @@ alt="image" /><br />
 </p>
 <h2 id="pattern-del-ddd">Pattern del DDD</h2>
 <p>Il pattern di DDD che è stato applicato, data l’architettura del
-sistema a microservizi, è quello del Consumer-Supplier.</p>
+sistema a microservizi, è quello del Consumer-Supplier. Di seguito, si
+riportano le motivazione secondo le quali è stato scelto:</p>
 <ul>
-<li><p>Permette una distinta separazione dei bounded context e quindi
-della business logic e delle responsabilità. Questo permette ai servizi
-di essere il più indipendenti possibili e di evolvere in modo
-indipendente, aggiornando il sistema.</p></li>
+<li><p>servizi loosely coupled</p></li>
+<li><p>evoluzione indipendente dei servizi, durante l’aggiornamento del
+sistema.</p></li>
 <li><p>Ove possibile, ogni bounded context è stato sviluppato in un
-microservizio separato, in modo da garantire la massima indipendenza e
-scalabilità, mantenendo una chiara definizione del dominio e delle
-proprie responsabilità di business.</p></li>
-<li><p>Il pattern Consumer-Supplier permette una cosa fondamentale per
-il nostro sistema, ossia la <strong>scalabilità</strong> in base alle
-richieste del consumer.</p></li>
-<li><p>La manutentibilità dei singoli componenti che possono,
+microservizio separato, ottenendo, così, una distinta separazione della
+business logic e delle responsabilità.</p></li>
+<li><p>chiara definizione del dominio</p></li>
+<li><p>la <strong>scalabilità</strong> in base alle richieste del
+consumer.</p></li>
+<li><p>La manutenibilità dei singoli componenti che possono,
 ipoteticamente, essere sviluppati da team diversi in modo parallelo,
 definendo al meglio i confini del dominio.</p></li>
 </ul>
@@ -989,61 +989,73 @@ Integration</p></li>
 <p>Inoltre sono evidenziati i breaking changes per le modifiche non più
 compatibili con le versioni precedenti. La stessa nomenclatura viene
 utilizzata anche nel changelog.</p>
-<h2 id="continuous-integration">Continuous Integration</h2>
 <h2 id="build-automation">Build automation</h2>
 <p>Abbiamo deciso di implementare ogni servizio in una repository
 diversa. La repository fornita è un contenitore di tutte le singole
-repository dei servizi. Per ogni repository è stata implementata una CI
-specifica.<br />
-</p>
+repository dei servizi. Per ogni repository è stata implementata una
+build automation specifica.<br />
+In questo modo si riesce a automatizzare i processi di build, test e
+deploy, ottenendo diversi vantaggi:</p>
+<ul>
+<li><p>si riduce drasticamente il tempo per la compilazione del
+codice</p></li>
+<li><p>ogni volta i passaggi verranno eseguiti allo stesso modo
+ottenendo, quindi, riproducibilità</p></li>
+<li><p>si identificano facilmente i problemi grazie al sistema di stampe
+a video che si ottiene durante l’esecuzione delle GitHub
+Actions</p></li>
+<li><p>minimizzazione degli errori umani</p></li>
+<li><p>garantisce il continuous deployment</p></li>
+</ul>
 <h3 id="usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
 BusinessLogic:</h3>
 <p>Essendo le due repository estremamente simili e avendo entrambe un
 ambiente in node.js, è stato implementato un workflow pressochè analogo.
-Questo workflow reagisce all’evento push sul main branch, e pull request
-sui branch main e develop e sono stati implementati 3 job: build, test e
-deploy. Dopo una checkout iniziale (fetch-depth è 0 in quanto il
-changelog necessita di tutta la history dei commit), viene creata una
-cache per permettere ai job di comunicare tra loro. Successivamente alla
-build il sistema viene testato (in entrambi i casi viene usata l’action
-di yarn) e infine viene effettuato il deploy del servizio
-containerizzato se l’evento è una pull request con la quale viene svolto
-il merge e quando l’action è closed (non sta progredendo e quindi
-l’esecuzione non è in corso). Nel deploy viene effettuato il chekout, si
-configura il nome del progetto, si configura la versione della build. Se
-il commit viene effettuato sul main si configura il nome del tag e la
+Questo workflow reagisce all’evento di pull request chiuse sul branch
+develop e alle release, le quali vengano generate a mano. Durante lo
+sviluppo del workflow, infatti, si è notato come non fosse possibile
+catturare l’evento della creazione di un nuovo tag che avrebbe permesso
+di automatizzare il processo di release di github. e sono stati
+implementati 3 job: build, test e deploy. Dopo una checkout iniziale,
+viene creata una cache per permettere ai job di comunicare tra loro.
+Successivamente alla build il sistema viene testato (in entrambi i casi
+viene usata l’action di yarn) e infine viene effettuato il deploy del
+servizio containerizzato Nel quale viene effettuato il chekout, si
+configura il nome del progetto e si configura la versione della build.
+Se il commit viene effettuato sul main si configura il nome del tag e la
 versione a "LATEST", nel caso non fosse nel main viene configurata la
 versione a "develop". Infine si effettua il login al Github container
 registry, la build e la push dell’immagine sul registro. L’immagine
 viene configurata in modo parametrico con delle variabili d’ambiente e
 il nome viene trasformato in minuscolo.</p>
 <h3 id="middlewaremaraffa">MiddlewareMaraffa:</h3>
-<p>//TODO push su main, pull request su main e develop build e test se
-pullrequest.merge = true</p>
-<p>Parte finale</p>
-<ul>
-<li><p><strong>ChatServer:</strong> Il servizio è sviluppato in un
-ambiente Java, pertanto dopo aver effettuato il checkout nel job build
-and test, si effettua il set-up di Java (distribuzione: temurin,
-versione 20). Viene svolto il set-up di Gradle, in cui viene usata
-un’action per la build e creata una cache. Inoltre viene aggiunto un
-commento con un riassunto dei risultati dei job alla pull request, il
-cui valore è impostato a "on-failure". Si noti che il suo valore di
-default è "never"; se fosse "always", si potrebbero verificare scenari
-indesiderati. Il riassunto dei risultati dei job risulta particolarmente
-utile: un utente che vuole esaminare la pull request riesce a
-comprendere lo stato dei job (se sono stati eseguiti correttamente
-oppure no) in modo leggibile e intuitivo. Successivamente si effettua il
-deploy del container di rabbitMQ se l’evento è una pull request oppure
-se è una push sul master o se la stringa con il riferimento a github
-contiene "tags/v". Infine se tutti il job da cui dipende
-(build-and-test) non è fallito e non è stato interrotto. Con
-l’istruzione run si verifica che non ci siano stati dei fallimenti nel
-job deploy and test.</p></li>
-<li><p><strong>FrontendMaraffa:</strong> //TODO Sarebbe figo spiegare
-come i nostri workflow hanno ridotto i conflitti di integrazione, il
-rilevamento precoce di bug e i problemi di compatibilità.</p></li>
-</ul>
+<p>Quando viene effettuata una release o una pull request sul branch
+develop ed è di tipo closed (non sta progredendo e quindi l’esecuzione
+non è in corso) il workflow del Middleware viene attivato. Anch’esso è
+costituito da tre jobs: build, test e deploy. Come prima cosa nella
+build, viene eseguito il checkout, effettuato il setup di Java e Gradle.
+Infine viene effettuata la build di Gradle. Nel job del test si crea un
+container con un database di MongoDB. Password e username vengono
+passati tramite i secrets. Successivamente si prosegue con checkout,
+setup di Java utilizzando la cache per utilizzare la build di Gradle
+svolta precedentemente e infine si esegue il test con gradlew. Per
+quanto riguarda il deploy, si effettua il checkout utilizzando un token
+salvato all’interno di un secret. La parte restante coincide con quella
+delle repository precedenti.</p>
+<h3 id="frontendmaraffa">FrontendMaraffa:</h3>
+<p>TODO Sarebbe figo spiegare come i nostri workflow hanno ridotto i
+conflitti di integrazione, il rilevamento precoce di bug e i problemi di
+compatibilità.</p>
+<h2 id="continuous-integration">Continuous Integration</h2>
+<p>Per migliorare la qualità del software e velocizzare il processo di
+sviluppo, è stata implementata la Continuous Integration. Questa pratica
+permette di integrare il codice frequentemente, evitando possibili
+rischi d’integrazione e consetendo l’esecuzione di test automatici.
+Grazie al sistema di notifiche, inoltre, è possibile ricevere feedback
+immediato sullo stato delle Github Actions, per accertarsi che sia
+sempre tutto funzionante e non siano stati introdotti bug. Mantenendo il
+sistema continuamente monitorato, si migliora anche l’effiicienza e la
+collaborazione tra i membri del team.</p>
 <h2 id="automated-quality-assurance">Automated quality assurance</h2>
 <h3 id="testing">Testing</h3>
 <p>Per ogni servizio in questo sistema è stato adottato, ove possibile,
@@ -1476,34 +1488,20 @@ Pages e <a
 href="https://www.overleaf.com/latex/templates/university-of-reading-computer-science-report-template-and-guide/xhttddjhkwrf"><u>Varun
 Ojha</u></a> per il template.</p>
 <h1 id="ch:con">Conclusions and Future Work</h1>
-<h2 id="conclusions">Conclusions</h2>
-<p>**spiega che verrà messo online nel sitoweb **</p>
-<p>**Replace with a description of the conclusions**</p>
-<p>Typically a conclusions chapter first summarizes the investigated
-problem and its aims and objectives. It summaries the
-critical/significant/major findings/results about the aims and
-objectives that have been obtained by applying the key
-methods/implementations/experiment set-ups. A conclusions chapter draws
-a picture/outline of your project’s central and the most signification
-contributions and achievements.</p>
-<p>A good conclusions summary could be approximately 300–500 words long,
-but this is just a recommendation.</p>
-<p>A conclusions chapter followed by an abstract is the last things you
-write in your project report.</p>
-<h2 id="future-work">Future work</h2>
-<p>This section should refer to Chapter <a href="#ch:results"
-data-reference-type="ref" data-reference="ch:results">[ch:results]</a>
-where the author has reflected their criticality about their own
-solution. The future work is then sensibly proposed in this section.</p>
-<p><strong>Guidance on writing future work:</strong> While working on a
-project, you gain experience and learn the potential of your project and
-its future works. Discuss the future work of the project in technical
-terms. This has to be based on what has not been yet achieved in
-comparison to what you had initially planned and what you have learned
-from the project. Describe to a reader what future work(s) can be
-started from the things you have completed. This includes identifying
-what has not been achieved and what could be achieved.</p>
-<p>A good future work summary could be approximately 300–500 words long,
-but this is just a recommendation.</p>
+<h2 id="conclusioni">Conclusioni</h2>
+<p>L’implementazione delle pratiche DevOps in Maraffa Online ha fornito
+notevoli miglioramenti nel processo di sviluppo software, contribuendo a
+una maggiore efficienza, qualità e collaborazione all’interno del team.
+L’automazione dei processi per la build automation ha ridotto
+significativamente il tempo richiesto e sono stati evitati errori dovuti
+a processi manuali come sviste. Inoltre, è stata data molta importanza
+anche al miglioramento continuo: grazie a feedback costanti gli errori
+sono stati rapidamente identificati e risolti andando ad aumentare anche
+la qualità. Anche le pratiche di DevOps applicate sono migliorate con il
+tempo. Inizialmente, a causa dell’inesperienza del team, sono state
+abbozzate; tuttavia, attraverso un processo di apprendimento iterativo e
+l’implementazione di best practices, sono state progressivamente
+affinate. Questo perfezionamento ha portato a pipeline di sviluppo più
+robuste, scalabili e adatte alle esigenze specifiche del progetto.</p>
 </body>
 </html>
