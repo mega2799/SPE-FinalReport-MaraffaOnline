@@ -175,6 +175,7 @@ verification</a></li>
 <li><a href="#conventional-commits"
 id="toc-conventional-commits">Conventional commits</a></li>
 </ul></li>
+<li><a href="#git-hooks" id="toc-git-hooks">Git Hooks:</a></li>
 <li><a href="#build-automation" id="toc-build-automation">Build
 automation</a>
 <ul>
@@ -987,6 +988,24 @@ Integration</p></li>
 <p>Inoltre sono evidenziati i breaking changes per le modifiche non più
 compatibili con le versioni precedenti. La stessa nomenclatura viene
 utilizzata anche nel changelog.</p>
+<h2 id="git-hooks">Git Hooks:</h2>
+<p>Affinchè i commit siano ben strutturati e, quindi, ci sia una
+maggiore chiarezza anche nel changelog, è stato implementato un git
+hook. Gli hook sono script che vengono eseguiti automaticamente in
+determinati punti del flusso di lavoro di Git. In questo caso, l’hook
+viene eseguito subito dopo aver eseguito un commit. Se il messaggio di
+commit non rispetta lo standard utilizzato nel progetto, il commit viene
+annullato e viene visualizzato un messaggio di errore:</p>
+<figure id="commit_hook">
+<img src="report/img/not_valid_msg_hook.png" />
+<figcaption>Message commit non valido</figcaption>
+</figure>
+<p>Altrimenti il commit viene effettuato correttamente e verrà riportato
+"Il formato del messaggio di commit è valido":</p>
+<figure id="commit_hook_valid">
+<img src="report/img/commit_msg_hook.png" />
+<figcaption>Message commit valido</figcaption>
+</figure>
 <h2 id="build-automation">Build automation</h2>
 <p>Abbiamo deciso di implementare ogni servizio in una repository
 diversa. La repository fornita è un contenitore di tutte le singole
