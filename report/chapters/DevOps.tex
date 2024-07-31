@@ -24,6 +24,7 @@ Se presenti, vengono inoltre riportate le sezioni:
 \end{itemize}
 Il changelog viene autogenerato tramite l'action 'BobAnkh/auto-generate-changelog@v1.2.5'.
 Inoltre per evitare un accesso non autorizzato a dati sensibili, come l'access token del changelog, sono stati inseriti in secrets, variabili d'ambiente di Github. 
+
 \section{Licensing e issue template}
 In ogni nostra repo è presente una licenza MIT. È stata scelta questa licenza perché è estremamente permissiva: 
 il codice sorgente di Maraffa Online è open source e pertanto gli utenti possono utilizzarlo, modificarlo e distribuirlo.
@@ -135,6 +136,24 @@ Riportiamo di seguito la nomenclatura usata:
 Inoltre sono evidenziati i breaking changes per le modifiche non più compatibili con le versioni precedenti.
 La stessa nomenclatura viene utilizzata anche nel changelog.
 
+\section{Git Hooks:}
+Affinchè i commit siano ben strutturati e, quindi, ci sia una maggiore chiarezza anche nel changelog, è stato implementato un git hook.
+Gli hook sono script che vengono eseguiti automaticamente in determinati punti del flusso di lavoro di Git.
+In questo caso, l'hook viene eseguito subito dopo aver eseguito un commit.
+Se il messaggio di commit non rispetta lo standard utilizzato nel progetto, il commit viene annullato e viene visualizzato un messaggio di errore:
+\begin{figure}[H]
+    \centering 
+    \includegraphics[scale=0.7]{report/img/not_valid_msg_hook.png}
+    \caption{Message commit non valido}
+    \label{commit_hook}
+\end{figure}
+Altrimenti il commit viene effettuato correttamente e verrà riportato "Il formato del messaggio di commit è valido":
+\begin{figure}[H]
+    \centering 
+    \includegraphics[scale=0.7]{report/img/commit_msg_hook.png}
+    \caption{Message commit valido}
+    \label{commit_hook_valid}
+\end{figure}
 
 \section{Build automation}
 Abbiamo deciso di implementare ogni servizio in una repository diversa. La repository fornita è un contenitore di tutte le singole repository dei servizi.
