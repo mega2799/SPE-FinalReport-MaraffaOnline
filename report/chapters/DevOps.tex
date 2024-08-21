@@ -515,7 +515,186 @@ Sono stati inseriti dei servizi che permettono di monitorare i database:
     \item \textbf{Mongo Express:} un'interfaccia web per la gestione dei database MongoDB.
 \end{itemize}
 
-TODO quando potremo testare un po'meglio e essere sicuri che effettivamente funzioni
+\begin{lstlisting}[language=Python, caption={Docker Compose di progetto}, label=list:docker_compose]
+version: "3.8"
+
+networks:
+  monitoring:
+  internal:
+  db:
+
+services:
+  mysql:
+    image: mysql:5.7
+    networks:
+      - internal
+      - db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ${MARAFFA_SQL_DB}
+      MYSQL_USER: ${MARAFFA_SQL_USER}
+      MYSQL_PASSWORD: ${MARAFFA_SQL_PWD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_volume:/var/lib/mysql
+
+  mongo:
+    image: mongo:5.0
+    networks:
+      - internal
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PWD}
+      # MONGO_INITDB_DATABASE: your_mongo_database
+    expose:
+      - 27012
+    ports:
+      - 27012:27017
+    volumes:
+      - mongo_volume:/data/db
+
+  adminer:
+    image: adminer:latest
+    networks:
+      - db
+    ports:
+      - "8090:8080"
+    depends_on:
+      - mysql
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    networks:
+      - internal
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USER}:${MONGO_PWD}@mongo:27017/
+      ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_USER}
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_PWD}
+    depends_on:
+      - mongo
+
+  user-service:
+    image: ghcr.io/sofy24/user-management-maraffa:${USER_SERVICE_TAG}
+    # container_name: user_service_container
+    networks:
+      - db
+      - internal
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: ${MARAFFA_SQL_USER}
+      DB_PASSWORD: ${MARAFFA_SQL_PWD}
+      DB_NAME: ${MARAFFA_SQL_DB}
+      PORT: 3001
+    depends_on:
+      - mysql
+
+  business-logic:
+    image: ghcr.io/sofy24/business-logic-maraffa:${BL_TAG}
+    networks:
+      - internal
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  angular-app:
+    image: ghcr.io/mega2799/maraffa-fe:${FE_TAG}
+    networks:
+      - internal
+    ports:
+      - "80:80"
+    depends_on:
+      - middleware
+    environment:
+      # API_HOST: ${API_HOST}
+      # API_PORT: ${API_PORT}
+      API_HOST: middleware
+      # API_HOST: maraffaonlinepika-api-1
+      API_PORT: 3003
+
+  middleware:
+    image: ghcr.io/sofy24/middleware-maraffa:${MIDDLEWARE_TAG}
+    ports:
+      - 3003:3003
+    networks:
+      - internal
+    depends_on:
+      - mongo
+    environment:
+      # MIDDLEWARE_HOST: 127.0.0.1
+      MIDDLEWARE_PORT: 3003
+      BUSINESS_LOGIC_HOST: business-logic
+      BUSINESS_LOGIC_PORT: 3000
+      USER_HOST: user-service
+      USER_PORT: 3001
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PWD}
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      MONGO_DATABASE: ${MONGO_DB}
+      DEBUG: true
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/:/rootfs"
+      - "/var/run:/var/run"
+      - "/sys:/sys"
+      - "/var/lib/docker/:/var/lib/docker"
+      - "/dev/disk/:/dev/disk"
+    privileged: true
+    devices:
+      - "/dev/kmsg"
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    privileged: true
+    depends_on:
+      - cadvisor
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3005:3000"
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - DS_PROMETHEUS=prometheus
+    volumes:
+      - "grafana-data:/var/lib/grafana"
+      - "./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml"
+      - "./dashboard.json:/var/lib/grafana/dashboards/dashboard.json"
+      - "./default.yaml:/etc/grafana/provisioning/dashboards/default.yaml"
+    privileged: true
+    depends_on:
+      - prometheus
+
+volumes:
+  mysql_volume:
+  mongo_volume:
+  rabbitmq_data:
+  grafana-data:
+
+\end{lstlisting}
+
+
+
+
 
 \section{Degna di nota la CI/CD per le relazioni}
 È stata creata una CI/CD per questa relazione e possibili altre future. Questo report è poi stato incluso a sua volta in un template GitHub appositamente nato per lo sviluppo di nuove relazioni. Contiene una serie di documenti in LaTeX, che rappresentano uno scheletro per le relazioni, e la CI per poter pubblicare la relazione in continuous integration in formato HTML sulla piattaforma GitHub Pages e fornire una release contenente il PDF della relazione. L'utilizzo di GitHub rende lo sviluppo della relazione più semplice, non obbligando a scegliere strumenti come Overleaf come editor di testo, mantenendo la relazione versionata e permettendo di lavorare in parallelo con altri membri del team sfruttando tutte le comodità offerte da Git.
