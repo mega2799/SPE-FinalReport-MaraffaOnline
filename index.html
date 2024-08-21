@@ -165,11 +165,6 @@ id="toc-struttura-delle-repository">Struttura delle repository</a></li>
 id="toc-pull-request-e-code-review">Pull Request e Code Review</a></li>
 <li><a href="#gestione-dei-conflitti"
 id="toc-gestione-dei-conflitti">Gestione dei Conflitti</a></li>
-<li><a
-href="#strumenti-di-supporto-todo-questo-utile-potrebbe-essere-spostato-in-unaltra-sezione"
-id="toc-strumenti-di-supporto-todo-questo-utile-potrebbe-essere-spostato-in-unaltra-sezione">Strumenti
-di Supporto TODO questo utile potrebbe essere spostato in un’altra
-sezione</a></li>
 <li><a href="#commit-verification" id="toc-commit-verification">Commit
 verification</a></li>
 <li><a href="#conventional-commits"
@@ -179,13 +174,13 @@ id="toc-conventional-commits">Conventional commits</a></li>
 <li><a href="#build-automation" id="toc-build-automation">Build
 automation</a>
 <ul>
-<li><a href="#usermanagementmaraffa-e-businesslogic"
-id="toc-usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
-BusinessLogic:</a></li>
-<li><a href="#middlewaremaraffa"
-id="toc-middlewaremaraffa">MiddlewareMaraffa:</a></li>
-<li><a href="#frontendmaraffa"
-id="toc-frontendmaraffa">FrontendMaraffa:</a></li>
+<li><a href="#scheletro-del-workflow"
+id="toc-scheletro-del-workflow">Scheletro del workflow</a></li>
+<li><a href="#usermanagement-e-businesslogic"
+id="toc-usermanagement-e-businesslogic">UserManagement e
+BusinessLogic</a></li>
+<li><a href="#middleware-1" id="toc-middleware-1">Middleware</a></li>
+<li><a href="#frontend" id="toc-frontend">Frontend</a></li>
 </ul></li>
 <li><a href="#continuous-integration"
 id="toc-continuous-integration">Continuous Integration</a></li>
@@ -243,7 +238,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-07-31</p>
+<p>2024-08-21</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -928,22 +923,6 @@ può creare anche confusione tra i membri del team. Per lo stesso motivo,
 non è mati stato utilizzato il merge con squash commit che di fatto
 avrebbe modificato la cronologia dei commit e reso difficile tracciare
 le modifiche originarie.</p>
-<h3
-id="strumenti-di-supporto-todo-questo-utile-potrebbe-essere-spostato-in-unaltra-sezione">Strumenti
-di Supporto TODO questo utile potrebbe essere spostato in un’altra
-sezione</h3>
-<p>Per implementare efficacemente queste best practices, è utile
-utilizzare strumenti di supporto come: - <strong>Git Hooks:</strong>
-Script che vengono eseguiti automaticamente in determinati punti del
-flusso di lavoro di Git, come prima di un commit o dopo un merge.
-Possono essere utilizzati per verificare la qualità del codice, eseguire
-test automatizzati, o applicare formattazioni standard. -
-<strong>Linting e Formattazione Automatizzata:</strong> Utilizza
-strumenti come ESLint o Prettier per mantenere uno stile di codice
-coerente e rilevare potenziali errori prima che vengano committati. -
-<strong>Monitoraggio e Analisi:</strong> Strumenti come SonarQube
-possono analizzare il codice per trovare problemi di sicurezza, bug, e
-debito tecnico.</p>
 <h3 id="commit-verification">Commit verification</h3>
 <p>È stato utilizzato il meccanismo di commit verification per
 assicurare:</p>
@@ -1024,45 +1003,58 @@ Actions</p></li>
 <li><p>minimizzazione degli errori umani</p></li>
 <li><p>garantisce il continuous deployment</p></li>
 </ul>
-<h3 id="usermanagementmaraffa-e-businesslogic">UserManagementMaraffa e
-BusinessLogic:</h3>
+<h3 id="scheletro-del-workflow">Scheletro del workflow</h3>
+<p>I workflow utilizzati in questo progetto, pur utilizzando actions
+diverse specifiche per ogni servizio e linguaggio, seguono uno schema
+comune che ne facilita lo sviluppo e la manutenzione.</p>
+<p>Ogni workflow di deployment è composto da tre job principali: build,
+test e deploy. Seguono una logica sequenziale e non parallela, in cui la
+fine di ogni job decreta l’inizio di quello successivo. Il collegamento
+tra i job è garantito da un sistema di cache, che permette di passare i
+dati tra i vari job migliorandone l’efficienza e la velocità. Questi job
+vengono attivati secondo alcune regole di progetto comuni alle
+repository, in linea con il workflow adottato. Questi ultimi non sono
+attivati ad ogni commit, ma solo in determinate circostanze, qui di
+seguito elencate:</p>
+<ul>
+<li><p><strong>Pull request su develop</strong></p></li>
+<li><p><strong>Release manuale su main pubblicata</strong></p></li>
+</ul>
+<p>La struttura dei workflow è stata progettata per essere il più
+modulare possibile. Sono state utilizzate variabili d’ambiente per
+differenziare il deploy su develop e main, in modo da poter riutilizzare
+lo stesso workflow per entrambi i branch e produrre diverse immagini del
+software. Il nome dell’immagine pubblicata viene creato in modo
+parametrico, utilizzando il nome della repository, modificando i
+caratteri in minuscolo e aggiungendo la versione del software, che viene
+presa dal tag della release o impostata su stage o develop a seconda del
+branch che ha attivato il workflow.</p>
+<h3 id="usermanagement-e-businesslogic">UserManagement e
+BusinessLogic</h3>
 <p>Essendo le due repository estremamente simili e avendo entrambe un
-ambiente in node.js, è stato implementato un workflow pressochè analogo.
-Questo workflow reagisce all’evento di pull request chiuse sul branch
-develop e alle release, le quali vengano generate a mano. Durante lo
-sviluppo del workflow, infatti, si è notato come non fosse possibile
-catturare l’evento della creazione di un nuovo tag che avrebbe permesso
-di automatizzare il processo di release di github. e sono stati
-implementati 3 job: build, test e deploy. Dopo una checkout iniziale,
-viene creata una cache per permettere ai job di comunicare tra loro.
-Successivamente alla build il sistema viene testato (in entrambi i casi
-viene usata l’action di yarn) e infine viene effettuato il deploy del
-servizio containerizzato Nel quale viene effettuato il chekout, si
-configura il nome del progetto e si configura la versione della build.
-Se il commit viene effettuato sul main si configura il nome del tag e la
-versione a "LATEST", nel caso non fosse nel main viene configurata la
-versione a "develop". Infine si effettua il login al Github container
-registry, la build e la push dell’immagine sul registro. L’immagine
-viene configurata in modo parametrico con delle variabili d’ambiente e
-il nome viene trasformato in minuscolo.</p>
-<h3 id="middlewaremaraffa">MiddlewareMaraffa:</h3>
-<p>Quando viene effettuata una release o una pull request sul branch
-develop ed è di tipo closed (non sta progredendo e quindi l’esecuzione
-non è in corso) il workflow del Middleware viene attivato. Anch’esso è
-costituito da tre jobs: build, test e deploy. Come prima cosa nella
-build, viene eseguito il checkout, effettuato il setup di Java e Gradle.
-Infine viene effettuata la build di Gradle. Nel job del test si crea un
-container con un database di MongoDB. Password e username vengono
-passati tramite i secrets. Successivamente si prosegue con checkout,
-setup di Java utilizzando la cache per utilizzare la build di Gradle
-svolta precedentemente e infine si esegue il test con gradlew. Per
-quanto riguarda il deploy, si effettua il checkout utilizzando un token
-salvato all’interno di un secret. La parte restante coincide con quella
-delle repository precedenti.</p>
-<h3 id="frontendmaraffa">FrontendMaraffa:</h3>
-<p>TODO Sarebbe figo spiegare come i nostri workflow hanno ridotto i
-conflitti di integrazione, il rilevamento precoce di bug e i problemi di
-compatibilità.</p>
+ambiente in Node.js, è stato implementato un workflow pressoché analogo.
+Le actions utilizzate sono quelle di Yarn per le varie fasi di build,
+test e deploy, e per la creazione della cache tra i vari job.</p>
+<h3 id="middleware-1">Middleware</h3>
+<p>Questa repository è stata implementata in Java, quindi il workflow è
+stato leggermente diverso. Per le varie fasi sono state utilizzate le
+action di Java e Gradle. Per il corretto funzionamento della action di
+setup e quindi delle successive, si è reso necessario, anche se non
+previsto e non consigliato, mantenere sul repository remoto il file
+‘gradle-wrapper.jar‘. Per la fase di test, invece, è stata utilizzata
+un’action che permette di creare un container con un database di
+MongoDB, in modo da poter testare il codice che interagisce con un
+database, il che compone una delle funzionalità principali del servizio.
+Anche in questo caso, password e username vengono passati tramite i
+secrets.</p>
+<h3 id="frontend">Frontend</h3>
+<p>La repository di frontend è stata implementata in Angular, quindi il
+workflow è stato leggermente diverso. Per le varie fasi sono state
+utilizzate le action di Yarn per le fasi di build, deploy e per la
+creazione della cache tra i vari job. Non è stato necessario utilizzare
+la fase di test, poiché il frontend di un’applicazione non ha un sistema
+di unit test; la comunicazione con il middleware viene testata
+"manualmente".</p>
 <h2 id="continuous-integration">Continuous Integration</h2>
 <p>Per migliorare la qualità del software e velocizzare il processo di
 sviluppo, è stata implementata la Continuous Integration. Questa pratica
@@ -1473,8 +1465,181 @@ query e molto altro.</p></li>
 <li><p><strong>Mongo Express:</strong> un’interfaccia web per la
 gestione dei database MongoDB.</p></li>
 </ul>
-<p>TODO quando potremo testare un po’meglio e essere sicuri che
-effettivamente funzioni</p>
+<div class="sourceCode" id="list:docker_compose" data-language="Python"
+data-caption="Docker Compose di progetto"
+label="list:docker_compose"><pre class="sourceCode python"><code class="sourceCode python"><span id="list:docker_compose-1"><a href="#list:docker_compose-1" aria-hidden="true" tabindex="-1"></a>version: <span class="st">&quot;3.8&quot;</span></span>
+<span id="list:docker_compose-2"><a href="#list:docker_compose-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-3"><a href="#list:docker_compose-3" aria-hidden="true" tabindex="-1"></a>networks:</span>
+<span id="list:docker_compose-4"><a href="#list:docker_compose-4" aria-hidden="true" tabindex="-1"></a>  monitoring:</span>
+<span id="list:docker_compose-5"><a href="#list:docker_compose-5" aria-hidden="true" tabindex="-1"></a>  internal:</span>
+<span id="list:docker_compose-6"><a href="#list:docker_compose-6" aria-hidden="true" tabindex="-1"></a>  db:</span>
+<span id="list:docker_compose-7"><a href="#list:docker_compose-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-8"><a href="#list:docker_compose-8" aria-hidden="true" tabindex="-1"></a>services:</span>
+<span id="list:docker_compose-9"><a href="#list:docker_compose-9" aria-hidden="true" tabindex="-1"></a>  mysql:</span>
+<span id="list:docker_compose-10"><a href="#list:docker_compose-10" aria-hidden="true" tabindex="-1"></a>    image: mysql:<span class="fl">5.7</span></span>
+<span id="list:docker_compose-11"><a href="#list:docker_compose-11" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-12"><a href="#list:docker_compose-12" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-13"><a href="#list:docker_compose-13" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> db</span>
+<span id="list:docker_compose-14"><a href="#list:docker_compose-14" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-15"><a href="#list:docker_compose-15" aria-hidden="true" tabindex="-1"></a>      MYSQL_ROOT_PASSWORD: root_password</span>
+<span id="list:docker_compose-16"><a href="#list:docker_compose-16" aria-hidden="true" tabindex="-1"></a>      MYSQL_DATABASE: ${MARAFFA_SQL_DB}</span>
+<span id="list:docker_compose-17"><a href="#list:docker_compose-17" aria-hidden="true" tabindex="-1"></a>      MYSQL_USER: ${MARAFFA_SQL_USER}</span>
+<span id="list:docker_compose-18"><a href="#list:docker_compose-18" aria-hidden="true" tabindex="-1"></a>      MYSQL_PASSWORD: ${MARAFFA_SQL_PWD}</span>
+<span id="list:docker_compose-19"><a href="#list:docker_compose-19" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-20"><a href="#list:docker_compose-20" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;3306:3306&quot;</span></span>
+<span id="list:docker_compose-21"><a href="#list:docker_compose-21" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose-22"><a href="#list:docker_compose-22" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mysql_volume:<span class="op">/</span>var<span class="op">/</span>lib<span class="op">/</span>mysql</span>
+<span id="list:docker_compose-23"><a href="#list:docker_compose-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-24"><a href="#list:docker_compose-24" aria-hidden="true" tabindex="-1"></a>  mongo:</span>
+<span id="list:docker_compose-25"><a href="#list:docker_compose-25" aria-hidden="true" tabindex="-1"></a>    image: mongo:<span class="fl">5.0</span></span>
+<span id="list:docker_compose-26"><a href="#list:docker_compose-26" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-27"><a href="#list:docker_compose-27" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-28"><a href="#list:docker_compose-28" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-29"><a href="#list:docker_compose-29" aria-hidden="true" tabindex="-1"></a>      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}</span>
+<span id="list:docker_compose-30"><a href="#list:docker_compose-30" aria-hidden="true" tabindex="-1"></a>      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PWD}</span>
+<span id="list:docker_compose-31"><a href="#list:docker_compose-31" aria-hidden="true" tabindex="-1"></a>      <span class="co"># MONGO_INITDB_DATABASE: your_mongo_database</span></span>
+<span id="list:docker_compose-32"><a href="#list:docker_compose-32" aria-hidden="true" tabindex="-1"></a>    expose:</span>
+<span id="list:docker_compose-33"><a href="#list:docker_compose-33" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="dv">27012</span></span>
+<span id="list:docker_compose-34"><a href="#list:docker_compose-34" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-35"><a href="#list:docker_compose-35" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="dv">27012</span>:<span class="dv">27017</span></span>
+<span id="list:docker_compose-36"><a href="#list:docker_compose-36" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose-37"><a href="#list:docker_compose-37" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mongo_volume:<span class="op">/</span>data<span class="op">/</span>db</span>
+<span id="list:docker_compose-38"><a href="#list:docker_compose-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-39"><a href="#list:docker_compose-39" aria-hidden="true" tabindex="-1"></a>  adminer:</span>
+<span id="list:docker_compose-40"><a href="#list:docker_compose-40" aria-hidden="true" tabindex="-1"></a>    image: adminer:latest</span>
+<span id="list:docker_compose-41"><a href="#list:docker_compose-41" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-42"><a href="#list:docker_compose-42" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> db</span>
+<span id="list:docker_compose-43"><a href="#list:docker_compose-43" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-44"><a href="#list:docker_compose-44" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;8090:8080&quot;</span></span>
+<span id="list:docker_compose-45"><a href="#list:docker_compose-45" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-46"><a href="#list:docker_compose-46" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mysql</span>
+<span id="list:docker_compose-47"><a href="#list:docker_compose-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-48"><a href="#list:docker_compose-48" aria-hidden="true" tabindex="-1"></a>  mongo<span class="op">-</span>express:</span>
+<span id="list:docker_compose-49"><a href="#list:docker_compose-49" aria-hidden="true" tabindex="-1"></a>    image: mongo<span class="op">-</span>express:<span class="fl">1.0.2</span></span>
+<span id="list:docker_compose-50"><a href="#list:docker_compose-50" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-51"><a href="#list:docker_compose-51" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-52"><a href="#list:docker_compose-52" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-53"><a href="#list:docker_compose-53" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;8081:8081&quot;</span></span>
+<span id="list:docker_compose-54"><a href="#list:docker_compose-54" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-55"><a href="#list:docker_compose-55" aria-hidden="true" tabindex="-1"></a>      ME_CONFIG_MONGODB_SERVER: mongo</span>
+<span id="list:docker_compose-56"><a href="#list:docker_compose-56" aria-hidden="true" tabindex="-1"></a>      ME_CONFIG_MONGODB_URL: mongodb:<span class="op">//</span>${MONGO_USER}:${MONGO_PWD}<span class="op">@</span>mongo:<span class="dv">27017</span><span class="op">/</span></span>
+<span id="list:docker_compose-57"><a href="#list:docker_compose-57" aria-hidden="true" tabindex="-1"></a>      ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_USER}</span>
+<span id="list:docker_compose-58"><a href="#list:docker_compose-58" aria-hidden="true" tabindex="-1"></a>      ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_PWD}</span>
+<span id="list:docker_compose-59"><a href="#list:docker_compose-59" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-60"><a href="#list:docker_compose-60" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mongo</span>
+<span id="list:docker_compose-61"><a href="#list:docker_compose-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-62"><a href="#list:docker_compose-62" aria-hidden="true" tabindex="-1"></a>  user<span class="op">-</span>service:</span>
+<span id="list:docker_compose-63"><a href="#list:docker_compose-63" aria-hidden="true" tabindex="-1"></a>    image: ghcr.io<span class="op">/</span>sofy24<span class="op">/</span>user<span class="op">-</span>management<span class="op">-</span>maraffa:${USER_SERVICE_TAG}</span>
+<span id="list:docker_compose-64"><a href="#list:docker_compose-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># container_name: user_service_container</span></span>
+<span id="list:docker_compose-65"><a href="#list:docker_compose-65" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-66"><a href="#list:docker_compose-66" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> db</span>
+<span id="list:docker_compose-67"><a href="#list:docker_compose-67" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-68"><a href="#list:docker_compose-68" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-69"><a href="#list:docker_compose-69" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;3001:3001&quot;</span></span>
+<span id="list:docker_compose-70"><a href="#list:docker_compose-70" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-71"><a href="#list:docker_compose-71" aria-hidden="true" tabindex="-1"></a>      DB_HOST: mysql</span>
+<span id="list:docker_compose-72"><a href="#list:docker_compose-72" aria-hidden="true" tabindex="-1"></a>      DB_PORT: <span class="dv">3306</span></span>
+<span id="list:docker_compose-73"><a href="#list:docker_compose-73" aria-hidden="true" tabindex="-1"></a>      DB_USERNAME: ${MARAFFA_SQL_USER}</span>
+<span id="list:docker_compose-74"><a href="#list:docker_compose-74" aria-hidden="true" tabindex="-1"></a>      DB_PASSWORD: ${MARAFFA_SQL_PWD}</span>
+<span id="list:docker_compose-75"><a href="#list:docker_compose-75" aria-hidden="true" tabindex="-1"></a>      DB_NAME: ${MARAFFA_SQL_DB}</span>
+<span id="list:docker_compose-76"><a href="#list:docker_compose-76" aria-hidden="true" tabindex="-1"></a>      PORT: <span class="dv">3001</span></span>
+<span id="list:docker_compose-77"><a href="#list:docker_compose-77" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-78"><a href="#list:docker_compose-78" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mysql</span>
+<span id="list:docker_compose-79"><a href="#list:docker_compose-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-80"><a href="#list:docker_compose-80" aria-hidden="true" tabindex="-1"></a>  business<span class="op">-</span>logic:</span>
+<span id="list:docker_compose-81"><a href="#list:docker_compose-81" aria-hidden="true" tabindex="-1"></a>    image: ghcr.io<span class="op">/</span>sofy24<span class="op">/</span>business<span class="op">-</span>logic<span class="op">-</span>maraffa:${BL_TAG}</span>
+<span id="list:docker_compose-82"><a href="#list:docker_compose-82" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-83"><a href="#list:docker_compose-83" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-84"><a href="#list:docker_compose-84" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-85"><a href="#list:docker_compose-85" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;3000:3000&quot;</span></span>
+<span id="list:docker_compose-86"><a href="#list:docker_compose-86" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-87"><a href="#list:docker_compose-87" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mysql</span>
+<span id="list:docker_compose-88"><a href="#list:docker_compose-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-89"><a href="#list:docker_compose-89" aria-hidden="true" tabindex="-1"></a>  angular<span class="op">-</span>app:</span>
+<span id="list:docker_compose-90"><a href="#list:docker_compose-90" aria-hidden="true" tabindex="-1"></a>    image: ghcr.io<span class="op">/</span>mega2799<span class="op">/</span>maraffa<span class="op">-</span>fe:${FE_TAG}</span>
+<span id="list:docker_compose-91"><a href="#list:docker_compose-91" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-92"><a href="#list:docker_compose-92" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-93"><a href="#list:docker_compose-93" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-94"><a href="#list:docker_compose-94" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;80:80&quot;</span></span>
+<span id="list:docker_compose-95"><a href="#list:docker_compose-95" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-96"><a href="#list:docker_compose-96" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> middleware</span>
+<span id="list:docker_compose-97"><a href="#list:docker_compose-97" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-98"><a href="#list:docker_compose-98" aria-hidden="true" tabindex="-1"></a>      <span class="co"># API_HOST: ${API_HOST}</span></span>
+<span id="list:docker_compose-99"><a href="#list:docker_compose-99" aria-hidden="true" tabindex="-1"></a>      <span class="co"># API_PORT: ${API_PORT}</span></span>
+<span id="list:docker_compose-100"><a href="#list:docker_compose-100" aria-hidden="true" tabindex="-1"></a>      API_HOST: middleware</span>
+<span id="list:docker_compose-101"><a href="#list:docker_compose-101" aria-hidden="true" tabindex="-1"></a>      <span class="co"># API_HOST: maraffaonlinepika-api-1</span></span>
+<span id="list:docker_compose-102"><a href="#list:docker_compose-102" aria-hidden="true" tabindex="-1"></a>      API_PORT: <span class="dv">3003</span></span>
+<span id="list:docker_compose-103"><a href="#list:docker_compose-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-104"><a href="#list:docker_compose-104" aria-hidden="true" tabindex="-1"></a>  middleware:</span>
+<span id="list:docker_compose-105"><a href="#list:docker_compose-105" aria-hidden="true" tabindex="-1"></a>    image: ghcr.io<span class="op">/</span>sofy24<span class="op">/</span>middleware<span class="op">-</span>maraffa:${MIDDLEWARE_TAG}</span>
+<span id="list:docker_compose-106"><a href="#list:docker_compose-106" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-107"><a href="#list:docker_compose-107" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="dv">3003</span>:<span class="dv">3003</span></span>
+<span id="list:docker_compose-108"><a href="#list:docker_compose-108" aria-hidden="true" tabindex="-1"></a>    networks:</span>
+<span id="list:docker_compose-109"><a href="#list:docker_compose-109" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> internal</span>
+<span id="list:docker_compose-110"><a href="#list:docker_compose-110" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-111"><a href="#list:docker_compose-111" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> mongo</span>
+<span id="list:docker_compose-112"><a href="#list:docker_compose-112" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-113"><a href="#list:docker_compose-113" aria-hidden="true" tabindex="-1"></a>      <span class="co"># MIDDLEWARE_HOST: 127.0.0.1</span></span>
+<span id="list:docker_compose-114"><a href="#list:docker_compose-114" aria-hidden="true" tabindex="-1"></a>      MIDDLEWARE_PORT: <span class="dv">3003</span></span>
+<span id="list:docker_compose-115"><a href="#list:docker_compose-115" aria-hidden="true" tabindex="-1"></a>      BUSINESS_LOGIC_HOST: business<span class="op">-</span>logic</span>
+<span id="list:docker_compose-116"><a href="#list:docker_compose-116" aria-hidden="true" tabindex="-1"></a>      BUSINESS_LOGIC_PORT: <span class="dv">3000</span></span>
+<span id="list:docker_compose-117"><a href="#list:docker_compose-117" aria-hidden="true" tabindex="-1"></a>      USER_HOST: user<span class="op">-</span>service</span>
+<span id="list:docker_compose-118"><a href="#list:docker_compose-118" aria-hidden="true" tabindex="-1"></a>      USER_PORT: <span class="dv">3001</span></span>
+<span id="list:docker_compose-119"><a href="#list:docker_compose-119" aria-hidden="true" tabindex="-1"></a>      MONGO_USER: ${MONGO_USER}</span>
+<span id="list:docker_compose-120"><a href="#list:docker_compose-120" aria-hidden="true" tabindex="-1"></a>      MONGO_PASSWORD: ${MONGO_PWD}</span>
+<span id="list:docker_compose-121"><a href="#list:docker_compose-121" aria-hidden="true" tabindex="-1"></a>      MONGO_HOST: mongo</span>
+<span id="list:docker_compose-122"><a href="#list:docker_compose-122" aria-hidden="true" tabindex="-1"></a>      MONGO_PORT: <span class="dv">27017</span></span>
+<span id="list:docker_compose-123"><a href="#list:docker_compose-123" aria-hidden="true" tabindex="-1"></a>      MONGO_DATABASE: ${MONGO_DB}</span>
+<span id="list:docker_compose-124"><a href="#list:docker_compose-124" aria-hidden="true" tabindex="-1"></a>      DEBUG: true</span>
+<span id="list:docker_compose-125"><a href="#list:docker_compose-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-126"><a href="#list:docker_compose-126" aria-hidden="true" tabindex="-1"></a>  cadvisor:</span>
+<span id="list:docker_compose-127"><a href="#list:docker_compose-127" aria-hidden="true" tabindex="-1"></a>    container_name: cadvisor</span>
+<span id="list:docker_compose-128"><a href="#list:docker_compose-128" aria-hidden="true" tabindex="-1"></a>    image: gcr.io<span class="op">/</span>cadvisor<span class="op">/</span>cadvisor:latest</span>
+<span id="list:docker_compose-129"><a href="#list:docker_compose-129" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-130"><a href="#list:docker_compose-130" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;8080:8080&quot;</span></span>
+<span id="list:docker_compose-131"><a href="#list:docker_compose-131" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose-132"><a href="#list:docker_compose-132" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/:/rootfs&quot;</span></span>
+<span id="list:docker_compose-133"><a href="#list:docker_compose-133" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/var/run:/var/run&quot;</span></span>
+<span id="list:docker_compose-134"><a href="#list:docker_compose-134" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/sys:/sys&quot;</span></span>
+<span id="list:docker_compose-135"><a href="#list:docker_compose-135" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/var/lib/docker/:/var/lib/docker&quot;</span></span>
+<span id="list:docker_compose-136"><a href="#list:docker_compose-136" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/dev/disk/:/dev/disk&quot;</span></span>
+<span id="list:docker_compose-137"><a href="#list:docker_compose-137" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose-138"><a href="#list:docker_compose-138" aria-hidden="true" tabindex="-1"></a>    devices:</span>
+<span id="list:docker_compose-139"><a href="#list:docker_compose-139" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;/dev/kmsg&quot;</span></span>
+<span id="list:docker_compose-140"><a href="#list:docker_compose-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-141"><a href="#list:docker_compose-141" aria-hidden="true" tabindex="-1"></a>  prometheus:</span>
+<span id="list:docker_compose-142"><a href="#list:docker_compose-142" aria-hidden="true" tabindex="-1"></a>    container_name: prometheus</span>
+<span id="list:docker_compose-143"><a href="#list:docker_compose-143" aria-hidden="true" tabindex="-1"></a>    image: prom<span class="op">/</span>prometheus:latest</span>
+<span id="list:docker_compose-144"><a href="#list:docker_compose-144" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-145"><a href="#list:docker_compose-145" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;9090:9090&quot;</span></span>
+<span id="list:docker_compose-146"><a href="#list:docker_compose-146" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose-147"><a href="#list:docker_compose-147" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./prometheus.yml:/etc/prometheus/prometheus.yml&quot;</span></span>
+<span id="list:docker_compose-148"><a href="#list:docker_compose-148" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose-149"><a href="#list:docker_compose-149" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-150"><a href="#list:docker_compose-150" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> cadvisor</span>
+<span id="list:docker_compose-151"><a href="#list:docker_compose-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-152"><a href="#list:docker_compose-152" aria-hidden="true" tabindex="-1"></a>  grafana:</span>
+<span id="list:docker_compose-153"><a href="#list:docker_compose-153" aria-hidden="true" tabindex="-1"></a>    container_name: grafana</span>
+<span id="list:docker_compose-154"><a href="#list:docker_compose-154" aria-hidden="true" tabindex="-1"></a>    image: grafana<span class="op">/</span>grafana:latest</span>
+<span id="list:docker_compose-155"><a href="#list:docker_compose-155" aria-hidden="true" tabindex="-1"></a>    ports:</span>
+<span id="list:docker_compose-156"><a href="#list:docker_compose-156" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;3005:3000&quot;</span></span>
+<span id="list:docker_compose-157"><a href="#list:docker_compose-157" aria-hidden="true" tabindex="-1"></a>    environment:</span>
+<span id="list:docker_compose-158"><a href="#list:docker_compose-158" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> GF_PATHS_PROVISIONING<span class="op">=/</span>etc<span class="op">/</span>grafana<span class="op">/</span>provisioning</span>
+<span id="list:docker_compose-159"><a href="#list:docker_compose-159" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> DS_PROMETHEUS<span class="op">=</span>prometheus</span>
+<span id="list:docker_compose-160"><a href="#list:docker_compose-160" aria-hidden="true" tabindex="-1"></a>    volumes:</span>
+<span id="list:docker_compose-161"><a href="#list:docker_compose-161" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;grafana-data:/var/lib/grafana&quot;</span></span>
+<span id="list:docker_compose-162"><a href="#list:docker_compose-162" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml&quot;</span></span>
+<span id="list:docker_compose-163"><a href="#list:docker_compose-163" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./dashboard.json:/var/lib/grafana/dashboards/dashboard.json&quot;</span></span>
+<span id="list:docker_compose-164"><a href="#list:docker_compose-164" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> <span class="st">&quot;./default.yaml:/etc/grafana/provisioning/dashboards/default.yaml&quot;</span></span>
+<span id="list:docker_compose-165"><a href="#list:docker_compose-165" aria-hidden="true" tabindex="-1"></a>    privileged: true</span>
+<span id="list:docker_compose-166"><a href="#list:docker_compose-166" aria-hidden="true" tabindex="-1"></a>    depends_on:</span>
+<span id="list:docker_compose-167"><a href="#list:docker_compose-167" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> prometheus</span>
+<span id="list:docker_compose-168"><a href="#list:docker_compose-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="list:docker_compose-169"><a href="#list:docker_compose-169" aria-hidden="true" tabindex="-1"></a>volumes:</span>
+<span id="list:docker_compose-170"><a href="#list:docker_compose-170" aria-hidden="true" tabindex="-1"></a>  mysql_volume:</span>
+<span id="list:docker_compose-171"><a href="#list:docker_compose-171" aria-hidden="true" tabindex="-1"></a>  mongo_volume:</span>
+<span id="list:docker_compose-172"><a href="#list:docker_compose-172" aria-hidden="true" tabindex="-1"></a>  rabbitmq_data:</span>
+<span id="list:docker_compose-173"><a href="#list:docker_compose-173" aria-hidden="true" tabindex="-1"></a>  grafana<span class="op">-</span>data:</span></code></pre></div>
 <h2 id="degna-di-nota-la-cicd-per-le-relazioni">Degna di nota la CI/CD
 per le relazioni</h2>
 <p>È stata creata una CI/CD per questa relazione e possibili altre
