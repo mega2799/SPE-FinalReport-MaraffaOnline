@@ -198,7 +198,6 @@ linting</a>
 id="toc-checkstyle-javadoc-github-page">Checkstyle, javadoc, github page
 </a></li>
 </ul></li>
-<li><a href="#deployment" id="toc-deployment">Deployment</a></li>
 <li><a href="#containerization"
 id="toc-containerization">Containerization</a>
 <ul>
@@ -218,11 +217,9 @@ d’ambiente</a></li>
 id="toc-integrazione-e-configurazione">Integrazione e
 Configurazione</a></li>
 </ul></li>
-<li><a href="#docker-compose-todo"
-id="toc-docker-compose-todo">Docker-compose TODO</a></li>
-<li><a href="#degna-di-nota-la-cicd-per-le-relazioni"
-id="toc-degna-di-nota-la-cicd-per-le-relazioni">Degna di nota la CI/CD
-per le relazioni</a></li>
+<li><a href="#docker-compose"
+id="toc-docker-compose">Docker-compose</a></li>
+<li><a href="#cicd" id="toc-cicd">CI/CD</a></li>
 </ul></li>
 <li><a href="#ch:con" id="toc-ch:con">Conclusions and Future Work</a>
 <ul>
@@ -238,7 +235,7 @@ per le relazioni</a></li>
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2024-08-21</p>
+<p>2024-08-24</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -1226,8 +1223,6 @@ label="list:javadoc_action"><pre class="sourceCode Bash"><code class="sourceCode
 <span id="list:javadoc_action-21"><a href="#list:javadoc_action-21" aria-hidden="true" tabindex="-1"></a>          <span class="ex">java-version:</span> 20</span>
 <span id="list:javadoc_action-22"><a href="#list:javadoc_action-22" aria-hidden="true" tabindex="-1"></a>          <span class="ex">target-folder:</span> javadoc  <span class="co"># url will be https://&lt;username&gt;.github.io/&lt;repo&gt;/javadoc, This can be left as nothing to generate javadocs in the root folder.</span></span>
 <span id="list:javadoc_action-23"><a href="#list:javadoc_action-23" aria-hidden="true" tabindex="-1"></a>          <span class="ex">project:</span> gradle</span></code></pre></div>
-<h2 id="deployment">Deployment</h2>
-<p>è opzionale</p>
 <h2 id="containerization">Containerization</h2>
 <p>Data l’architettura del progetto in microservizi, usare Docker per
 creare un’immagine per ogni servizio è stata una scelta naturale.
@@ -1448,12 +1443,12 @@ class="sourceCode python"><code class="sourceCode python"><span id="list:docker_
 visione completa delle performance e dello stato dei microservizi,
 permettendo di mantenere un’operatività ottimale e di intervenire
 prontamente in caso di anomalie.</p>
-<h2 id="docker-compose-todo">Docker-compose TODO</h2>
-<p>Infine il risultato prodotto è stata un file docker-compose che
+<h2 id="docker-compose">Docker-compose</h2>
+<p>Infine il risultato prodotto è stato un file docker-compose che
 raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra
 i container e semplificando il deploy è stato creato un network interno
 per poter permettere la comunicazione dei container tra di loro e
-particolari network invece per connettere i database ai servizi che ne
+particolari network, invece, per connettere i database ai servizi che ne
 fanno uso. Sono state inserite anche delle dipendenze tra i servizi, ad
 esempio lo user service ha come vincolo che il container del database
 sia avviato prima di esso. Sono stati inseriti dei servizi che
@@ -1640,8 +1635,7 @@ label="list:docker_compose"><pre class="sourceCode python"><code class="sourceCo
 <span id="list:docker_compose-171"><a href="#list:docker_compose-171" aria-hidden="true" tabindex="-1"></a>  mongo_volume:</span>
 <span id="list:docker_compose-172"><a href="#list:docker_compose-172" aria-hidden="true" tabindex="-1"></a>  rabbitmq_data:</span>
 <span id="list:docker_compose-173"><a href="#list:docker_compose-173" aria-hidden="true" tabindex="-1"></a>  grafana<span class="op">-</span>data:</span></code></pre></div>
-<h2 id="degna-di-nota-la-cicd-per-le-relazioni">Degna di nota la CI/CD
-per le relazioni</h2>
+<h2 id="cicd">CI/CD</h2>
 <p>È stata creata una CI/CD per questa relazione e possibili altre
 future. Questo report è poi stato incluso a sua volta in un template
 GitHub appositamente nato per lo sviluppo di nuove relazioni. Contiene
