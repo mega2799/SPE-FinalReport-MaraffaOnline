@@ -355,10 +355,6 @@ jobs:
           project: gradle
 \end{lstlisting}
 
-
-
-\section{Deployment}
-è opzionale
 \section{Containerization}
 
 Data l'architettura del progetto in microservizi, usare Docker per creare un'immagine per ogni servizio è stata una scelta naturale. 
@@ -528,10 +524,10 @@ La configurazione di questi strumenti è stata gestita tramite Docker Compose, p
 Con questa configurazione, il sistema di monitoraggio offre una visione completa delle performance e dello stato dei microservizi, permettendo di mantenere un'operatività ottimale e di intervenire prontamente in caso di anomalie.
 
 
-\section{Docker-compose TODO}
+\section{Docker-compose}
 
-Infine il risultato prodotto è stata un file docker-compose che raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra i container e semplificando il deploy
-è stato creato un network interno per poter permettere la comunicazione dei container tra di loro e particolari network invece per connettere i database ai servizi che ne fanno uso.
+Infine il risultato prodotto è stato un file docker-compose che raggruppa tutti i servizi in un unico stack, definendo le dipendenze tra i container e semplificando il deploy
+è stato creato un network interno per poter permettere la comunicazione dei container tra di loro e particolari network, invece, per connettere i database ai servizi che ne fanno uso.
 Sono state inserite anche delle dipendenze tra i servizi, ad esempio lo user service ha come vincolo che il container del database sia avviato prima di esso. 
 \vspace{0.5cm}
 Sono stati inseriti dei servizi che permettono di monitorare i database: 
@@ -721,7 +717,7 @@ volumes:
 
 
 
-\section{Degna di nota la CI/CD per le relazioni}
+\section{CI/CD}
 È stata creata una CI/CD per questa relazione e possibili altre future. Questo report è poi stato incluso a sua volta in un template GitHub appositamente nato per lo sviluppo di nuove relazioni. Contiene una serie di documenti in LaTeX, che rappresentano uno scheletro per le relazioni, e la CI per poter pubblicare la relazione in continuous integration in formato HTML sulla piattaforma GitHub Pages e fornire una release contenente il PDF della relazione. L'utilizzo di GitHub rende lo sviluppo della relazione più semplice, non obbligando a scegliere strumenti come Overleaf come editor di testo, mantenendo la relazione versionata e permettendo di lavorare in parallelo con altri membri del team sfruttando tutte le comodità offerte da Git.
 
 A questo \href{https://github.com/mega2799/Report-ghPages-latex}{\underline{link}} il template spiega alcuni dei passaggi per poterlo utilizzare. In alternativa, è stato inserito anche un file bash che permette, tramite un container Docker, di creare localmente il PDF della relazione utilizzando i software pandoc e latexmk.
