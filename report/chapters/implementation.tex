@@ -12,7 +12,7 @@
 
 \subsection{Servizi di Business Logic e User Service}
 
-Entrambi questi servizi sono stati realizzati con lo stack NestJS, un framework per Node.js che semplifica la realizzazione di web server e API REST.
+Entrambi questi servizi sono stati realizzati con lo stack \href{http://nestjs.com}{\underline{NestJS}}, un framework per Node.js che semplifica la realizzazione di web server e API REST.
 Si occupano rispettivamente di gestire la logica di gioco e la gestione degli utenti che vogliono utilizzare il sistema, due core business del progetto.
 
 \subsubsection{Business Logic}
@@ -43,8 +43,8 @@ Utilizza API REST per comunicare con il middleware e ottenere i dati necessari p
 
 \includegraphics[width=12cm]{report/img/middleware.png}\\[10.5cm]
 
-Come già citato, il middleware è il cuore del sistema. L'architettura utilizzata per la gestione delle partite è quella di un multi-agente, in cui ogni agente si occupa di gestire una partita 
-e di orchestrare la comunicazione con gli altri servizi, come ad esempio il front-end. Questo core è stato realizzato con Vertx, che è stato utilizzato anche per creare un web-server in Java.
+Come già citato, il \textbf{middleware è il cuore del sistema}. L'architettura utilizzata per la gestione delle partite è quella di un \textbf{multi-agente}, in cui ogni agente si occupa di gestire una partita 
+e di orchestrare la comunicazione con gli altri servizi, come ad esempio il front-end. Questo core è stato realizzato con \textbf{Vertx}, che è stato utilizzato anche per creare un web-server in Java.
 
 Inoltre, al middleware è collegato un database NoSQL su MongoDB, che viene aggiornato a ogni trick completato dai giocatori per creare uno storico delle partite e salvare le loro decisioni in gioco. 
 Questa raccolta di dati sarà parte di uno sviluppo futuro, in cui, dopo aver raccolto una grande quantità di dati di partite, si potrà tentare di creare un modello di machine learning per sviluppare un'intelligenza artificiale che possa giocare al posto di un giocatore umano.
