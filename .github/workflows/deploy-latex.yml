@@ -29,7 +29,8 @@ jobs:
       - name: Build Latex PDF and HTML
         run: |
           mkdir -p ./public/report/img
-          pandoc -s --highlight-style kate --toc -c latex2html.css report/main.tex -o public/index.html
+          curl 'https://raw.githubusercontent.com/ryangrose/easy-pandoc-templates/master/copy_templates.sh' | bash
+          pandoc  -s --highlight-style kate --toc --template easy_template.html report/main.tex --metadata-file=metadata.yaml  -o public/index.html
           cp latex2html.css public
           cp report/img/* public/report/img
           pdflatex report/main.tex
