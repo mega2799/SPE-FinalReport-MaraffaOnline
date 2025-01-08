@@ -2,7 +2,7 @@
 \label{ch:ddd} %Label of the chapter lit rev. The key ``ch:lit_rev'' can be used with command \ref{ch:lit_rev} to refer this Chapter.
 
 \section{Knowledge crunching session for the exploration of the problem space}
-Per ottenere maggior chiarezza sul dominio è stato utilizzato il metodo Even Storming. 
+Per ottenere maggior chiarezza sul dominio è stato utilizzato il metodo Event Storming. 
 La tecnica consiste nell'individuare degli eventi di dominio e riportarli al passato su un post-it arancione.
 Una volta individuati gli eventi, sono stati scritti su post-it blu i comandi che l'utente svolge per creare l'evento.
 In giallo è stato specificato l'attore, la persona che esegue il comando, mentre in verde la view, l'interfaccia software
@@ -149,6 +149,20 @@ Si riporta di seguito lo schema dei casi d'uso che modella l'interazione dell'ut
 \label{use_case}
 \end{figure}
 
+\section{Pattern del DDD}
+
+Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier.
+Di seguito, si riportano le motivazione secondo le quali è stato scelto:
+\begin{itemize}
+    \item servizi \textbf{loosely coupled}
+    \item evoluzione indipendente dei servizi, durante l'aggiornamento del sistema.
+    \item ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, ottenendo, così, una distinta separazione della business logic e delle responsabilità. 
+    \item chiara definizione del dominio
+    \item la \textbf{scalabilità} in base alle richieste del consumer.
+    \item La manutenibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
+
+\end{itemize}
+
 \section{Design generale del software}
 
 L'architettura del software è basata su micro-servizi autonomi e indipendenti tra loro, la cui comunicazione avviene tramite API REST.
@@ -163,17 +177,3 @@ I microservizi sviluppati si occupano di varie aree legate alla natura del proge
 \end{itemize}
 
 \includegraphics[width=12cm]{report/img/Architecture.png}\\[5.5cm]
-
-\section{Pattern del DDD}
-
-Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier.
-Di seguito, si riportano le motivazione secondo le quali è stato scelto:
-\begin{itemize}
-    \item servizi \textbf{loosely coupled}
-    \item evoluzione indipendente dei servizi, durante l'aggiornamento del sistema.
-    \item ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, ottenendo, così, una distinta separazione della business logic e delle responsabilità. 
-    \item chiara definizione del dominio
-    \item la \textbf{scalabilità} in base alle richieste del consumer.
-    \item La manutenibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
-
-\end{itemize}
