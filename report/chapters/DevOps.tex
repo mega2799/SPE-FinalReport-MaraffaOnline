@@ -13,17 +13,18 @@ Per ogni release viene creato anche un tag con la corrispondente versione.
 \subsection{Changelog e secrets}
 Ogni volta che is effettua una push sul main, viene generato un changelog. Il changelog è un file che contiene tutte le modifiche effettuate.
 Nel changelog vengono riportati ogni commit che indicano le modifiche apportate, i contributori e il codice sorgente.
-Se presenti, vengono inoltre riportate le sezioni: 
-\begin{itemize}
-    \item \textbf{feat: Feature} per le nuove funzionalità
-    \item \textbf{fix: Bug Fixes} per le correzioni di bug
-    \item \textbf{docs: Documentation} per le modifiche alla documentazione
-    \item \textbf{refactor: Refactor} per le modifiche al codice che non aggiungono nuove funzionalità
-    \item \textbf{perf: Performance Improvements} per le modifiche che migliorano le prestazioni
-    \item \textbf{CI: Continuos Integration} per le modifiche alla CI
-\end{itemize}
+Se presenti, vengono inoltre riportate le sezioni analoghe a quelle dei conventional commit (feat per nuove funzionalità, ci
+per la continuous integration, refactor, docs per la documentazione, ecc.).
+% \begin{itemize}
+%     \item \textbf{feat: Feature} per le nuove funzionalità
+%     \item \textbf{fix: Bug Fixes} per le correzioni di bug
+%     \item \textbf{docs: Documentation} per le modifiche alla documentazione
+%     \item \textbf{refactor: Refactor} per le modifiche al codice che non aggiungono nuove funzionalità
+%     \item \textbf{perf: Performance Improvements} per le modifiche che migliorano le prestazioni
+%     \item \textbf{CI: Continuos Integration} per le modifiche alla CI
+% \end{itemize}
 Il changelog viene autogenerato tramite l'action 'BobAnkh/auto-generate-changelog@v1.2.5'.
-Inoltre per evitare un accesso non autorizzato a dati sensibili, come l'access token del changelog, sono stati inseriti in secrets, variabili d'ambiente di Github. 
+Inoltre, per evitare un accesso non autorizzato a dati sensibili, come l'access token del changelog, sono stati inseriti in secrets, variabili d'ambiente di Github. 
 
 \section{Licensing e issue template}
 In ogni nostra repo è presente una licenza MIT. È stata scelta questa licenza perché è estremamente permissiva: 
