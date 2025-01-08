@@ -906,23 +906,13 @@ versione.</p>
 changelog. Il changelog è un file che contiene tutte le modifiche
 effettuate. Nel changelog vengono riportati ogni commit che indicano le
 modifiche apportate, i contributori e il codice sorgente. Se presenti,
-vengono inoltre riportate le sezioni:</p>
-<ul>
-<li><p><strong>feat: Feature</strong> per le nuove funzionalità</p></li>
-<li><p><strong>fix: Bug Fixes</strong> per le correzioni di bug</p></li>
-<li><p><strong>docs: Documentation</strong> per le modifiche alla
-documentazione</p></li>
-<li><p><strong>refactor: Refactor</strong> per le modifiche al codice
-che non aggiungono nuove funzionalità</p></li>
-<li><p><strong>perf: Performance Improvements</strong> per le modifiche
-che migliorano le prestazioni</p></li>
-<li><p><strong>CI: Continuos Integration</strong> per le modifiche alla
-CI</p></li>
-</ul>
-<p>Il changelog viene autogenerato tramite l’action
-’BobAnkh/auto-generate-changelog@v1.2.5’. Inoltre per evitare un accesso
-non autorizzato a dati sensibili, come l’access token del changelog,
-sono stati inseriti in secrets, variabili d’ambiente di Github.</p>
+vengono inoltre riportate le sezioni analoghe a quelle dei conventional
+commit (feat per nuove funzionalità, ci per la continuous integration,
+refactor, docs per la documentazione, ecc.). Il changelog viene
+autogenerato tramite l’action ’BobAnkh/auto-generate-changelog@v1.2.5’.
+Inoltre, per evitare un accesso non autorizzato a dati sensibili, come
+l’access token del changelog, sono stati inseriti in secrets, variabili
+d’ambiente di Github.</p>
 <h2 id="licensing-e-issue-template">Licensing e issue template</h2>
 <p>In ogni nostra repo è presente una licenza MIT. È stata scelta questa
 licenza perché è estremamente permissiva: il codice sorgente di Maraffa
