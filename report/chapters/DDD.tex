@@ -163,6 +163,18 @@ Di seguito, si riportano le motivazione secondo le quali è stato scelto:
 
 \end{itemize}
 
+Un pattern molto famoso del DDD è l'Event Sourcing, tuttavia, in questo progetto non è stato applicato.
+Infatti, sebbene possa trarre in inganno il salvataggio su \textit{MongoDB} di tutti gli eventi che si
+verificano nel contesto di una partita e, di conseguenza, la memorizzazione degli stati, 
+l'Event Sourcing non è rispettato.
+Gli stati salvati sono mutabili e vengono sovrascritti ad ogni cambiamento grazie ai metodi di
+ aggiornamento, senza salvare ogni singola modifica. Inoltre, sebbene sia presente un timestamp alla 
+ momento della creazione del record, non sono presenti in fase di aggiornamento.
+Per evitare di aggiungere ulteriore complessità al progetto, anche in termini di performance relativa
+alle interrogazioni articolate per ricostruire lo storico, si è deciso di non implementare il pattern.
+Oltre a una semplificata manutenzione si va anche a ridurre lo spazio di memorizzazione necessario e, pertanto,
+in questa casistica si è ritenuto che un approccio tradizionale fosse più che sufficiente.  
+
 \section{Design generale del software}
 
 L'architettura del software è basata su micro-servizi autonomi e indipendenti tra loro, la cui comunicazione avviene tramite API REST.
