@@ -153,11 +153,11 @@ code span.wa { color: #bf0303; } /* Warning */
         <li><a href="#requisiti" id="toc-requisiti">Requisiti</a></li>
         <li><a href="#casi-duso" id="toc-casi-duso">Casi d’uso</a></li>
         </ul></li>
+        <li><a href="#pattern-del-ddd" id="toc-pattern-del-ddd">Pattern
+        del DDD</a></li>
         <li><a href="#design-generale-del-software"
         id="toc-design-generale-del-software">Design generale del
         software</a></li>
-        <li><a href="#pattern-del-ddd" id="toc-pattern-del-ddd">Pattern
-        del DDD</a></li>
         </ul></li>
         <li><a href="#ch:implementation"
         id="toc-ch:implementation">Implementation</a>
@@ -290,7 +290,7 @@ code span.wa { color: #bf0303; } /* Warning */
 <p> <br />
 <span> Sofia Tosi, Matteo Santoro </span><br />
 </p>
-<p>2025-01-02</p>
+<p>2025-01-08</p>
 </div>
 </div>
 <h2 id="list-of-abbreviations">List of Abbreviations</h2>
@@ -318,7 +318,7 @@ report.</p>
 id="knowledge-crunching-session-for-the-exploration-of-the-problem-space">Knowledge
 crunching session for the exploration of the problem space</h2>
 <p>Per ottenere maggior chiarezza sul dominio è stato utilizzato il
-metodo Even Storming. La tecnica consiste nell’individuare degli eventi
+metodo Event Storming. La tecnica consiste nell’individuare degli eventi
 di dominio e riportarli al passato su un post-it arancione. Una volta
 individuati gli eventi, sono stati scritti su post-it blu i comandi che
 l’utente svolge per creare l’evento. In giallo è stato specificato
@@ -591,6 +591,24 @@ l’interazione dell’utente con l’applicazione.</p>
 <img src="report/img/Casi_duso.png" />
 <figcaption>Schema dei casi d’uso</figcaption>
 </figure>
+<h2 id="pattern-del-ddd">Pattern del DDD</h2>
+<p>Il pattern di DDD che è stato applicato, data l’architettura del
+sistema a microservizi, è quello del Consumer-Supplier. Di seguito, si
+riportano le motivazione secondo le quali è stato scelto:</p>
+<ul>
+<li><p>servizi <strong>loosely coupled</strong></p></li>
+<li><p>evoluzione indipendente dei servizi, durante l’aggiornamento del
+sistema.</p></li>
+<li><p>ove possibile, ogni bounded context è stato sviluppato in un
+microservizio separato, ottenendo, così, una distinta separazione della
+business logic e delle responsabilità.</p></li>
+<li><p>chiara definizione del dominio</p></li>
+<li><p>la <strong>scalabilità</strong> in base alle richieste del
+consumer.</p></li>
+<li><p>La manutenibilità dei singoli componenti che possono,
+ipoteticamente, essere sviluppati da team diversi in modo parallelo,
+definendo al meglio i confini del dominio.</p></li>
+</ul>
 <h2 id="design-generale-del-software">Design generale del software</h2>
 <p>L’architettura del software è basata su micro-servizi autonomi e
 indipendenti tra loro, la cui comunicazione avviene tramite API REST.
@@ -614,24 +632,6 @@ gioco".</p></li>
 <p><img src="report/img/Architecture.png" style="width:12cm"
 alt="image" /><br />
 </p>
-<h2 id="pattern-del-ddd">Pattern del DDD</h2>
-<p>Il pattern di DDD che è stato applicato, data l’architettura del
-sistema a microservizi, è quello del Consumer-Supplier. Di seguito, si
-riportano le motivazione secondo le quali è stato scelto:</p>
-<ul>
-<li><p>servizi <strong>loosely coupled</strong></p></li>
-<li><p>evoluzione indipendente dei servizi, durante l’aggiornamento del
-sistema.</p></li>
-<li><p>ove possibile, ogni bounded context è stato sviluppato in un
-microservizio separato, ottenendo, così, una distinta separazione della
-business logic e delle responsabilità.</p></li>
-<li><p>chiara definizione del dominio</p></li>
-<li><p>la <strong>scalabilità</strong> in base alle richieste del
-consumer.</p></li>
-<li><p>La manutenibilità dei singoli componenti che possono,
-ipoteticamente, essere sviluppati da team diversi in modo parallelo,
-definendo al meglio i confini del dominio.</p></li>
-</ul>
 <h1 id="ch:implementation">Implementation</h1>
 <h2 id="componenti">Componenti</h2>
 <h3 id="servizi-di-business-logic-e-user-service">Servizi di Business
