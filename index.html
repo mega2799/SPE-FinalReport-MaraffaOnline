@@ -592,9 +592,11 @@ l’interazione dell’utente con l’applicazione.</p>
 <figcaption>Schema dei casi d’uso</figcaption>
 </figure>
 <h2 id="pattern-del-ddd">Pattern del DDD</h2>
-<p>Il pattern di DDD che è stato applicato, data l’architettura del
-sistema a microservizi, è quello del Consumer-Supplier. Di seguito, si
-riportano le motivazione secondo le quali è stato scelto:</p>
+<p>Per poter mantere le varie parti di software evolvibili assieme al
+contesto e l’architettura che utilizza un servizio che "coordina" ed
+interroga gli altri e che ha il ruolo di customer si utilizzerà il
+<strong>Customer-supplier</strong>, Di seguito, si riportano le
+motivazione secondo le quali è stato scelto:</p>
 <ul>
 <li><p>servizi <strong>loosely coupled</strong></p></li>
 <li><p>evoluzione indipendente dei servizi, durante l’aggiornamento del
@@ -602,28 +604,25 @@ sistema.</p></li>
 <li><p>ove possibile, ogni bounded context è stato sviluppato in un
 microservizio separato, ottenendo, così, una distinta separazione della
 business logic e delle responsabilità.</p></li>
-<li><p>chiara definizione del dominio</p></li>
-<li><p>la <strong>scalabilità</strong> in base alle richieste del
-consumer.</p></li>
 <li><p>La manutenibilità dei singoli componenti che possono,
 ipoteticamente, essere sviluppati da team diversi in modo parallelo,
 definendo al meglio i confini del dominio.</p></li>
 </ul>
-<p>Un pattern molto famoso del DDD è l’Event Sourcing, tuttavia, in
-questo progetto non è stato applicato. Infatti, sebbene possa trarre in
-inganno il salvataggio su <em>MongoDB</em> di tutti gli eventi che si
-verificano nel contesto di una partita e, di conseguenza, la
-memorizzazione degli stati, l’Event Sourcing non è rispettato. Gli stati
-salvati sono mutabili e vengono sovrascritti ad ogni cambiamento grazie
-ai metodi di aggiornamento, senza salvare ogni singola modifica.
-Inoltre, sebbene sia presente un timestamp alla momento della creazione
-del record, non sono presenti in fase di aggiornamento. Per evitare di
-aggiungere ulteriore complessità al progetto, anche in termini di
-performance relativa alle interrogazioni articolate per ricostruire lo
-storico, si è deciso di non implementare il pattern. Oltre a una
-semplificata manutenzione si va anche a ridurre lo spazio di
-memorizzazione necessario e, pertanto, in questa casistica si è ritenuto
-che un approccio tradizionale fosse più che sufficiente.</p>
+<p>Una pratica del DDD è l’Event Sourcing, tuttavia, in questo progetto
+non è stato applicato. Infatti, sebbene possa trarre in inganno il
+salvataggio su <em>MongoDB</em> di tutti gli eventi che si verificano
+nel contesto di una partita e, di conseguenza, la memorizzazione degli
+stati, l’Event Sourcing non è rispettato. Gli stati salvati sono
+mutabili e vengono sovrascritti ad ogni cambiamento grazie ai metodi di
+aggiornamento, senza salvare ogni singola modifica. Inoltre, sebbene sia
+presente un timestamp alla momento della creazione del record, non sono
+presenti in fase di aggiornamento. Per evitare di aggiungere ulteriore
+complessità al progetto, anche in termini di performance relativa alle
+interrogazioni articolate per ricostruire lo storico, si è deciso di non
+implementare il pattern. Oltre a una semplificata manutenzione si va
+anche a ridurre lo spazio di memorizzazione necessario e, pertanto, in
+questa casistica si è ritenuto che un approccio tradizionale fosse più
+che sufficiente.</p>
 <h2 id="design-generale-del-software">Design generale del software</h2>
 <p>L’architettura del software è basata su micro-servizi autonomi e
 indipendenti tra loro, la cui comunicazione avviene tramite API REST.
