@@ -615,11 +615,11 @@ nel contesto di una partita e, di conseguenza, la memorizzazione degli
 stati, l’Event Sourcing non è rispettato. Gli stati salvati sono
 mutabili e vengono sovrascritti ad ogni cambiamento grazie ai metodi di
 aggiornamento, senza salvare ogni singola modifica. Inoltre, sebbene sia
-presente un timestamp alla momento della creazione del record, non sono
+presente un timestamp al momento della creazione del record, non sono
 presenti in fase di aggiornamento. Per evitare di aggiungere ulteriore
 complessità al progetto, anche in termini di performance relativa alle
 interrogazioni articolate per ricostruire lo storico, si è deciso di non
-implementare il pattern. Oltre a una semplificata manutenzione si va
+implementare il pattern. Oltre a una semplificata manutenzione, si va
 anche a ridurre lo spazio di memorizzazione necessario e, pertanto, in
 questa casistica si è ritenuto che un approccio tradizionale fosse più
 che sufficiente.</p>
