@@ -151,19 +151,17 @@ Si riporta di seguito lo schema dei casi d'uso che modella l'interazione dell'ut
 
 \section{Pattern del DDD}
 
-Il pattern di DDD che è stato applicato, data l'architettura del sistema a microservizi, è quello del Consumer-Supplier.
+Per poter mantere le varie parti di software evolvibili assieme al contesto e l'architettura che utilizza un servizio che "coordina" ed interroga gli altri e che ha il ruolo di customer
+si utilizzerà il \textbf{Customer-supplier}, 
 Di seguito, si riportano le motivazione secondo le quali è stato scelto:
 \begin{itemize}
     \item servizi \textbf{loosely coupled}
     \item evoluzione indipendente dei servizi, durante l'aggiornamento del sistema.
     \item ove possibile, ogni bounded context è stato sviluppato in un microservizio separato, ottenendo, così, una distinta separazione della business logic e delle responsabilità. 
-    \item chiara definizione del dominio
-    \item la \textbf{scalabilità} in base alle richieste del consumer.
     \item La manutenibilità dei singoli componenti che possono, ipoteticamente, essere sviluppati da team diversi in modo parallelo, definendo al meglio i confini del dominio.
-
 \end{itemize}
 
-Un pattern molto famoso del DDD è l'Event Sourcing, tuttavia, in questo progetto non è stato applicato.
+Una pratica del DDD è l'Event Sourcing, tuttavia, in questo progetto non è stato applicato.
 Infatti, sebbene possa trarre in inganno il salvataggio su \textit{MongoDB} di tutti gli eventi che si
 verificano nel contesto di una partita e, di conseguenza, la memorizzazione degli stati, 
 l'Event Sourcing non è rispettato.
